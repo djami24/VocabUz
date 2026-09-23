@@ -19,7 +19,8 @@
   --shadow-md:0 4px 16px rgba(33,150,243,.15);
   --radius:16px; --radius-sm:12px; --bottom-nav-h:66px;
 }
-html,body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:var(--ink);}
+html{min-height:100%;}
+body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:var(--ink);overflow-y:auto;}
 
 /* ── TOP BAR ── */
 .topbar{position:sticky;top:0;z-index:100;background:var(--bg);padding:14px 16px 10px;display:flex;align-items:center;gap:10px;}
@@ -73,7 +74,7 @@ html,body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;co
 /* ══════════════════════════
    VIEW 2: SO'ZLAR RO'YXATI
 ══════════════════════════ */
-#viewWords{display:none;padding-bottom:calc(var(--bottom-nav-h)+24px);}
+#viewWords{display:none;padding-bottom:calc(var(--bottom-nav-h)+80px);}
 .words-list{padding:0 16px;display:flex;flex-direction:column;gap:10px;}
 .word-card{background:var(--white);border-radius:var(--radius);padding:14px 16px 12px;box-shadow:var(--shadow-sm);transition:box-shadow .15s;}
 .word-card.learned-card{border-left:3px solid var(--green);}
