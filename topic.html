@@ -600,7 +600,7 @@ function openTopic(topic){
   const vw = document.getElementById('viewWords');
   vw.style.display='block';
   vw.scrollTop = 0;
-  document.getElementById('topbarTitle').textContent = TOPIC_EMOJI[topic]+' '+topic;
+  document.getElementById('topbarTitle').textContent = topic;
   renderWords();
 }
 
@@ -637,7 +637,7 @@ function renderWords(){
     </div>`;
   } else if(full){
     bannerHtml=`<div class="test-ready-banner" onclick="startTest()">
-      <div class="test-ready-txt"><div class="test-ready-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:6px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Test boshlashga tayyor!</div><div class="test-ready-sub">Barcha ${total} ta so'zni o'rgandingiz</div></div>
+      <div class="test-ready-txt"><div class="test-ready-title">Test boshlashga tayyor!</div><div class="test-ready-sub">Barcha ${total} ta so'zni o'rgandingiz</div></div>
       <button class="test-ready-btn">Testni boshlash</button>
     </div>`;
   } else {
