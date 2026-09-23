@@ -586,7 +586,8 @@ function renderTopics(){
         <div class="topic-card-progress-bar" style="width:${pct}%"></div>
       </div>`;
   });
-  document.getElementById('topicsGrid').innerHTML = html;
+  document.getElementById('topicsGrid').innerHTML = html +
+    '<div style="height:120px;flex-shrink:0;display:block;"></div>';
 }
 
 // ════════════════════════════════════════
