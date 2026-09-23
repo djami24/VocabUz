@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Admin Panel — VocaabUZ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+/* ── Tokens (VocabUZ bilan bir xil) ── */
+:root {
+  --sky:        #E8F4FD;
+  --sky-mid:    #C8E6F9;
+  --blue:       #1DA1F2;
+  --blue-deep:  #0D8AD4;
+  --blue-soft:  #E3F2FD;
+  --ink:        #1A2333;
+  --ink-mid:    #4A5568;
+  --ink-soft:   #8A9BB0;
+  --white:      #FFFFFF;
+  --card-bg:    #FFFFFF;
+  --line:       #E2ECF5;
+  --green:      #22C55E;
+  --amber:      #F59E0B;
+  --red:        #EF4444;
+  --radius-sm:  10px;
+  --radius-md:  16px;
+  --radius-lg:  22px;
+  --shadow-sm:  0 2px 8px rgba(29,161,242,.08);
+  --shadow-md:  0 4px 20px rgba(29,161,242,.12);
+  --font:       'Inter', 'Segoe UI', system-ui, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+  font-family: var(--font);
+  background: var(--sky);
+  color: var(--ink);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+/* ── AUTH SCREEN ── */
+#authScreen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+}
+.auth-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 36px 28px;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: var(--shadow-md);
+}
+.auth-logo {
+  width: 52px; height: 52px;
+  background: linear-gradient(135deg, var(--blue), #0D47A1);
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+}
+.auth-title { font-size: 1.4rem; font-weight: 800; color: var(--ink); text-align: center; margin-bottom: 4px; }
+.auth-sub { font-size: .85rem; color: var(--ink-soft); text-align: center; margin-bottom: 28px; }
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: .82rem; font-weight: 600; color: var(--ink-mid); margin-bottom: 6px; }
+.form-input {
+  width: 100%; padding: 12px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: .95rem; font-family: var(--font);
+  color: var(--ink); background: var(--sky);
+  outline: none; transition: border .15s;
+}
+.form-input:focus { border-color: var(--blue); background: var(--white); }
+.form-error { font-size: .8rem; color: var(--red); margin-top: 5px; min-height: 18px; }
+.btn-primary {
+  width: 100%; padding: 14px;
+  background: linear-gradient(135deg, var(--blue), var(--blue-deep));
+  color: #fff; border-radius: var(--radius-sm);
+  font-size: 1rem; font-weight: 700;
+  transition: opacity .15s;
+}
+.btn-primary:active { opacity: .85; }
+.btn-primary:disabled { opacity: .6; cursor: not-allowed; }
+
+/* ── ADMIN LAYOUT ── */
+#adminApp { display: none; }
+
+/* Sidebar */
+.sidebar {
+  position: fixed; left: 0; top: 0; bottom: 0;
+  width: 220px;
+  background: var(--white);
+  border-right: 1.5px solid var(--line);
+  display: flex; flex-direction: column;
+  z-index: 200;
+  box-shadow: var(--shadow-sm);
+}
+.sidebar-logo {
+  display: flex; align-items: center; gap: 10px;
+  padding: 20px 18px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.sidebar-logo-icon {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--blue), #0D47A1);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.sidebar-logo-text { font-size: .95rem; font-weight: 800; color: var(--ink); }
+.sidebar-logo-badge {
+  font-size: .62rem; font-weight: 700;
+  background: var(--blue-soft); color: var(--blue);
+  padding: 2px 6px; border-radius: 6px; margin-left: 4px;
+}
+
+.sidebar-nav { padding: 12px 10px; flex: 1; }
+.nav-label {
+  font-size: .7rem; font-weight: 700; color: var(--ink-soft);
+  padding: 8px 8px 4px; letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: .88rem; font-weight: 500;
+  color: var(--ink-mid);
+  cursor: pointer;
+  transition: background .12s, color .12s;
+  margin-bottom: 2px;
+}
+.nav-item:hover { background: var(--sky); color: var(--ink); }
+.nav-item.active { background: var(--blue-soft); color: var(--blue); font-weight: 700; }
+.nav-item svg { flex-shrink: 0; }
+
+.sidebar-footer {
+  padding: 14px 10px;
+  border-top: 1px solid var(--line);
+}
+.admin-profile {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+}
+.admin-avatar {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--blue), #0D47A1);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .8rem; font-weight: 800; color: #fff; flex-shrink: 0;
+}
+.admin-info { flex: 1; overflow: hidden; }
+.admin-name { font-size: .82rem; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.admin-role { font-size: .72rem; color: var(--ink-soft); }
+.logout-btn {
+  padding: 6px; border-radius: 8px;
+  color: var(--ink-soft); transition: color .12s, background .12s;
+}
+.logout-btn:hover { color: var(--red); background: #FEE2E2; }
+
+/* ── MAIN CONTENT ── */
+.main-content {
+  margin-left: 220px;
+  padding: 24px;
+  min-height: 100vh;
+}
+
+/* ── PAGE HEADER ── */
+.page-header {
+  margin-bottom: 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
+}
+.page-title { font-size: 1.4rem; font-weight: 800; color: var(--ink); }
+.page-sub { font-size: .83rem; color: var(--ink-soft); margin-top: 2px; }
+
+/* ── STATS GRID ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
+.stat-card {
+  background: var(--white);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--line);
+}
+.stat-icon {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 12px;
+}
+.stat-icon.blue  { background: var(--blue-soft); color: var(--blue); }
+.stat-icon.green { background: #DCFCE7; color: var(--green); }
+.stat-icon.amber { background: #FEF3C7; color: var(--amber); }
+.stat-icon.red   { background: #FEE2E2; color: var(--red); }
+.stat-value { font-size: 1.8rem; font-weight: 800; color: var(--ink); line-height: 1; }
+.stat-label { font-size: .78rem; color: var(--ink-soft); margin-top: 4px; }
+
+/* ── CARD ── */
+.card {
+  background: var(--white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  flex-wrap: wrap;
+}
+.card-title { font-size: 1rem; font-weight: 700; color: var(--ink); }
+.card-body { padding: 0; }
+
+/* ── TOOLBAR ── */
+.toolbar {
+  display: flex; align-items: center; gap: 10px;
+  flex-wrap: wrap;
+}
+.search-box {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--sky);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  min-width: 220px;
+}
+.search-box input {
+  border: none; background: none; outline: none;
+  font-size: .88rem; font-family: var(--font);
+  color: var(--ink); width: 100%;
+}
+.search-box svg { color: var(--ink-soft); flex-shrink: 0; }
+
+.filter-select {
+  padding: 9px 12px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: .85rem; font-family: var(--font);
+  color: var(--ink); background: var(--white);
+  outline: none; cursor: pointer;
+}
+
+.btn-add {
+  display: flex; align-items: center; gap: 6px;
+  padding: 9px 16px;
+  background: linear-gradient(135deg, var(--blue), var(--blue-deep));
+  color: #fff;
+  border-radius: var(--radius-sm);
+  font-size: .88rem; font-weight: 700;
+  transition: opacity .12s;
+}
+.btn-add:hover { opacity: .9; }
+
+/* ── TABLE ── */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+thead tr { background: var(--sky); }
+th {
+  padding: 11px 16px;
+  text-align: left;
+  font-size: .78rem; font-weight: 700;
+  color: var(--ink-soft);
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+td {
+  padding: 13px 16px;
+  font-size: .88rem;
+  color: var(--ink);
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--sky); }
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: .72rem; font-weight: 700;
+}
+.badge-a1, .badge-a2 { background: #DCFCE7; color: #15803D; }
+.badge-b1, .badge-b2 { background: #FEF3C7; color: #92400E; }
+.badge-c1, .badge-c2 { background: #FEE2E2; color: #9B1C1C; }
+.badge-blue { background: var(--blue-soft); color: var(--blue); }
+
+.action-btns { display: flex; gap: 6px; }
+.btn-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .12s, color .12s;
+  color: var(--ink-mid);
+}
+.btn-icon:hover { background: var(--sky-mid); color: var(--blue); }
+.btn-icon.danger:hover { background: #FEE2E2; color: var(--red); }
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  text-align: center; padding: 60px 20px;
+  color: var(--ink-soft);
+}
+.empty-icon { font-size: 3rem; margin-bottom: 12px; }
+.empty-title { font-size: 1rem; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+.empty-sub { font-size: .85rem; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(26,35,51,.45);
+  backdrop-filter: blur(4px);
+  z-index: 500;
+  display: none; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  width: 100%; max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+  animation: modalIn .18s ease;
+}
+@keyframes modalIn {
+  from { transform: scale(.95) translateY(8px); opacity: 0; }
+  to   { transform: scale(1) translateY(0); opacity: 1; }
+}
+.modal-header {
+  padding: 20px 22px 16px;
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-title { font-size: 1.05rem; font-weight: 800; color: var(--ink); }
+.modal-close {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink-soft); transition: background .12s;
+}
+.modal-close:hover { background: var(--sky); }
+.modal-body { padding: 20px 22px; }
+.modal-footer {
+  padding: 14px 22px 20px;
+  display: flex; justify-content: flex-end; gap: 10px;
+}
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.modal .form-group { margin-bottom: 16px; }
+.modal .form-input { background: var(--sky); }
+.modal .form-input:focus { background: var(--white); }
+
+textarea.form-input {
+  resize: vertical; min-height: 72px; line-height: 1.5;
+}
+
+.btn-secondary {
+  padding: 11px 20px;
+  background: var(--sky);
+  color: var(--ink-mid);
+  border-radius: var(--radius-sm);
+  font-size: .9rem; font-weight: 600;
+  transition: background .12s;
+}
+.btn-secondary:hover { background: var(--sky-mid); }
+.btn-save {
+  padding: 11px 24px;
+  background: linear-gradient(135deg, var(--blue), var(--blue-deep));
+  color: #fff;
+  border-radius: var(--radius-sm);
+  font-size: .9rem; font-weight: 700;
+  transition: opacity .12s;
+}
+.btn-save:hover { opacity: .9; }
+.btn-save:disabled { opacity: .6; cursor: not-allowed; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--ink); color: #fff;
+  padding: 12px 22px; border-radius: 30px;
+  font-size: .88rem; font-weight: 600;
+  box-shadow: 0 4px 20px rgba(0,0,0,.25);
+  z-index: 1000;
+  transition: transform .25s, opacity .25s;
+  opacity: 0; pointer-events: none;
+  white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+/* ── LOADING ── */
+.loading {
+  display: flex; align-items: center; justify-content: center;
+  padding: 60px 20px; gap: 10px;
+  color: var(--ink-soft); font-size: .9rem;
+}
+.spinner {
+  width: 22px; height: 22px;
+  border: 2.5px solid var(--line);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── VISIT ROW ── */
+.visit-user-row { display: flex; align-items: center; gap: 10px; }
+.visit-avatar {
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, var(--blue), #0D47A1);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .8rem; font-weight: 800; color: #fff; flex-shrink: 0;
+}
+.visit-name { font-weight: 600; font-size: .88rem; }
+.visit-email { font-size: .75rem; color: var(--ink-soft); }
+
+/* ── PAGINATION ── */
+.pagination {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 16px;
+  border-top: 1px solid var(--line);
+}
+.page-btn {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .85rem; font-weight: 600;
+  color: var(--ink-mid);
+  border: 1.5px solid var(--line);
+  transition: all .12s;
+}
+.page-btn:hover:not(:disabled) { border-color: var(--blue); color: var(--blue); }
+.page-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+.page-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ── PAGE visibility ── */
+.tab-page { display: none; }
+.tab-page.active { display: block; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform .25s;
+  }
+  .sidebar.open { transform: translateX(0); }
+  .main-content { margin-left: 0; padding: 16px; }
+  .mobile-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px;
+    background: var(--white);
+    border-bottom: 1px solid var(--line);
+    margin: -16px -16px 20px;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .hamburger { padding: 6px; }
+  .overlay-bg {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.35); z-index: 150;
+  }
+  .overlay-bg.open { display: block; }
+  .form-row { grid-template-columns: 1fr; }
+}
+@media (min-width: 769px) {
+  .mobile-header { display: none; }
+  .overlay-bg { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ AUTH SCREEN ══════════════ -->
+<div id="authScreen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+    </div>
+    <div class="auth-title">Admin Panel</div>
+    <div class="auth-sub">VocaabUZ boshqaruv sahifasi</div>
+
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" type="email" id="adminEmail" placeholder="admin@vocabuz.com" autocomplete="email">
+      <div class="form-error" id="emailErr"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Parol</label>
+      <input class="form-input" type="password" id="adminPass" placeholder="••••••••" autocomplete="current-password">
+      <div class="form-error" id="passErr"></div>
+    </div>
+    <div class="form-error" id="authErr" style="margin-bottom:12px"></div>
+    <button class="btn-primary" id="loginBtn" onclick="doAdminLogin()">Kirish</button>
+  </div>
+</div>
+
+<!-- ══════════════ ADMIN APP ══════════════ -->
+<div id="adminApp">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+      </div>
+      <div>
+        <span class="sidebar-logo-text">VocaabUZ</span>
+        <span class="sidebar-logo-badge">ADMIN</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">Asosiy</div>
+      <div class="nav-item active" onclick="showPage('dashboard')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-item" onclick="showPage('words')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        So'zlar
+      </div>
+      <div class="nav-label">Foydalanuvchilar</div>
+      <div class="nav-item" onclick="showPage('users')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Barcha foydalanuvchilar
+      </div>
+      <div class="nav-item" onclick="showPage('visits')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        Kirish tarixi
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="admin-profile">
+        <div class="admin-avatar" id="sidebarAvatar">A</div>
+        <div class="admin-info">
+          <div class="admin-name" id="sidebarName">Admin</div>
+          <div class="admin-role">Super Admin</div>
+        </div>
+        <button class="logout-btn" onclick="doLogout()" title="Chiqish">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mobile overlay -->
+  <div class="overlay-bg" id="overlayBg" onclick="closeSidebar()"></div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Mobile header -->
+    <div class="mobile-header">
+      <button class="hamburger" onclick="openSidebar()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <span style="font-size:1rem;font-weight:800;color:var(--ink)">VocaabUZ Admin</span>
+    </div>
+
+    <!-- ── DASHBOARD ── -->
+    <div class="tab-page active" id="page-dashboard">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Dashboard</div>
+          <div class="page-sub">Umumiy ko'rinish</div>
+        </div>
+      </div>
+
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+          <div class="stat-icon blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <div class="stat-value" id="statWords">—</div>
+          <div class="stat-label">Jami so'zlar</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div class="stat-value" id="statUsers">—</div>
+          <div class="stat-label">Foydalanuvchilar</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <div class="stat-value" id="statVisits">—</div>
+          <div class="stat-label">Bugungi kirishlar</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></div>
+          <div class="stat-value" id="statTopics">—</div>
+          <div class="stat-label">Mavzular</div>
+        </div>
+      </div>
+
+      <!-- Recent visits table -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Oxirgi kirishlar</div>
+        </div>
+        <div class="card-body">
+          <div id="dashVisitsBody"><div class="loading"><div class="spinner"></div>Yuklanmoqda…</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── WORDS ── -->
+    <div class="tab-page" id="page-words">
+      <div class="page-header">
+        <div>
+          <div class="page-title">So'zlar</div>
+          <div class="page-sub">Barcha lug'at so'zlari</div>
+        </div>
+        <button class="btn-add" onclick="openAddWord()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          So'z qo'shish
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="toolbar">
+            <div class="search-box">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="wordSearch" placeholder="So'z qidirish…" oninput="filterWords()">
+            </div>
+            <select class="filter-select" id="topicFilter" onchange="filterWords()">
+              <option value="">Barcha mavzular</option>
+            </select>
+            <select class="filter-select" id="levelFilter" onchange="filterWords()">
+              <option value="">Barcha darajalar</option>
+              <option value="A1">A1</option>
+              <option value="A2">A2</option>
+              <option value="B1">B1</option>
+              <option value="B2">B2</option>
+              <option value="C1">C1</option>
+              <option value="C2">C2</option>
+            </select>
+          </div>
+          <div style="font-size:.82rem;color:var(--ink-soft)" id="wordsCount"></div>
+        </div>
+        <div class="card-body">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Ingliz so'zi</th>
+                  <th>O'zbekcha</th>
+                  <th>Mavzu</th>
+                  <th>Daraja</th>
+                  <th>Misol</th>
+                  <th>Amallar</th>
+                </tr>
+              </thead>
+              <tbody id="wordsTableBody"></tbody>
+            </table>
+          </div>
+          <div id="wordsPagination" class="pagination"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── USERS ── -->
+    <div class="tab-page" id="page-users">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Foydalanuvchilar</div>
+          <div class="page-sub">Ro'yxatdan o'tgan barcha foydalanuvchilar</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="search-box">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="userSearch" placeholder="Ism yoki email qidirish…" oninput="filterUsers()">
+          </div>
+          <div style="font-size:.82rem;color:var(--ink-soft)" id="usersCount"></div>
+        </div>
+        <div class="card-body">
+          <div id="usersTableWrap"><div class="loading"><div class="spinner"></div>Yuklanmoqda…</div></div>
+          <div id="usersPagination" class="pagination"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── VISITS ── -->
+    <div class="tab-page" id="page-visits">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Kirish tarixi</div>
+          <div class="page-sub">Saytga kirgan foydalanuvchilar va vaqti</div>
+        </div>
+        <select class="filter-select" id="visitDateFilter" onchange="filterVisits()">
+          <option value="">Barcha vaqt</option>
+          <option value="today">Bugun</option>
+          <option value="week">Bu hafta</option>
+          <option value="month">Bu oy</option>
+        </select>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <div id="visitsTableWrap"><div class="loading"><div class="spinner"></div>Yuklanmoqda…</div></div>
+          <div id="visitsPagination" class="pagination"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ══════════════ MODALS ══════════════ -->
+
+<!-- Add/Edit Word Modal -->
+<div class="modal-overlay" id="wordModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="wordModalTitle">So'z qo'shish</div>
+      <button class="modal-close" onclick="closeModal('wordModal')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editWordId">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Ingliz so'zi *</label>
+          <input class="form-input" type="text" id="wWord" placeholder="curriculum">
+          <div class="form-error" id="wWordErr"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">O'zbekcha tarjima *</label>
+          <input class="form-input" type="text" id="wUz" placeholder="o'quv dasturi">
+          <div class="form-error" id="wUzErr"></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Mavzu *</label>
+          <input class="form-input" type="text" id="wTopic" placeholder="Ta'lim" list="topicSuggestions">
+          <datalist id="topicSuggestions"></datalist>
+          <div class="form-error" id="wTopicErr"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Daraja *</label>
+          <select class="form-input filter-select" id="wLevel" style="width:100%">
+            <option value="">Tanlang</option>
+            <option value="A1">A1</option>
+            <option value="A2">A2</option>
+            <option value="B1">B1</option>
+            <option value="B2">B2</option>
+            <option value="C1">C1</option>
+            <option value="C2">C2</option>
+          </select>
+          <div class="form-error" id="wLevelErr"></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Misol gap (ixtiyoriy)</label>
+        <textarea class="form-input" id="wExample" placeholder="A modern curriculum should prepare students for both employment and everyday life."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">So'z turi (ixtiyoriy)</label>
+        <input class="form-input" type="text" id="wTypes" placeholder="noun, verb, adjective…">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('wordModal')">Bekor qilish</button>
+      <button class="btn-save" id="saveWordBtn" onclick="saveWord()">Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete confirm -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-header">
+      <div class="modal-title">O'chirishni tasdiqlang</div>
+      <button class="modal-close" onclick="closeModal('deleteModal')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:.9rem;color:var(--ink-mid);line-height:1.6">
+        <strong id="deleteWordName"></strong> so'zini o'chirishni xohlaysizmi? Bu amalni ortga qaytarib bo'lmaydi.
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('deleteModal')">Bekor qilish</button>
+      <button class="btn-save" id="confirmDeleteBtn" onclick="confirmDelete()" style="background:linear-gradient(135deg,var(--red),#B91C1C)">O'chirish</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+
+<!-- ══════════════ FIREBASE + SCRIPTS ══════════════ -->
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+
+<script>
+// ── Firebase config (firebase-config.js bilan bir xil) ──
+const firebaseConfig = {
+  apiKey:            "AIzaSyCkMHAAIBEom-mxeo_hmFwguaTxJDLy7rE",
+  authDomain:        "vocabuz-f61c1.firebaseapp.com",
+  projectId:         "vocabuz-f61c1",
+  storageBucket:     "vocabuz-f61c1.firebasestorage.app",
+  messagingSenderId: "535277710706",
+  appId:             "1:535277710706:web:92e4afea24612ee4c601eb"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db   = firebase.firestore();
+const auth = firebase.auth();
+
+// ── Admin email(lar) — shu emaillar admin hisoblanadi ──
+// Öz emailingizni shu yerga qo'shing!
+const ADMIN_EMAILS = [
+  'admin@vocabuz.com',
+  // 'sizning@emailingiz.com'  ← o'zingiznikini qo'shing
+];
+
+// ── STATE ──
+let currentAdmin = null;
+let ALL_WORDS = [];      // Firestore'dan yoki local dan
+let allUsers  = [];
+let allVisits = [];
+let filteredWords = [];
+let filteredUsers = [];
+let filteredVisits= [];
+let wordToDelete = null;
+
+// Pagination
+const PER_PAGE = 20;
+let wordPage  = 1;
+let userPage  = 1;
+let visitPage = 1;
+
+// ══════════ AUTH ══════════
+auth.onAuthStateChanged(async function(user) {
+  if (!user) {
+    showAuthScreen();
+    return;
+  }
+  // Admin check
+  if (!ADMIN_EMAILS.includes(user.email)) {
+    await auth.signOut();
+    document.getElementById('authErr').textContent = 'Sizda admin huquqi yo\'q.';
+    showAuthScreen();
+    return;
+  }
+  currentAdmin = user;
+  showAdminApp();
+  loadAll();
+  logVisit(user);
+});
+
+function showAuthScreen() {
+  document.getElementById('authScreen').style.display = 'flex';
+  document.getElementById('adminApp').style.display = 'none';
+}
+
+function showAdminApp() {
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('adminApp').style.display = 'block';
+  const name = currentAdmin.displayName || currentAdmin.email;
+  document.getElementById('sidebarName').textContent = name;
+  document.getElementById('sidebarAvatar').textContent = name.charAt(0).toUpperCase();
+}
+
+function doAdminLogin() {
+  const email = document.getElementById('adminEmail').value.trim();
+  const pass  = document.getElementById('adminPass').value;
+  const btn   = document.getElementById('loginBtn');
+  const gErr  = document.getElementById('authErr');
+  gErr.textContent = '';
+  document.getElementById('emailErr').textContent = '';
+  document.getElementById('passErr').textContent = '';
+
+  if (!email) { document.getElementById('emailErr').textContent = 'Email kiriting'; return; }
+  if (!pass)  { document.getElementById('passErr').textContent  = 'Parol kiriting'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Tekshirilmoqda…';
+
+  auth.signInWithEmailAndPassword(email, pass)
+    .then(() => {
+      btn.disabled = false;
+      btn.textContent = 'Kirish';
+    })
+    .catch(err => {
+      btn.disabled = false;
+      btn.textContent = 'Kirish';
+      const msgs = {
+        'auth/user-not-found': 'Foydalanuvchi topilmadi',
+        'auth/wrong-password': 'Parol noto\'g\'ri',
+        'auth/invalid-email': 'Email noto\'g\'ri',
+        'auth/too-many-requests': 'Juda ko\'p urinish. Keyinroq urinib ko\'ring',
+        'auth/invalid-credential': 'Email yoki parol noto\'g\'ri'
+      };
+      gErr.textContent = msgs[err.code] || 'Xatolik: ' + err.message;
+    });
+}
+
+async function doLogout() {
+  await auth.signOut();
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('authScreen').style.display !== 'none') {
+    doAdminLogin();
+  }
+});
+
+// ══════════ VISIT LOGGING ══════════
+async function logVisit(user) {
+  try {
+    await db.collection('visits').add({
+      uid:       user.uid,
+      name:      user.displayName || '',
+      email:     user.email || '',
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      page:      'index'
+    });
+  } catch(e) { /* ignore */ }
+}
+
+// ══════════ LOAD ALL DATA ══════════
+async function loadAll() {
+  await Promise.all([
+    loadWords(),
+    loadUsers(),
+    loadVisits()
+  ]);
+  renderDashboard();
+}
+
+// ── WORDS ──
+async function loadWords() {
+  try {
+    // 1. Firestore'dan so'zlar
+    const snap = await db.collection('words').orderBy('id').get();
+    if (!snap.empty) {
+      ALL_WORDS = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+    } else {
+      // 2. Firestore bo'sh bo'lsa — topic.html dagi LOCAL so'zlar (import)
+      ALL_WORDS = getLocalWords();
+      await seedWordsToFirestore();
+    }
+    filteredWords = [...ALL_WORDS];
+    renderWordsTable();
+    populateTopicFilter();
+  } catch(e) {
+    console.error('Words load error:', e);
+    ALL_WORDS = getLocalWords();
+    filteredWords = [...ALL_WORDS];
+    renderWordsTable();
+  }
+}
+
+async function seedWordsToFirestore() {
+  const batch = db.batch();
+  ALL_WORDS.forEach(w => {
+    const ref = db.collection('words').doc(String(w.id));
+    batch.set(ref, w);
+  });
+  try { await batch.commit(); showToast('So\'zlar Firestore\'ga yuklandi!'); } catch(e) {}
+}
+
+// ── USERS ──
+async function loadUsers() {
+  try {
+    const snap = await db.collection('users').orderBy('createdAt', 'desc').get();
+    allUsers = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+    filteredUsers = [...allUsers];
+    renderUsersTable();
+    document.getElementById('statUsers').textContent = allUsers.length;
+  } catch(e) {
+    console.error('Users load error:', e);
+    document.getElementById('statUsers').textContent = '—';
+  }
+}
+
+// ── VISITS ──
+async function loadVisits() {
+  try {
+    const snap = await db.collection('visits').orderBy('timestamp', 'desc').limit(200).get();
+    allVisits = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+    filteredVisits = [...allVisits];
+    renderVisitsTable();
+    // Bugungi kirishlar
+    const today = new Date(); today.setHours(0,0,0,0);
+    const todayCount = allVisits.filter(v => {
+      if (!v.timestamp) return false;
+      return v.timestamp.toDate && v.timestamp.toDate() >= today;
+    }).length;
+    document.getElementById('statVisits').textContent = todayCount;
+  } catch(e) {
+    console.error('Visits load error:', e);
+    document.getElementById('statVisits').textContent = '—';
+  }
+}
+
+// ══════════ DASHBOARD ══════════
+function renderDashboard() {
+  document.getElementById('statWords').textContent  = ALL_WORDS.length;
+  const topics = new Set(ALL_WORDS.map(w => w.topic));
+  document.getElementById('statTopics').textContent = topics.size;
+
+  // Recent visits table
+  const recent = allVisits.slice(0, 8);
+  const wrap = document.getElementById('dashVisitsBody');
+  if (!recent.length) {
+    wrap.innerHTML = '<div class="empty-state"><div class="empty-icon">👁️</div><div class="empty-title">Hech qanday kirish yo\'q</div><div class="empty-sub">Foydalanuvchilar saytga kirganda bu yerda ko\'rinadi</div></div>';
+    return;
+  }
+  wrap.innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Foydalanuvchi</th><th>Email</th><th>Vaqti</th></tr></thead>
+        <tbody>${recent.map(v => `
+          <tr>
+            <td><div class="visit-user-row"><div class="visit-avatar">${(v.name||v.email||'?').charAt(0).toUpperCase()}</div><div><div class="visit-name">${v.name||'—'}</div></div></div></td>
+            <td style="color:var(--ink-soft);font-size:.82rem">${v.email||'—'}</td>
+            <td style="color:var(--ink-soft);font-size:.82rem">${formatTs(v.timestamp)}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+// ══════════ WORDS TABLE ══════════
+function filterWords() {
+  const q     = document.getElementById('wordSearch').value.toLowerCase();
+  const topic = document.getElementById('topicFilter').value;
+  const level = document.getElementById('levelFilter').value;
+
+  filteredWords = ALL_WORDS.filter(w =>
+    (!q     || w.word.toLowerCase().includes(q) || w.uz.toLowerCase().includes(q)) &&
+    (!topic || w.topic === topic) &&
+    (!level || w.level === level)
+  );
+  wordPage = 1;
+  renderWordsTable();
+}
+
+function renderWordsTable() {
+  const total = filteredWords.length;
+  document.getElementById('wordsCount').textContent = `${total} ta so'z`;
+  document.getElementById('statWords').textContent  = ALL_WORDS.length;
+
+  const start = (wordPage - 1) * PER_PAGE;
+  const page  = filteredWords.slice(start, start + PER_PAGE);
+  const tbody = document.getElementById('wordsTableBody');
+
+  if (!page.length) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📝</div><div class="empty-title">So'z topilmadi</div><div class="empty-sub">Qidiruv filtrini o'zgartiring</div></div></td></tr>`;
+    document.getElementById('wordsPagination').innerHTML = '';
+    return;
+  }
+
+  tbody.innerHTML = page.map((w, i) => {
+    const lvl = (w.level||'').toLowerCase();
+    return `<tr>
+      <td style="color:var(--ink-soft);font-size:.8rem">${start+i+1}</td>
+      <td><strong>${esc(w.word)}</strong></td>
+      <td>${esc(w.uz)}</td>
+      <td><span class="badge badge-blue">${esc(w.topic||'—')}</span></td>
+      <td><span class="badge badge-${lvl}">${esc(w.level||'—')}</span></td>
+      <td style="color:var(--ink-soft);font-size:.8rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(w.example||'—')}</td>
+      <td>
+        <div class="action-btns">
+          <button class="btn-icon" onclick="openEditWord(${JSON.stringify(w).replace(/"/g,'&quot;')})" title="Tahrirlash">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="btn-icon danger" onclick="openDeleteWord('${esc(w._id||String(w.id))}','${esc(w.word)}')" title="O'chirish">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  renderPagination('wordsPagination', total, wordPage, p => { wordPage = p; renderWordsTable(); });
+}
+
+function populateTopicFilter() {
+  const topics = [...new Set(ALL_WORDS.map(w => w.topic).filter(Boolean))].sort();
+  const sel = document.getElementById('topicFilter');
+  sel.innerHTML = '<option value="">Barcha mavzular</option>' + topics.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
+
+  // Also populate datalist for word modal
+  const dl = document.getElementById('topicSuggestions');
+  dl.innerHTML = topics.map(t => `<option value="${esc(t)}">`).join('');
+}
+
+// ══════════ USERS TABLE ══════════
+function filterUsers() {
+  const q = document.getElementById('userSearch').value.toLowerCase();
+  filteredUsers = allUsers.filter(u =>
+    !q || (u.name||'').toLowerCase().includes(q) || (u.email||'').toLowerCase().includes(q)
+  );
+  userPage = 1;
+  renderUsersTable();
+}
+
+function renderUsersTable() {
+  document.getElementById('usersCount').textContent = `${filteredUsers.length} ta foydalanuvchi`;
+  const start = (userPage - 1) * PER_PAGE;
+  const page  = filteredUsers.slice(start, start + PER_PAGE);
+  const wrap  = document.getElementById('usersTableWrap');
+
+  if (!filteredUsers.length) {
+    wrap.innerHTML = '<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-title">Foydalanuvchi topilmadi</div></div>';
+    document.getElementById('usersPagination').innerHTML = '';
+    return;
+  }
+
+  wrap.innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Foydalanuvchi</th><th>Email</th><th>Ro'yxat sanasi</th><th>Saqlangan so'zlar</th></tr></thead>
+        <tbody>${page.map((u, i) => `
+          <tr>
+            <td style="color:var(--ink-soft);font-size:.8rem">${start+i+1}</td>
+            <td><div class="visit-user-row">
+              <div class="visit-avatar">${(u.name||u.email||'?').charAt(0).toUpperCase()}</div>
+              <div><div class="visit-name">${esc(u.name||'—')}</div></div>
+            </div></td>
+            <td style="color:var(--ink-soft);font-size:.82rem">${esc(u.email||'—')}</td>
+            <td style="color:var(--ink-soft);font-size:.82rem">${formatTs(u.createdAt)}</td>
+            <td><span class="badge badge-blue">${(u.bookmarks||[]).length} ta</span></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+
+  renderPagination('usersPagination', filteredUsers.length, userPage, p => { userPage = p; renderUsersTable(); });
+}
+
+// ══════════ VISITS TABLE ══════════
+function filterVisits() {
+  const filter = document.getElementById('visitDateFilter').value;
+  const now = new Date();
+
+  filteredVisits = allVisits.filter(v => {
+    if (!filter) return true;
+    if (!v.timestamp || !v.timestamp.toDate) return false;
+    const ts = v.timestamp.toDate();
+    if (filter === 'today') {
+      const d = new Date(now); d.setHours(0,0,0,0);
+      return ts >= d;
+    }
+    if (filter === 'week') {
+      const d = new Date(now); d.setDate(d.getDate() - 7);
+      return ts >= d;
+    }
+    if (filter === 'month') {
+      const d = new Date(now); d.setMonth(d.getMonth() - 1);
+      return ts >= d;
+    }
+    return true;
+  });
+  visitPage = 1;
+  renderVisitsTable();
+}
+
+function renderVisitsTable() {
+  const start = (visitPage - 1) * PER_PAGE;
+  const page  = filteredVisits.slice(start, start + PER_PAGE);
+  const wrap  = document.getElementById('visitsTableWrap');
+
+  if (!filteredVisits.length) {
+    wrap.innerHTML = '<div class="empty-state"><div class="empty-icon">👁️</div><div class="empty-title">Kirish tarixi yo\'q</div><div class="empty-sub">Foydalanuvchilar saytga kirganida bu yerda ko\'rinadi</div></div>';
+    document.getElementById('visitsPagination').innerHTML = '';
+    return;
+  }
+
+  wrap.innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Foydalanuvchi</th><th>Email</th><th>Kirish vaqti</th><th>Sana</th></tr></thead>
+        <tbody>${page.map((v, i) => `
+          <tr>
+            <td style="color:var(--ink-soft);font-size:.8rem">${start+i+1}</td>
+            <td><div class="visit-user-row">
+              <div class="visit-avatar">${(v.name||v.email||'?').charAt(0).toUpperCase()}</div>
+              <div><div class="visit-name">${esc(v.name||'—')}</div></div>
+            </div></td>
+            <td style="color:var(--ink-soft);font-size:.82rem">${esc(v.email||'—')}</td>
+            <td style="color:var(--ink-soft);font-size:.82rem">${formatTime(v.timestamp)}</td>
+            <td style="color:var(--ink-soft);font-size:.82rem">${formatDate(v.timestamp)}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+
+  renderPagination('visitsPagination', filteredVisits.length, visitPage, p => { visitPage = p; renderVisitsTable(); });
+}
+
+// ══════════ WORD CRUD ══════════
+function openAddWord() {
+  document.getElementById('wordModalTitle').textContent = 'Yangi so\'z qo\'shish';
+  document.getElementById('editWordId').value = '';
+  document.getElementById('wWord').value = '';
+  document.getElementById('wUz').value = '';
+  document.getElementById('wTopic').value = '';
+  document.getElementById('wLevel').value = '';
+  document.getElementById('wExample').value = '';
+  document.getElementById('wTypes').value = '';
+  ['wWordErr','wUzErr','wTopicErr','wLevelErr'].forEach(id => document.getElementById(id).textContent = '');
+  openModal('wordModal');
+}
+
+function openEditWord(w) {
+  document.getElementById('wordModalTitle').textContent = 'So\'zni tahrirlash';
+  document.getElementById('editWordId').value = w._id || String(w.id);
+  document.getElementById('wWord').value    = w.word || '';
+  document.getElementById('wUz').value      = w.uz   || '';
+  document.getElementById('wTopic').value   = w.topic || '';
+  document.getElementById('wLevel').value   = w.level || '';
+  document.getElementById('wExample').value = w.example || '';
+  document.getElementById('wTypes').value   = w.types || '';
+  ['wWordErr','wUzErr','wTopicErr','wLevelErr'].forEach(id => document.getElementById(id).textContent = '');
+  openModal('wordModal');
+}
+
+async function saveWord() {
+  const word    = document.getElementById('wWord').value.trim();
+  const uz      = document.getElementById('wUz').value.trim();
+  const topic   = document.getElementById('wTopic').value.trim();
+  const level   = document.getElementById('wLevel').value;
+  const example = document.getElementById('wExample').value.trim();
+  const types   = document.getElementById('wTypes').value.trim();
+  const editId  = document.getElementById('editWordId').value;
+
+  let ok = true;
+  if (!word)  { document.getElementById('wWordErr').textContent  = 'So\'zni kiriting';  ok = false; }
+  if (!uz)    { document.getElementById('wUzErr').textContent    = 'Tarjimani kiriting'; ok = false; }
+  if (!topic) { document.getElementById('wTopicErr').textContent = 'Mavzuni kiriting';   ok = false; }
+  if (!level) { document.getElementById('wLevelErr').textContent = 'Darajani tanlang';  ok = false; }
+  if (!ok) return;
+
+  const btn = document.getElementById('saveWordBtn');
+  btn.disabled = true;
+  btn.textContent = 'Saqlanmoqda…';
+
+  const data = { word, uz, topic, level, example, types };
+
+  try {
+    if (editId) {
+      await db.collection('words').doc(editId).update(data);
+      // Update local
+      const idx = ALL_WORDS.findIndex(w => (w._id||String(w.id)) === editId);
+      if (idx !== -1) ALL_WORDS[idx] = { ...ALL_WORDS[idx], ...data };
+      showToast('✅ So\'z yangilandi!');
+    } else {
+      // New word — generate id
+      const maxId = ALL_WORDS.reduce((m,w) => Math.max(m, w.id||0), 0);
+      const newId = maxId + 1;
+      data.id = newId;
+      const ref = await db.collection('words').doc(String(newId)).set(data);
+      ALL_WORDS.push({ _id: String(newId), ...data });
+      showToast('✅ Yangi so\'z qo\'shildi!');
+    }
+    filteredWords = [...ALL_WORDS];
+    filterWords();
+    populateTopicFilter();
+    renderDashboard();
+    closeModal('wordModal');
+  } catch(e) {
+    showToast('❌ Xatolik: ' + e.message);
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Saqlash';
+}
+
+function openDeleteWord(id, name) {
+  wordToDelete = id;
+  document.getElementById('deleteWordName').textContent = name;
+  openModal('deleteModal');
+}
+
+async function confirmDelete() {
+  if (!wordToDelete) return;
+  const btn = document.getElementById('confirmDeleteBtn');
+  btn.disabled = true;
+  btn.textContent = 'O\'chirilmoqda…';
+  try {
+    await db.collection('words').doc(wordToDelete).delete();
+    ALL_WORDS = ALL_WORDS.filter(w => (w._id||String(w.id)) !== wordToDelete);
+    filteredWords = [...ALL_WORDS];
+    filterWords();
+    renderDashboard();
+    closeModal('deleteModal');
+    showToast('🗑️ So\'z o\'chirildi');
+  } catch(e) {
+    showToast('❌ Xatolik: ' + e.message);
+  }
+  btn.disabled = false;
+  btn.textContent = 'O\'chirish';
+  wordToDelete = null;
+}
+
+// ══════════ PAGINATION ══════════
+function renderPagination(containerId, total, current, onChange) {
+  const totalPages = Math.ceil(total / PER_PAGE);
+  const el = document.getElementById(containerId);
+  if (totalPages <= 1) { el.innerHTML = ''; return; }
+
+  let html = `<button class="page-btn" ${current===1?'disabled':''} onclick="(${onChange.toString()})(${current-1})">‹</button>`;
+
+  for (let p = 1; p <= totalPages; p++) {
+    if (totalPages > 7 && Math.abs(p - current) > 2 && p !== 1 && p !== totalPages) {
+      if (p === 2 || p === totalPages - 1) html += '<span style="color:var(--ink-soft);padding:0 4px">…</span>';
+      continue;
+    }
+    html += `<button class="page-btn ${p===current?'active':''}" onclick="(${onChange.toString()})(${p})">${p}</button>`;
+  }
+  html += `<button class="page-btn" ${current===totalPages?'disabled':''} onclick="(${onChange.toString()})(${current+1})">›</button>`;
+  el.innerHTML = html;
+}
+
+// ══════════ NAVIGATION ══════════
+function showPage(name) {
+  document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.textContent.toLowerCase().includes(
+      name==='dashboard'?'dashboard':name==='words'?'so\'z':name==='users'?'barcha':'kirish'
+    )) n.classList.add('active');
+  });
+  closeSidebar();
+}
+
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('overlayBg').classList.add('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlayBg').classList.remove('open');
+}
+
+// ══════════ MODALS ══════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+// ══════════ TOAST ══════════
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ══════════ HELPERS ══════════
+function esc(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function formatTs(ts) {
+  if (!ts) return '—';
+  try {
+    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    return d.toLocaleString('uz-UZ', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+  } catch { return '—'; }
+}
+function formatDate(ts) {
+  if (!ts) return '—';
+  try {
+    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    return d.toLocaleDateString('uz-UZ', { day:'2-digit', month:'2-digit', year:'numeric' });
+  } catch { return '—'; }
+}
+function formatTime(ts) {
+  if (!ts) return '—';
+  try {
+    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    return d.toLocaleTimeString('uz-UZ', { hour:'2-digit', minute:'2-digit' });
+  } catch { return '—'; }
+}
+
+// ══════════ LOCAL WORDS SEED ══════════
+// Bu funksiya topic.html dagi ALL_WORDS dan bir nechta so'z oladi (namuna)
+// Asl so'zlarni Firestore'ga bir marta yuklash uchun ishlatiladi
+function getLocalWords() {
+  return [
+    { id:1,  topic:"Ta'lim",  word:"curriculum",   uz:"o'quv dasturi",      level:"B2", example:"A modern curriculum should prepare students for both employment and everyday life." },
+    { id:2,  topic:"Ta'lim",  word:"syllabus",     uz:"kurs rejasi",         level:"B2", example:"The lecturer shared the syllabus before the first class." },
+    { id:3,  topic:"Ta'lim",  word:"assessment",   uz:"baholash",            level:"B2", example:"Regular assessment helps teachers identify learning gaps early." },
+    { id:4,  topic:"Ta'lim",  word:"scholarship",  uz:"stipendiya",          level:"B1", example:"She received a full scholarship to study abroad." },
+    { id:5,  topic:"Ta'lim",  word:"graduate",     uz:"bitirmoq, bitiruvchi",level:"A2", example:"He graduated from university with honors." },
+    { id:6,  topic:"Biznes",  word:"revenue",      uz:"daromad, tushum",     level:"B2", example:"The company's revenue increased by 20% last year." },
+    { id:7,  topic:"Biznes",  word:"strategy",     uz:"strategiya",          level:"B2", example:"A good business strategy is essential for long-term success." },
+    { id:8,  topic:"Tibbiyot",word:"diagnosis",    uz:"tashxis",             level:"C1", example:"An early diagnosis can significantly improve treatment outcomes." },
+    { id:9,  topic:"Tibbiyot",word:"symptom",      uz:"belgi, simptom",      level:"B2", example:"Fatigue is a common symptom of many illnesses." },
+    { id:10, topic:"Huquq",   word:"legislation",  uz:"qonunchilik",         level:"C1", example:"New legislation was passed to protect consumer rights." },
+  ];
+}
+</script>
+</body>
+</html>
