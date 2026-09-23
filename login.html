@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Kirish — VocaabUZ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="auth-page">
+  <div class="auth-logo">
+    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+    </svg>
+  </div>
+  <div class="auth-title">VocaabUZ</div>
+  <div class="auth-sub">Hisobingizga kiring</div>
+
+  <div class="auth-card">
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" type="email" id="emailInput" placeholder="email@example.com" autocomplete="email">
+      <div class="form-error" id="emailErr"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Parol</label>
+      <input class="form-input" type="password" id="passInput" placeholder="••••••••" autocomplete="current-password">
+      <div class="form-error" id="passErr"></div>
+    </div>
+    <div class="form-error" id="globalErr" style="margin-bottom:12px"></div>
+    <button class="btn-primary" id="loginBtn" onclick="doLogin()">Kirish</button>
+    <div class="auth-switch">
+      Hisobingiz yo'qmi? <a href="register.html">Ro'yxatdan o'tish</a>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+// Agar allaqachon login bo'lgan bo'lsa, asosiy sahifaga yuborish
+firebase.auth().onAuthStateChanged(function(user){
+  if(user) location.href = 'index.html';
+});
+
+function doLogin(){
+  var email = document.getElementById('emailInput').value.trim();
+  var pass  = document.getElementById('passInput').value;
+  var btn   = document.getElementById('loginBtn');
+  var gErr  = document.getElementById('globalErr');
+  gErr.textContent = '';
+
+  if(!email){ document.getElementById('emailErr').textContent = 'Email kiriting'; return; }
+  if(!pass) { document.getElementById('passErr').textContent  = 'Parol kiriting'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Yuklanmoqda…';
+
+  firebase.auth().signInWithEmailAndPassword(email, pass)
+    .then(function(){ location.href = 'index.html'; })
+    .catch(function(err){
+      btn.disabled = false;
+      btn.textContent = 'Kirish';
+      var msg = 'Xatolik yuz berdi';
+      if(err.code === 'auth/user-not-found')    msg = 'Bunday foydalanuvchi topilmadi';
+      if(err.code === 'auth/wrong-password')    msg = 'Parol noto\'g\'ri';
+      if(err.code === 'auth/invalid-email')     msg = 'Email noto\'g\'ri';
+      if(err.code === 'auth/too-many-requests') msg = 'Juda ko\'p urinish. Keyinroq urinib ko\'ring';
+      gErr.textContent = msg;
+    });
+}
+
+// Enter tugmasi
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Enter') doLogin();
+});
+</script>
+</body>
+</html>

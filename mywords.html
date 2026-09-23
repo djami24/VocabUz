@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>So'zlarim — VocaabUZ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="page" style="padding-top:16px">
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Saqlangan so'zlar</div>
+      <div class="stat-value" id="statSaved">—</div>
+      <div class="stat-icon">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Yoqtirgan</div>
+      <div class="stat-value" id="statLiked">—</div>
+      <div class="stat-icon" style="color:var(--red);opacity:.25">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Saved words -->
+  <div class="mywords-section-title">Saqlangan so'zlar</div>
+  <div id="savedList"></div>
+  <div class="spinner" id="loader"></div>
+
+  <!-- Liked words -->
+  <div class="mywords-section-title" id="likedTitle" style="display:none">Yoqtirgan so'zlar</div>
+  <div id="likedList"></div>
+
+</div>
+
+<nav class="bottom-nav">
+  <a class="bottom-nav-item" href="index.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    Asosiy
+  </a>
+  <a class="bottom-nav-item is-active" href="mywords.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    So'zlarim
+  </a>
+  <a class="bottom-nav-item" href="search.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    Qidirish
+  </a>
+  <a class="bottom-nav-item" href="roadmap.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+    Yo'l xaritasi
+  </a>
+  <a class="bottom-nav-item" href="profile.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Profil
+  </a>
+</nav>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+firebase.auth().onAuthStateChanged(function(user){
+  if(!user){ location.href='login.html'; return; }
+  loadMyWords(user.uid);
+});
+
+function loadMyWords(uid){
+  db.collection('users').doc(uid).get().then(function(doc){
+    document.getElementById('loader').style.display='none';
+    if(!doc.exists){ renderEmpty(); return; }
+    var data = doc.data();
+    var bookmarks = data.bookmarks || [];
+    var likes = data.likes || [];
+    document.getElementById('statSaved').textContent = bookmarks.length + ' ta so\'z';
+    document.getElementById('statLiked').textContent = likes.length + ' ta so\'z';
+
+    if(!bookmarks.length){
+      document.getElementById('savedList').innerHTML='<div class="empty-state"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><p>Hali hech qanday so\'z saqlanmagan</p></div>';
+      return;
+    }
+
+    // Batch fetch saved words (max 10 per query in Firestore)
+    fetchWordsByIds(bookmarks, 'savedList');
+    if(likes.length){
+      document.getElementById('likedTitle').style.display='';
+      fetchWordsByIds(likes, 'likedList');
+    }
+  });
+}
+
+function fetchWordsByIds(ids, containerId){
+  // Firestore 'in' query max 30
+  var chunks = [];
+  for(var i=0; i<ids.length; i+=30) chunks.push(ids.slice(i,i+30));
+  var all = [];
+  var pending = chunks.length;
+  chunks.forEach(function(chunk){
+    db.collection('words').where(firebase.firestore.FieldPath.documentId(),'in',chunk).get()
+      .then(function(snap){
+        snap.docs.forEach(function(d){ all.push(Object.assign({id:d.id}, d.data())); });
+        if(--pending === 0) renderWordCards(all, containerId);
+      });
+  });
+}
+
+function renderWordCards(words, containerId){
+  if(!words.length){ document.getElementById(containerId).innerHTML=''; return; }
+  var html = words.map(function(w){
+    return '<div class="word-list-row" onclick="location.href=\'word.html?id='+w.id+'\'">'
+      + '<div class="word-list-num" style="min-width:auto;padding:0 6px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>'
+      + '</div>'
+      + '<div style="flex:1"><div class="word-list-word">'+escHtml(w.word)+'</div>'
+      + '<div style="font-size:.8rem;color:var(--ink-soft)">'+escHtml(w.translation)+'</div></div>'
+      + (w.level?'<span class="word-list-badge">'+w.level+'</span>':'')
+      + '</div>';
+  }).join('');
+  document.getElementById(containerId).innerHTML = html;
+}
+
+function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+</script>
+</body>
+</html>

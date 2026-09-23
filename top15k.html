@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>TOP 15K — VocaabUZ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <a class="topbar-back" href="index.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+  <div class="topbar-title">TOP 15K</div>
+  <div class="topbar-action"></div>
+</div>
+
+<div class="page">
+  <div class="search-wrap">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input class="search-input" type="search" placeholder="Qidirish" id="topSearch" oninput="filterTop()">
+  </div>
+
+  <div id="wordList"></div>
+  <div class="spinner" id="loader"></div>
+  <button id="loadMoreBtn" style="display:none;width:100%;padding:14px;background:var(--white);border:1.5px solid var(--line);border-radius:var(--radius-md);font-size:.9rem;font-weight:600;color:var(--blue);cursor:pointer;margin-top:4px" onclick="loadMore()">Ko'proq yuklash</button>
+</div>
+
+<nav class="bottom-nav">
+  <a class="bottom-nav-item is-active" href="index.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    Asosiy
+  </a>
+  <a class="bottom-nav-item" href="mywords.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    So'zlarim
+  </a>
+  <a class="bottom-nav-item" href="search.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    Qidirish
+  </a>
+  <a class="bottom-nav-item" href="roadmap.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+    Yo'l xaritasi
+  </a>
+  <a class="bottom-nav-item" href="profile.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Profil
+  </a>
+</nav>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+var allWords = [];
+var lastDoc  = null;
+var PAGE_SIZE = 50;
+
+firebase.auth().onAuthStateChanged(function(user){
+  if(!user){ location.href='login.html'; return; }
+  loadWords();
+});
+
+function loadWords(){
+  var q = db.collection('words')
+    .where('topicId','==','top15k')
+    .orderBy('order')
+    .limit(PAGE_SIZE);
+  q.get().then(function(snap){
+    document.getElementById('loader').style.display='none';
+    lastDoc = snap.docs[snap.docs.length - 1];
+    var words = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+    allWords = words;
+    renderWords(words);
+    if(snap.docs.length === PAGE_SIZE) document.getElementById('loadMoreBtn').style.display='';
+  });
+}
+
+function loadMore(){
+  if(!lastDoc) return;
+  document.getElementById('loadMoreBtn').textContent = 'Yuklanmoqda…';
+  db.collection('words').where('topicId','==','top15k').orderBy('order').startAfter(lastDoc).limit(PAGE_SIZE)
+    .get().then(function(snap){
+      lastDoc = snap.docs[snap.docs.length - 1];
+      var more = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+      allWords = allWords.concat(more);
+      renderWords(allWords);
+      document.getElementById('loadMoreBtn').textContent = "Ko'proq yuklash";
+      if(snap.docs.length < PAGE_SIZE) document.getElementById('loadMoreBtn').style.display='none';
+    });
+}
+
+function renderWords(words){
+  var html = words.map(function(w){
+    return '<div class="word-list-row" onclick="location.href=\'word.html?id='+w.id+'\'">'
+      + '<div class="word-list-num">'+w.order+'</div>'
+      + '<div class="word-list-word">'+escHtml(w.word)+'</div>'
+      + '<div class="word-list-type">'+escHtml(w.type||'')+'</div>'
+      + '</div>';
+  }).join('');
+  if(!html) html = '<div class="empty-state"><p>So\'z topilmadi</p></div>';
+  document.getElementById('wordList').innerHTML = html;
+}
+
+function filterTop(){
+  var q = document.getElementById('topSearch').value.toLowerCase();
+  if(!q){ renderWords(allWords); return; }
+  renderWords(allWords.filter(function(w){ return w.word.toLowerCase().includes(q); }));
+}
+
+function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+</script>
+</body>
+</html>

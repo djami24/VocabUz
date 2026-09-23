@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>VocaabUZ — Ingliz tili lug'ati</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+.home-user-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0 12px;
+}
+.home-user-avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), #0D47A1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+.home-user-info { flex: 1; }
+.home-user-name {
+  font-size: .97rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.home-user-sub {
+  font-size: .78rem;
+  color: var(--ink-soft);
+}
+.premium-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: linear-gradient(135deg, #1565C0, #1DA1F2);
+  color: #fff;
+  font-size: .75rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.notif-btn {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--white);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  color: var(--ink-mid);
+  flex-shrink: 0;
+  transition: background .15s;
+}
+.notif-btn:active { background: var(--sky-mid); }
+</style>
+</head>
+<body>
+
+<div class="page" id="mainPage">
+
+  <!-- User row -->
+  <div class="home-user-row">
+    <div class="home-user-avatar" id="homeAvatar">?</div>
+    <div class="home-user-info">
+      <div class="home-user-name" id="homeUserName">Yuklanmoqda…</div>
+      <div class="home-user-sub" id="homeUserSub"></div>
+    </div>
+    <button class="premium-badge" onclick="location.href='profile.html'">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
+      Premium
+    </button>
+    <button class="notif-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    </button>
+  </div>
+
+  <!-- Banner -->
+  <div class="banner-wrap">
+    <div class="banner-slide">
+      <div>
+        <div class="banner-title">Ingliz tilini tezroq o'rganing</div>
+        <div class="banner-sub">1000+ so'z · Audio · Misollar</div>
+      </div>
+      <div class="banner-dots">
+        <div class="banner-dot is-active"></div>
+        <div class="banner-dot"></div>
+        <div class="banner-dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cards grid -->
+  <div class="home-grid">
+
+    <div class="home-card" onclick="location.href='topic.html'">
+      <div class="home-card-title">Topic vocabulary</div>
+      <div class="home-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="home-card" onclick="location.href='speaking.html'">
+      <div class="home-card-title">Speaking vocabulary</div>
+      <div class="home-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M15 10s1 .5 1 2-1 2-1 2"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="home-card" onclick="location.href='top15k.html'">
+      <div class="home-card-title">TOP 15K</div>
+      <div class="home-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4.5 9.5 9 5l4.5 4.5L18 5"/><path d="M4.5 19.5 9 15l4.5 4.5L18 15"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="home-card" onclick="location.href='lugat.html'">
+      <div class="home-card-title">Lug'at (rasmli)</div>
+      <div class="home-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="home-card home-grid-full" onclick="location.href='writing.html'">
+      <div class="home-card-title">Writing vocabulary</div>
+      <div class="home-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="7" x2="16" y2="7"/><line x1="10" y1="11" x2="16" y2="11"/><line x1="10" y1="15" x2="14" y2="15"/>
+        </svg>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Bottom nav -->
+<nav class="bottom-nav">
+  <a class="bottom-nav-item is-active" href="index.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    Asosiy
+  </a>
+  <a class="bottom-nav-item" href="mywords.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    So'zlarim
+  </a>
+  <a class="bottom-nav-item" href="search.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    Qidirish
+  </a>
+  <a class="bottom-nav-item" href="roadmap.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+    Yo'l xaritasi
+  </a>
+  <a class="bottom-nav-item" href="profile.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Profil
+  </a>
+</nav>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="auth-guard.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  firebase.auth().onAuthStateChanged(function (user) {
+    if (!user) { location.href = 'login.html'; return; }
+    var name = user.displayName || user.email || 'Foydalanuvchi';
+    var parts = name.trim().split(/\s+/);
+    var initials = parts.length >= 2
+      ? (parts[0][0] + parts[1][0]).toUpperCase()
+      : name[0].toUpperCase();
+    document.getElementById('homeAvatar').textContent = initials;
+    document.getElementById('homeUserName').textContent = name;
+    document.getElementById('homeUserSub').textContent = user.email || '';
+  });
+});
+</script>
+</body>
+</html>

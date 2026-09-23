@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Qidirish — VocaabUZ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="page" style="padding-top:16px">
+
+  <div class="search-page-top">
+    <div style="flex:1;position:relative;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--ink-soft);pointer-events:none"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search-input" type="search" placeholder="So'z qidirish…" id="searchInput" oninput="onSearch()" autofocus style="padding-left:44px">
+    </div>
+    <div class="search-lang-toggle">
+      <div class="lang-btn is-active" id="btnEN" onclick="setLang('EN')">EN</div>
+      <div class="lang-btn" id="btnUZ" onclick="setLang('UZ')">UZ</div>
+    </div>
+  </div>
+
+  <!-- Recent searches -->
+  <div id="recentSection">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div class="section-label" style="margin:0">So'nggi qidiruvlar</div>
+      <button style="font-size:.8rem;font-weight:600;color:var(--blue);background:none;border:none;cursor:pointer" onclick="clearRecent()">Tozalash</button>
+    </div>
+    <div id="recentList"></div>
+  </div>
+
+  <!-- Search results -->
+  <div id="resultsSection" style="display:none">
+    <div class="section-label" id="resultsLabel">Natijalar</div>
+    <div id="resultsList"></div>
+    <div class="spinner" id="searchLoader" style="display:none"></div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<nav class="bottom-nav">
+  <a class="bottom-nav-item" href="index.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    Asosiy
+  </a>
+  <a class="bottom-nav-item" href="mywords.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    So'zlarim
+  </a>
+  <a class="bottom-nav-item is-active" href="search.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    Qidirish
+  </a>
+  <a class="bottom-nav-item" href="roadmap.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+    Yo'l xaritasi
+  </a>
+  <a class="bottom-nav-item" href="profile.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Profil
+  </a>
+</nav>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+var searchLang = 'EN';
+var searchTimer = null;
+var RECENT_KEY = 'vocaabuz_recent';
+
+firebase.auth().onAuthStateChanged(function(user){
+  if(!user){ location.href='login.html'; return; }
+  renderRecent();
+});
+
+function setLang(l){
+  searchLang = l;
+  document.getElementById('btnEN').classList.toggle('is-active', l==='EN');
+  document.getElementById('btnUZ').classList.toggle('is-active', l==='UZ');
+  onSearch();
+}
+
+function onSearch(){
+  var q = document.getElementById('searchInput').value.trim();
+  clearTimeout(searchTimer);
+  if(!q){
+    document.getElementById('recentSection').style.display='';
+    document.getElementById('resultsSection').style.display='none';
+    return;
+  }
+  document.getElementById('recentSection').style.display='none';
+  document.getElementById('resultsSection').style.display='';
+  document.getElementById('searchLoader').style.display='';
+  document.getElementById('resultsList').innerHTML='';
+  searchTimer = setTimeout(function(){ doSearch(q); }, 300);
+}
+
+function doSearch(q){
+  var field = searchLang==='EN' ? 'word' : 'translation';
+  var qLow  = q.toLowerCase();
+
+  db.collection('words')
+    .orderBy(field)
+    .startAt(qLow)
+    .endAt(qLow + '\uf8ff')
+    .limit(30)
+    .get()
+    .then(function(snap){
+      document.getElementById('searchLoader').style.display='none';
+      var words = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+      document.getElementById('resultsLabel').textContent = 'Natijalar ('+words.length+')';
+      if(!words.length){
+        document.getElementById('resultsList').innerHTML='<div class="empty-state"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><p>Hech narsa topilmadi</p></div>';
+        return;
+      }
+      addRecent(words[0]);
+      var html = words.map(function(w){
+        return '<div class="search-recent-row" onclick="location.href=\'word.html?id='+w.id+'\'">'
+          + '<div style="flex:1">'
+          + '<div><span class="search-recent-word">'+escHtml(w.word)+'</span>'
+          + '<span class="search-recent-type">'+escHtml(w.type||'')+'</span></div>'
+          + '<div class="search-recent-trans">'+escHtml(w.translation)+'</div>'
+          + '</div>'
+          + (w.level ? '<span class="search-recent-badge">'+w.level+'</span>' : '')
+          + '</div>';
+      }).join('');
+      document.getElementById('resultsList').innerHTML = html;
+    });
+}
+
+function renderRecent(){
+  var recent = getRecent();
+  if(!recent.length){
+    document.getElementById('recentSection').style.display='none';
+    return;
+  }
+  var html = recent.map(function(w){
+    return '<div class="search-recent-row" onclick="location.href=\'word.html?id='+w.id+'\'">'
+      + '<div style="flex:1">'
+      + '<div><span class="search-recent-word">'+escHtml(w.word)+'</span>'
+      + (w.type?'<span class="search-recent-type">'+escHtml(w.type)+'</span>':'')
+      + '</div>'
+      + '<div class="search-recent-trans">'+escHtml(w.translation)+'</div>'
+      + '</div>'
+      + (w.level?'<span class="search-recent-badge">'+w.level+'</span>':'')
+      + '</div>';
+  }).join('');
+  document.getElementById('recentList').innerHTML = html;
+}
+
+function getRecent(){ try{ return JSON.parse(localStorage.getItem(RECENT_KEY)||'[]'); }catch(e){ return []; } }
+function addRecent(w){
+  var r = getRecent().filter(function(x){ return x.id !== w.id; });
+  r.unshift({ id:w.id, word:w.word, translation:w.translation, type:w.type||'', level:w.level||'' });
+  if(r.length > 10) r.pop();
+  try{ localStorage.setItem(RECENT_KEY, JSON.stringify(r)); }catch(e){}
+}
+function clearRecent(){
+  try{ localStorage.removeItem(RECENT_KEY); }catch(e){}
+  document.getElementById('recentSection').style.display='none';
+}
+
+function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+</script>
+</body>
+</html>

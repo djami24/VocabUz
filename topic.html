@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Topic vocabulary — VocaabUZ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <a class="topbar-back" href="index.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+  <div class="topbar-title">Topic vocabulary</div>
+  <div class="topbar-action"></div>
+</div>
+
+<div class="page">
+  <div class="search-wrap">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input class="search-input" type="search" placeholder="Mavzu va so'zlarni qidirish" id="topicSearch" oninput="filterTopics()">
+  </div>
+
+  <div id="topicList"></div>
+  <div class="spinner" id="loader"></div>
+</div>
+
+<nav class="bottom-nav">
+  <a class="bottom-nav-item is-active" href="index.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    Asosiy
+  </a>
+  <a class="bottom-nav-item" href="mywords.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    So'zlarim
+  </a>
+  <a class="bottom-nav-item" href="search.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    Qidirish
+  </a>
+  <a class="bottom-nav-item" href="roadmap.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+    Yo'l xaritasi
+  </a>
+  <a class="bottom-nav-item" href="profile.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Profil
+  </a>
+</nav>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+var allTopics = [];
+
+firebase.auth().onAuthStateChanged(function(user){
+  if(!user){ location.href='login.html'; return; }
+  loadTopics();
+});
+
+function loadTopics(){
+  db.collection('topics').orderBy('order').get().then(function(snap){
+    document.getElementById('loader').style.display = 'none';
+    allTopics = snap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()); });
+    renderTopics(allTopics);
+  }).catch(function(){ document.getElementById('loader').style.display='none'; });
+}
+
+function renderTopics(topics){
+  var html = '';
+  topics.forEach(function(t, i){
+    var subs = t.subTopics || [];
+    html += '<div class="list-card">';
+    html += '<div class="list-row-header" onclick="toggleAccordion(this)" data-id="'+t.id+'">'
+           + '<div class="list-row-num">'+(i+1)+'</div>'
+           + '<div class="list-row-text">'+escHtml(t.name)+'</div>'
+           + '<svg class="list-row-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>'
+           + '</div>';
+    if(subs.length){
+      html += '<div class="list-sub-rows">';
+      // First sub is always free
+      subs.forEach(function(s, si){
+        var locked = si > 0;
+        html += '<div class="list-sub-row'+(locked?' is-locked':'')+'" onclick="goToSubTopic(\''+t.id+'\',\''+escHtml(s.id||s.name)+'\')">'
+               + '<div class="list-sub-row-text">'+escHtml(s.name)+'</div>'
+               + (locked
+                  ? '<svg class="list-row-lock" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'
+                  : '<svg class="list-row-right" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>')
+               + '</div>';
+      });
+      html += '</div>';
+    } else {
+      // No subtopics — direct link
+    }
+    html += '</div>';
+  });
+  if(!html) html = '<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><p>Hech narsa topilmadi</p></div>';
+  document.getElementById('topicList').innerHTML = html;
+}
+
+function toggleAccordion(header){
+  var subRows = header.nextElementSibling;
+  if(!subRows || !subRows.classList.contains('list-sub-rows')) return;
+  var isOpen = subRows.classList.toggle('is-open');
+  header.classList.toggle('is-open', isOpen);
+}
+
+function goToSubTopic(topicId, subId){
+  location.href = 'vocab.html?topic='+encodeURIComponent(topicId)+'&sub='+encodeURIComponent(subId);
+}
+
+function filterTopics(){
+  var q = document.getElementById('topicSearch').value.toLowerCase();
+  if(!q){ renderTopics(allTopics); return; }
+  var filtered = allTopics.filter(function(t){
+    return t.name.toLowerCase().includes(q) ||
+      (t.subTopics||[]).some(function(s){ return s.name.toLowerCase().includes(q); });
+  });
+  renderTopics(filtered);
+}
+
+function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+</script>
+</body>
+</html>
