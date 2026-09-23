@@ -469,7 +469,7 @@ const ALL_WORDS = [
 
 // ─── MAVZULAR TARTIBI ─────────────────────────────────────
 const TOPIC_ORDER = ["Ta'lim","Sog'liq","Biznes","Hissiyotlar","Munosabatlar","Texnologiya","Atrof-muhit","Ovqat"];
-const TOPIC_EMOJI = {"Ta'lim":'📚',"Sog'liq":'🏥',"Biznes":'💼',"Hissiyotlar":'😊',"Munosabatlar":'🤝',"Texnologiya":'💻',"Atrof-muhit":'🌿',"Ovqat":'🍽️'};
+const TOPIC_EMOJI = {};
 const TOPIC_COLOR = {"Ta'lim":'#E3F2FD',"Sog'liq":'#FCE4EC',"Biznes":'#E8F5E9',"Hissiyotlar":'#FFF8E1',"Munosabatlar":'#F3E5F5',"Texnologiya":'#E0F7FA',"Atrof-muhit":'#F1F8E9',"Ovqat":'#FBE9E7'};
 
 // ─── STATE ────────────────────────────────────────────────
@@ -556,18 +556,17 @@ function renderTopics(){
     const full     = isTopicFull(topic);
     const passed   = isTopicPassed(topic);
     const unlocked = isTopicUnlocked(topic);
-    const emoji    = TOPIC_EMOJI[topic]||'📖';
     const color    = TOPIC_COLOR[topic]||'#E3F2FD';
 
     let badgeHtml, rightHtml;
     if(passed){
-      badgeHtml=`<span class="topic-badge done">✓ O'tildi</span>`;
+      badgeHtml=`<span class="topic-badge done">O'tildi</span>`;
       rightHtml=`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
     } else if(!unlocked){
-      badgeHtml=`<span class="topic-badge locked">🔒 Qulflangan</span>`;
+      badgeHtml=`<span class="topic-badge locked">Qulflangan</span>`;
       rightHtml=`<svg class="lock-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`;
     } else if(full){
-      badgeHtml=`<span class="topic-badge" style="background:var(--amber-light);color:var(--amber)">📝 Test tayyor!</span>`;
+      badgeHtml=`<span class="topic-badge" style="background:var(--amber-light);color:var(--amber)">Test tayyor!</span>`;
       rightHtml=`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>`;
     } else {
       badgeHtml=`<span class="topic-badge">${learned}/${total}</span>`;
@@ -579,7 +578,6 @@ function renderTopics(){
 
     html+=`
       <div class="${cardClass}" ${clickAttr}>
-        <div class="topic-icon" style="background:${color}">${emoji}</div>
         <div class="topic-info">
           <div class="topic-name">${topic}</div>
           <div class="topic-meta">${total} ta so'z &bull; ${pct}% ${badgeHtml}</div>
@@ -637,7 +635,7 @@ function renderWords(){
     </div>`;
   } else if(full){
     bannerHtml=`<div class="test-ready-banner" onclick="startTest()">
-      <div class="test-ready-txt"><div class="test-ready-title">Test boshlashga tayyor!</div><div class="test-ready-sub">Barcha ${total} ta so'zni o'rgandingiz</div></div>
+      <div class="test-ready-txt"><div class="test-ready-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:6px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Test boshlashga tayyor!</div><div class="test-ready-sub">Barcha ${total} ta so'zni o'rgandingiz</div></div>
       <button class="test-ready-btn">Testni boshlash</button>
     </div>`;
   } else {
@@ -686,8 +684,8 @@ function markLearned(id){
   const numId=Number(id);
   const idx=learnedIds.indexOf(numId);
   const isNew=idx===-1;
-  if(isNew){ learnedIds.push(numId); showToast("✅ O'rgandim! So'z saqlandi!"); }
-  else      { learnedIds.splice(idx,1); showToast("↩️ O'rganilganlardan olib tashlandi"); }
+  if(isNew){ learnedIds.push(numId); showToast("O'rgandim! So'z saqlandi!"); }
+  else      { learnedIds.splice(idx,1); showToast("O'rganilganlardan olib tashlandi"); }
   saveState();
   saveToFirestore();
   renderWords();
@@ -696,7 +694,7 @@ function markLearned(id){
 function toggleBookmark(id){
   const numId=Number(id);
   const idx=bookmarks.indexOf(numId);
-  if(idx===-1){ bookmarks.push(numId); showToast("📚 Yodlash ro'yxatiga qo'shildi!"); }
+  if(idx===-1){ bookmarks.push(numId); showToast("Yodlash ro'yxatiga qo'shildi!"); }
   else        { bookmarks.splice(idx,1); showToast("Yodlashdan olib tashlandi"); }
   saveState();
   saveToFirestore();
@@ -712,7 +710,7 @@ function toggleBookmark(id){
 function toggleLike(id){
   const numId=Number(id);
   const idx=likes.indexOf(numId);
-  if(idx===-1){ likes.push(numId); showToast("❤️ Yoqtirganlarga qo'shildi!"); }
+  if(idx===-1){ likes.push(numId); showToast("Yoqtirganlarga qo'shildi!"); }
   else        { likes.splice(idx,1); showToast("Yoqtirganlardan olib tashlandi"); }
   saveState();
   saveToFirestore();
@@ -855,7 +853,6 @@ function nextQuestion(){
 function renderTestFail(){
   document.getElementById('testBody').innerHTML=`
     <div class="test-result">
-      <div class="test-result-emoji">😔</div>
       <div class="test-result-title">Test o'tmadi</div>
       <div class="test-result-sub">2 ta xato qildingiz. Yana bir bor so'zlarni yaxshi o'rganib, qayta urining!</div>
       <div class="test-result-stats">
@@ -864,7 +861,7 @@ function renderTestFail(){
         <div class="trs"><div class="trs-val" style="color:var(--ink-mid)">${testIdx+1}</div><div class="trs-lbl">Savol</div></div>
       </div>
       <div class="test-result-btns">
-        <button class="trb primary" onclick="startTest()">🔄 Qaytadan boshlash</button>
+        <button class="trb primary" onclick="startTest()">Qaytadan boshlash</button>
         <button class="trb secondary" onclick="closeTest()">So'zlarni takrorlash</button>
       </div>
     </div>`;
@@ -887,11 +884,10 @@ function renderTestResult(){
   if(passed){
     document.getElementById('testBody').innerHTML=`
       <div class="test-result">
-        <div class="test-result-emoji">🏆</div>
         <div class="test-result-title">Tabriklaymiz!</div>
         <div class="test-result-sub">
           ${currentTopic} mavzusidan testni muvaffaqiyatli o'tdingiz!
-          ${hasNext?('<br><br>🔓 <strong>'+nextTopic+'</strong> mavzusi ochildi!'):'<br><br>Barcha mavzularni tugatdingiz! 🎉'}
+          ${hasNext?('<br><br><strong>'+nextTopic+'</strong> mavzusi ochildi!'):'<br><br>Barcha mavzularni tugatdingiz!'}
         </div>
         <div class="test-result-stats">
           <div class="trs"><div class="trs-val green">${testCorrect}</div><div class="trs-lbl">To'g'ri</div></div>
@@ -899,7 +895,7 @@ function renderTestResult(){
           <div class="trs"><div class="trs-val" style="color:var(--blue)">${Math.round(testCorrect/total*100)}%</div><div class="trs-lbl">Natija</div></div>
         </div>
         <div class="test-result-btns">
-          ${hasNext?`<button class="trb green" onclick="closeTestGoNext('${nextTopic}')">➡ ${nextTopic} mavzusiga o'tish</button>`:''}
+          ${hasNext?`<button class="trb green" onclick="closeTestGoNext('${nextTopic}')">${nextTopic} mavzusiga o'tish</button>`:''}
           <button class="trb secondary" onclick="closeTest();renderTopics()">Mavzular ro'yxatiga</button>
         </div>
       </div>`;
