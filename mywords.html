@@ -932,8 +932,8 @@ function render(){
   }
 
   // Progress bar
-  const learned = Math.floor(totalIds * 0.3); // placeholder
-  const pct = totalIds > 0 ? Math.round(learned/totalIds*100) : 0;
+  const learnedInList = list.filter(w => learned.includes(w.id)).length;
+  const pct = totalIds > 0 ? Math.round(learnedInList/totalIds*100) : 0;
 
   let html = '';
 
