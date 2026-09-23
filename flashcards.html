@@ -121,11 +121,8 @@ html,body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;co
 }
 .filter-pill.active{background:var(--blue);color:#fff;}
 
-/* ── DECK CARD (list view) ── */
-.deck-list{
-  display:flex;flex-direction:column;gap:10px;
-  padding:0 16px;
-}
+/* ── DECK CARD ── */
+.deck-list{display:flex;flex-direction:column;gap:10px;padding:0 16px;}
 .deck-card{
   background:var(--white);border-radius:var(--radius);
   padding:16px;box-shadow:var(--shadow-sm);
@@ -150,15 +147,27 @@ html,body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;co
 .deck-arrow{color:var(--ink-soft);}
 
 /* ── STATS ROW ── */
-.stats-row{
-  display:flex;gap:10px;padding:0 16px 16px;
-}
+.stats-row{display:flex;gap:10px;padding:0 16px 16px;}
 .stat-box{
   flex:1;background:var(--white);border-radius:var(--radius-sm);
   padding:12px 10px;text-align:center;box-shadow:var(--shadow-sm);
 }
 .stat-num{font-size:1.5rem;font-weight:800;color:var(--blue);}
 .stat-lbl{font-size:.72rem;color:var(--ink-soft);margin-top:2px;}
+
+/* ── MODE TOGGLE ── */
+.mode-toggle{
+  display:flex;gap:8px;padding:0 16px 14px;
+}
+.mode-btn{
+  flex:1;height:42px;border-radius:var(--radius-sm);
+  border:2px solid var(--blue-light);
+  background:var(--white);color:var(--ink-mid);
+  font-family:inherit;font-size:.82rem;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;
+  transition:all .15s;
+}
+.mode-btn.active{background:var(--blue);border-color:var(--blue);color:#fff;}
 
 /* ── SPINNER ── */
 .spinner-wrap{display:flex;align-items:center;justify-content:center;padding:48px 0;}
@@ -205,14 +214,14 @@ html,body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;co
   padding:20px 16px 16px;overflow:hidden;
 }
 
-/* Flip card */
+/* ── FLIP CARD ── */
 .fc-card-wrap{
   width:100%;max-width:380px;
   perspective:1000px;cursor:pointer;
-  margin-bottom:24px;
+  margin-bottom:20px;
 }
 .fc-card{
-  width:100%;height:240px;
+  width:100%;height:260px;
   position:relative;transform-style:preserve-3d;
   transition:transform .45s cubic-bezier(.4,0,.2,1);
   border-radius:22px;
@@ -222,48 +231,118 @@ html,body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;co
   position:absolute;inset:0;border-radius:22px;
   display:flex;flex-direction:column;
   align-items:center;justify-content:center;
-  padding:24px;backface-visibility:hidden;
+  backface-visibility:hidden;
   -webkit-backface-visibility:hidden;
+  overflow:hidden;
 }
-.fc-front{
-  background:linear-gradient(135deg,var(--blue-deep),var(--blue));
-  color:#fff;
-}
-.fc-back{background:var(--white);box-shadow:var(--shadow-md);transform:rotateY(180deg);}
 
+/* ── FRONT FACE: RASMLI ── */
+.fc-front{
+  background:#1a1a2e;
+  color:#fff;
+  position:relative;
+}
+/* Rasm */
+.fc-img{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:cover;
+  border-radius:22px;
+  opacity:0;
+  transition:opacity .4s;
+}
+.fc-img.loaded{opacity:1;}
+/* Rasm ustidagi qorong'i overlay */
+.fc-img-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(
+    to bottom,
+    rgba(0,0,0,.18) 0%,
+    rgba(0,0,0,.0) 40%,
+    rgba(0,0,0,.55) 100%
+  );
+  border-radius:22px;
+}
+/* Rasm yuklanayotganda placeholder */
+.fc-img-placeholder{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--blue-deep),var(--blue));
+  border-radius:22px;
+  transition:opacity .3s;
+}
+.fc-img-placeholder.hidden{opacity:0;pointer-events:none;}
+
+/* So'z nomi va info — rasm ustida */
+.fc-front-content{
+  position:relative;z-index:2;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:flex-end;
+  height:100%;width:100%;
+  padding:16px 20px 22px;
+}
+.fc-front-top{
+  position:absolute;top:14px;left:16px;right:16px;
+  display:flex;justify-content:space-between;align-items:center;
+}
 .fc-front-level{
   font-size:.72rem;font-weight:700;
-  background:rgba(255,255,255,.2);
-  padding:3px 10px;border-radius:8px;
-  margin-bottom:14px;
+  background:rgba(255,255,255,.25);
+  backdrop-filter:blur(4px);
+  padding:3px 10px;border-radius:8px;color:#fff;
 }
-.fc-front-word{font-size:2rem;font-weight:900;text-align:center;margin-bottom:8px;}
-.fc-front-topic{font-size:.78rem;opacity:.75;text-align:center;}
-.fc-hint{
-  font-size:.75rem;opacity:.65;
-  display:flex;align-items:center;gap:4px;margin-top:14px;
+.fc-front-topic{
+  font-size:.72rem;font-weight:600;
+  background:rgba(0,0,0,.3);
+  backdrop-filter:blur(4px);
+  padding:3px 10px;border-radius:8px;color:#fff;
+}
+.fc-front-word{
+  font-size:2.1rem;font-weight:900;
+  text-align:center;color:#fff;
+  text-shadow:0 2px 12px rgba(0,0,0,.5);
+  letter-spacing:-.5px;
+  margin-bottom:4px;
+}
+.fc-hint-small{
+  font-size:.75rem;color:rgba(255,255,255,.75);
+  display:flex;align-items:center;gap:4px;
 }
 
+/* ── BACK FACE ── */
+.fc-back{
+  background:var(--white);
+  box-shadow:var(--shadow-md);
+  transform:rotateY(180deg);
+  padding:24px;
+}
 .fc-back-uz{
-  font-size:1.25rem;font-weight:800;
+  font-size:1.3rem;font-weight:800;
   color:var(--ink);text-align:center;margin-bottom:8px;
 }
-.fc-back-level{
-  display:inline-block;
+.fc-back-badge{
+  display:inline-flex;align-items:center;gap:6px;
   background:var(--blue-light);color:var(--blue);
   font-size:.72rem;font-weight:700;
-  padding:3px 10px;border-radius:8px;margin-bottom:12px;
+  padding:3px 12px;border-radius:8px;margin-bottom:14px;
 }
 .fc-back-example{
   font-size:.82rem;font-style:italic;
   color:var(--ink-mid);text-align:center;
-  line-height:1.5;
+  line-height:1.6;
+  padding:10px 0 0;
+  border-top:1px solid var(--blue-light);
+  margin-top:2px;
+}
+.fc-back-word{
+  font-size:.85rem;font-weight:700;color:var(--blue);
+  margin-bottom:12px;text-align:center;
 }
 
 /* Tap hint */
 .fc-tap-hint{
   font-size:.8rem;color:var(--ink-soft);
-  margin-bottom:20px;
+  margin-bottom:16px;
   display:flex;align-items:center;gap:5px;
 }
 
@@ -279,6 +358,31 @@ html,body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;co
 .fc-btn.again{background:var(--red-light);color:var(--red);}
 .fc-btn.skip{background:#F1F5F9;color:var(--ink-soft);}
 .fc-btn.good{background:var(--green-light);color:var(--green);}
+
+/* ── MODE: SO'Z OLDINGI (klassik) ── */
+.fc-front-classic{
+  background:linear-gradient(135deg,var(--blue-deep),var(--blue));
+  color:#fff;
+  padding:24px;
+}
+.fc-front-classic .fc-front-word{
+  font-size:2rem;font-weight:900;
+  text-align:center;text-shadow:none;
+  margin-bottom:8px;
+}
+.fc-front-classic .fc-front-level-cl{
+  font-size:.72rem;font-weight:700;
+  background:rgba(255,255,255,.2);
+  padding:3px 10px;border-radius:8px;
+  margin-bottom:14px;
+}
+.fc-front-classic .fc-front-topic-cl{
+  font-size:.78rem;opacity:.75;text-align:center;
+}
+.fc-front-classic .fc-hint-cl{
+  font-size:.75rem;opacity:.65;
+  display:flex;align-items:center;gap:4px;margin-top:14px;
+}
 
 /* Result screen */
 .fc-result{
@@ -369,26 +473,60 @@ html,body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;co
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="M12 8v4l3 3"/></svg>
       Kartochkani bosib aylantiring
     </div>
+
+    <!-- FLIP CARD -->
     <div class="fc-card-wrap" onclick="flipCard()">
       <div class="fc-card" id="fcCard">
-        <!-- FRONT -->
-        <div class="fc-face fc-front">
-          <div class="fc-front-level" id="fcLevel">B1</div>
-          <div class="fc-front-word" id="fcWord">—</div>
-          <div class="fc-front-topic" id="fcTopic">—</div>
-          <div class="fc-hint">
+
+        <!-- FRONT: Rasmli rejim -->
+        <div class="fc-face fc-front" id="fcFrontImg">
+          <!-- Rasm yuklana olmasa — gradient background -->
+          <div class="fc-img-placeholder" id="fcImgPlaceholder">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </div>
+          <!-- Unsplash rasm -->
+          <img class="fc-img" id="fcImg" alt="" />
+          <div class="fc-img-overlay"></div>
+          <!-- Rasm ustidagi kontent -->
+          <div class="fc-front-content">
+            <div class="fc-front-top">
+              <span class="fc-front-level" id="fcLevel">B1</span>
+              <span class="fc-front-topic" id="fcTopic">📚 Ta'lim</span>
+            </div>
+            <div class="fc-front-word" id="fcWord">—</div>
+            <div class="fc-hint-small">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              Bosib tarjimasini ko'ring
+            </div>
+          </div>
+        </div>
+
+        <!-- FRONT: Klassik rejim (so'z birinchi) -->
+        <div class="fc-face fc-front-classic" id="fcFrontClassic" style="display:none;">
+          <div class="fc-front-level-cl" id="fcLevelCl">B1</div>
+          <div class="fc-front-word" id="fcWordCl">—</div>
+          <div class="fc-front-topic-cl" id="fcTopicCl">—</div>
+          <div class="fc-hint-cl">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             Bosib tarjimasini ko'ring
           </div>
         </div>
+
         <!-- BACK -->
         <div class="fc-face fc-back">
+          <div class="fc-back-word" id="fcBackWord">—</div>
           <div class="fc-back-uz" id="fcUz">—</div>
-          <div class="fc-back-level" id="fcLevelBack">B1</div>
+          <div class="fc-back-badge">
+            <span id="fcLevelBack">B1</span>
+            <span>·</span>
+            <span id="fcTopicBack">—</span>
+          </div>
           <div class="fc-back-example" id="fcExample">—</div>
         </div>
+
       </div>
     </div>
+
     <div class="fc-btns" id="fcBtns">
       <button class="fc-btn again" onclick="fcAnswer('again')">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.16"/></svg>
@@ -437,7 +575,7 @@ html,body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;co
 <script src="firebase-config.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════
-//  200 TA SO'Z (topic.html bilan bir xil)
+//  200 TA SO'Z
 // ═══════════════════════════════════════════════════════════
 const ALL_WORDS = [
   { id:1,  topic:"Ta'lim",       word:"curriculum",      uz:"o'quv dasturi, ta'lim dasturi",     level:"B2", example:"A modern curriculum should prepare students for both employment and everyday life." },
@@ -475,174 +613,173 @@ const ALL_WORDS = [
   { id:33, topic:"Ta'lim",       word:"portfolio",       uz:"portfolio, ishlar to'plami",         level:"B1", example:"Artists often present a portfolio of their work to clients." },
   { id:34, topic:"Ta'lim",       word:"internship",      uz:"amaliyot, stajirovka",               level:"B1", example:"She completed a summer internship at a marketing agency." },
   { id:35, topic:"Ta'lim",       word:"peer review",     uz:"tengdoshlar baholashi",              level:"C1", example:"All scientific papers must pass peer review before publication." },
-  { id:36,  topic:"Sog'liq",     word:"symptom",         uz:"belgi, alomat",                     level:"B1", example:"A high temperature is a common symptom of flu." },
-  { id:37,  topic:"Sog'liq",     word:"diagnose",        uz:"tashxis qo'ymoq",                   level:"B2", example:"The doctor diagnosed her with type 2 diabetes." },
-  { id:38,  topic:"Sog'liq",     word:"prescription",    uz:"retsept, buyruq",                   level:"B1", example:"The pharmacist asked for a valid prescription." },
-  { id:39,  topic:"Sog'liq",     word:"immunity",        uz:"immunitet, kasalliklarga chidamlilik",level:"B2", example:"Vaccines help build immunity against serious diseases." },
-  { id:40,  topic:"Sog'liq",     word:"chronic",         uz:"surunkali, uzoq muddatli",          level:"B2", example:"She has been living with a chronic back condition for years." },
-  { id:41,  topic:"Sog'liq",     word:"rehabilitation",  uz:"reabilitatsiya, tiklanish",         level:"C1", example:"After the accident, he spent three months in rehabilitation." },
-  { id:42,  topic:"Sog'liq",     word:"endurance",       uz:"chidamlilik, bardoshlilik",         level:"B2", example:"Long-distance running builds endurance over time." },
-  { id:43,  topic:"Sog'liq",     word:"flexibility",     uz:"egiluvchanlik, moslashuvchanlik",   level:"B1", example:"Yoga improves both flexibility and mental focus." },
-  { id:44,  topic:"Sog'liq",     word:"nutrition",       uz:"oziqlanish, ovqatlanish",           level:"B1", example:"Good nutrition is essential for children's development." },
-  { id:45,  topic:"Sog'liq",     word:"obesity",         uz:"semizlik, to'liqlik",               level:"B2", example:"Obesity is linked to an increased risk of heart disease." },
-  { id:46,  topic:"Sog'liq",     word:"prevention",      uz:"oldini olish, profilaktika",        level:"B2", example:"Prevention is always better than treatment." },
-  { id:47,  topic:"Sog'liq",     word:"mental health",   uz:"ruhiy sog'liq",                     level:"B1", example:"Mental health awareness has grown significantly in recent years." },
-  { id:48,  topic:"Sog'liq",     word:"dosage",          uz:"doza, me'yor",                      level:"B2", example:"Always follow the correct dosage instructions on the label." },
-  { id:49,  topic:"Sog'liq",     word:"surgery",         uz:"jarrohlik, operatsiya",             level:"B1", example:"She underwent surgery to remove the tumour." },
-  { id:50,  topic:"Sog'liq",     word:"contagious",      uz:"yuqumli, o'tuvchi",                 level:"B2", example:"Chickenpox is highly contagious and spreads quickly." },
-  { id:51,  topic:"Sog'liq",     word:"vaccine",         uz:"vaktsina, emlash",                  level:"B1", example:"The flu vaccine is recommended every year for older adults." },
-  { id:52,  topic:"Sog'liq",     word:"allergy",         uz:"allergiya",                         level:"B1", example:"She has a severe allergy to peanuts." },
-  { id:53,  topic:"Sog'liq",     word:"sedentary",       uz:"o'tirib ish qiladigan, harakatsiz", level:"C1", example:"A sedentary lifestyle increases the risk of many health problems." },
-  { id:54,  topic:"Sog'liq",     word:"metabolism",      uz:"moddalar almashinuvi, metabolizm",  level:"C1", example:"Regular exercise helps to boost your metabolism." },
-  { id:55,  topic:"Sog'liq",     word:"well-being",      uz:"farovonlik, yaxshi his etish",      level:"B2", example:"Physical activity contributes greatly to overall well-being." },
-  { id:56,  topic:"Sog'liq",     word:"therapy",         uz:"terapiya, davolash",                level:"B1", example:"Cognitive behavioural therapy is widely used for anxiety disorders." },
-  { id:57,  topic:"Sog'liq",     word:"paramedic",       uz:"tibbiy xodim, feldsher",            level:"B2", example:"The paramedic gave first aid at the scene of the accident." },
-  { id:58,  topic:"Sog'liq",     word:"insomnia",        uz:"uyqusizlik",                        level:"B2", example:"Stress is a common cause of insomnia." },
-  { id:59,  topic:"Sog'liq",     word:"epidemic",        uz:"epidemiya, kasallik tarqalishi",    level:"B2", example:"Authorities acted quickly to contain the cholera epidemic." },
-  { id:60,  topic:"Sog'liq",     word:"hygiene",         uz:"gigiena, tozalik",                  level:"A2", example:"Washing your hands regularly is basic personal hygiene." },
-  { id:61,  topic:"Sog'liq",     word:"cardiac",         uz:"yurak, kardiak",                    level:"C1", example:"He was rushed to hospital with a cardiac arrest." },
-  { id:62,  topic:"Sog'liq",     word:"fracture",        uz:"suyak sinishi, yoriq",              level:"B2", example:"She suffered a fracture in her wrist after the fall." },
-  { id:63,  topic:"Sog'liq",     word:"anaesthetic",     uz:"narkoz, og'riq qoldiruvchi",        level:"C1", example:"The patient was placed under general anaesthetic during the procedure." },
-  { id:64,  topic:"Sog'liq",     word:"inflammation",    uz:"yallig'lanish, shish",              level:"C1", example:"The injury caused significant inflammation around the knee joint." },
-  { id:65,  topic:"Sog'liq",     word:"clinical",        uz:"klinik, tibbiy",                    level:"B2", example:"The drug passed all clinical trials before being approved." },
-  { id:66,  topic:"Biznes",      word:"revenue",         uz:"daromad, tushum",                   level:"B2", example:"The company reported record revenue in the last financial quarter." },
-  { id:67,  topic:"Biznes",      word:"investment",      uz:"investitsiya, qo'yilma",            level:"B1", example:"She made a long-term investment in renewable energy stocks." },
-  { id:68,  topic:"Biznes",      word:"entrepreneur",    uz:"tadbirkor, bizneschi",              level:"B2", example:"Young entrepreneurs are driving innovation in the tech sector." },
-  { id:69,  topic:"Biznes",      word:"merger",          uz:"birlashish, qo'shilish",            level:"C1", example:"The merger between the two airlines created the world's largest carrier." },
-  { id:70,  topic:"Biznes",      word:"dividend",        uz:"dividend, foyda ulushi",            level:"C1", example:"Shareholders received a generous dividend this year." },
-  { id:71,  topic:"Biznes",      word:"franchise",       uz:"franchayzing, litsenziya",          level:"C1", example:"She opened a coffee franchise in the city centre." },
-  { id:72,  topic:"Biznes",      word:"liability",       uz:"javobgarlik, majburiyat",           level:"C1", example:"The company accepted liability for the faulty product." },
-  { id:73,  topic:"Biznes",      word:"negotiate",       uz:"muzokaralar olib bormoq",           level:"B1", example:"They negotiated a better deal with the supplier." },
-  { id:74,  topic:"Biznes",      word:"asset",           uz:"aktiv, mulk",                       level:"B2", example:"Property is often considered a safe long-term asset." },
-  { id:75,  topic:"Biznes",      word:"profit margin",   uz:"foyda chegarasi, rentabellik",      level:"C1", example:"Rising costs have reduced the company's profit margin." },
-  { id:76,  topic:"Biznes",      word:"supply chain",    uz:"ta'minot zanjiri",                  level:"B2", example:"The pandemic disrupted global supply chains significantly." },
-  { id:77,  topic:"Biznes",      word:"inflation",       uz:"inflyatsiya, narxlar o'sishi",      level:"B2", example:"High inflation reduces the purchasing power of consumers." },
-  { id:78,  topic:"Biznes",      word:"audit",           uz:"audit, tekshirish",                 level:"C1", example:"An external audit revealed several accounting errors." },
-  { id:79,  topic:"Biznes",      word:"outsource",       uz:"autsorsing, tashqaridan topshirish",level:"C1", example:"Many firms outsource their IT support to specialist companies." },
-  { id:80,  topic:"Biznes",      word:"stakeholder",     uz:"manfaatdor tomon",                  level:"B2", example:"All stakeholders were consulted before the decision was made." },
-  { id:81,  topic:"Biznes",      word:"brand",           uz:"brend, tovar belgisi",              level:"B1", example:"A strong brand builds customer loyalty over time." },
-  { id:82,  topic:"Biznes",      word:"budget",          uz:"byudjet, moliyaviy reja",           level:"A2", example:"The project went over budget by twenty per cent." },
-  { id:83,  topic:"Biznes",      word:"marketing",       uz:"marketing, bozorga chiqarish",      level:"B1", example:"Effective marketing is key to the success of any new product." },
-  { id:84,  topic:"Biznes",      word:"headquarters",    uz:"markaziy ofis, bosh idora",         level:"B2", example:"The company's headquarters are located in New York." },
-  { id:85,  topic:"Biznes",      word:"bankruptcy",      uz:"bankrotlik, to'lovga qodir emaslik",level:"C1", example:"The airline filed for bankruptcy after years of financial losses." },
-  { id:86,  topic:"Hissiyotlar", word:"anxious",         uz:"xavotirli, bezovta",               level:"B1", example:"She felt anxious before the job interview." },
-  { id:87,  topic:"Hissiyotlar", word:"frustrated",      uz:"umidsiz, g'azablangan",            level:"B1", example:"He was frustrated by the constant delays." },
-  { id:88,  topic:"Hissiyotlar", word:"overwhelmed",     uz:"toliqan, bosimi ostida",           level:"B2", example:"She felt overwhelmed by the amount of work she had to complete." },
-  { id:89,  topic:"Hissiyotlar", word:"melancholy",      uz:"g'amgin, tushkunlik",              level:"C1", example:"A sense of melancholy settled over him as he left his hometown." },
-  { id:90,  topic:"Hissiyotlar", word:"content",         uz:"qoniqarli, xotirjam",              level:"B1", example:"After moving to the countryside, she felt truly content." },
-  { id:91,  topic:"Hissiyotlar", word:"irritated",       uz:"jahli chiqqan, ta'sirlangan",      level:"B1", example:"He was irritated by the constant noise from the construction site." },
-  { id:92,  topic:"Hissiyotlar", word:"compassion",      uz:"rahm-shafqat, hamdardlik",         level:"B2", example:"The nurse showed great compassion to her patients." },
-  { id:93,  topic:"Hissiyotlar", word:"resentment",      uz:"nafrat, xafa bo'lish",             level:"C1", example:"Years of unfair treatment built deep resentment within the team." },
-  { id:94,  topic:"Hissiyotlar", word:"relief",          uz:"yengillik, xavotirdan qutulish",   level:"B1", example:"She felt a great sense of relief when the exam results came back positive." },
-  { id:95,  topic:"Hissiyotlar", word:"loneliness",      uz:"yolg'izlik",                       level:"B2", example:"Moving to a new city can lead to feelings of loneliness." },
-  { id:96,  topic:"Hissiyotlar", word:"pride",           uz:"g'urur, iftixor",                  level:"B1", example:"She looked at her daughter's painting with pride." },
-  { id:97,  topic:"Hissiyotlar", word:"shame",           uz:"uyat, sharmandachilik",            level:"B2", example:"He felt deep shame after lying to his parents." },
-  { id:98,  topic:"Hissiyotlar", word:"excitement",      uz:"hayajon, zavq",                    level:"A2", example:"There was a great sense of excitement before the festival." },
-  { id:99,  topic:"Hissiyotlar", word:"apprehensive",    uz:"xavotirli, hadiksirab",            level:"B2", example:"She was apprehensive about starting her new job." },
-  { id:100, topic:"Hissiyotlar", word:"grief",           uz:"qayg'u, aza",                      level:"B2", example:"He was still dealing with grief after the loss of his father." },
-  { id:101, topic:"Hissiyotlar", word:"contempt",        uz:"nafrat, mensimovchilik",            level:"C1", example:"She looked at him with barely concealed contempt." },
-  { id:102, topic:"Hissiyotlar", word:"ecstatic",        uz:"juda xursand, extaz holatida",     level:"C1", example:"She was ecstatic when she found out she had won first prize." },
-  { id:103, topic:"Hissiyotlar", word:"guilty",          uz:"aybdor, vijdoni qiynalgan",        level:"B1", example:"He felt guilty for not telling the truth sooner." },
-  { id:104, topic:"Hissiyotlar", word:"nostalgic",       uz:"o'tmishni sog'inish, nostalgiya",  level:"C1", example:"Old photos make her feel nostalgic for her school days." },
-  { id:105, topic:"Hissiyotlar", word:"confident",       uz:"ishonchli, o'ziga ishongan",       level:"B1", example:"Public speaking made him feel much more confident over time." },
-  { id:106, topic:"Hissiyotlar", word:"jealous",         uz:"hasadgo'y, havaskor",              level:"B1", example:"She was jealous of her friend's success abroad." },
-  { id:107, topic:"Hissiyotlar", word:"content",         uz:"qoniqish, xotirjam",               level:"B2", example:"He was content living a simple life in the village." },
-  { id:108, topic:"Hissiyotlar", word:"grief",           uz:"qayg'u, motam",                    level:"B2", example:"Grief can take many different forms after losing someone close." },
-  { id:109, topic:"Hissiyotlar", word:"embarrassed",     uz:"uyalgan, xijolat bo'lgan",         level:"B1", example:"She was embarrassed when she forgot her teacher's name." },
-  { id:110, topic:"Hissiyotlar", word:"optimistic",      uz:"optimistik, umidvor",              level:"B1", example:"Despite the challenges, she remained optimistic about the future." },
-  { id:111, topic:"Hissiyotlar", word:"desperate",       uz:"umidsiz, yoqasiga yetgan",         level:"B2", example:"He was desperate for work after months of unemployment." },
-  { id:112, topic:"Hissiyotlar", word:"sympathetic",     uz:"hamdard, mehribon",                level:"B2", example:"Her friends were sympathetic when she told them the news." },
-  { id:113, topic:"Hissiyotlar", word:"indifferent",     uz:"befarq, loqayd",                   level:"C1", example:"He seemed completely indifferent to the criticism." },
-  { id:114, topic:"Hissiyotlar", word:"enthusiastic",    uz:"ishtiyoqli, shavqli",              level:"B1", example:"The students were enthusiastic about the new science project." },
-  { id:115, topic:"Hissiyotlar", word:"furious",         uz:"g'azablangan, qattiq jahli chiqqan",level:"B2", example:"She was furious when she discovered her bag had been stolen." },
-  { id:116, topic:"Munosabatlar",word:"compromise",      uz:"murosa, kelishuv",                  level:"B1", example:"A good relationship requires compromise from both sides." },
-  { id:117, topic:"Munosabatlar",word:"reconcile",       uz:"yarashmoq, murosaga kelmoq",        level:"C1", example:"They reconciled after years of disagreement." },
-  { id:118, topic:"Munosabatlar",word:"sibling",         uz:"aka-uka yoki opa-singil",           level:"A2", example:"Do you have any siblings?" },
-  { id:119, topic:"Munosabatlar",word:"loyalty",         uz:"sodiqlik, vafolilik",               level:"B2", example:"Loyalty is one of the most important values in friendship." },
-  { id:120, topic:"Munosabatlar",word:"trust",           uz:"ishonch",                           level:"A2", example:"It takes time to build trust in any relationship." },
-  { id:121, topic:"Munosabatlar",word:"supportive",      uz:"qo'llab-quvvatlovchi",              level:"B1", example:"Her family was very supportive during her recovery." },
-  { id:122, topic:"Munosabatlar",word:"affection",       uz:"mehrli munosabat, sevgi",           level:"B2", example:"She showed great affection for her younger brother." },
-  { id:123, topic:"Munosabatlar",word:"divorce",         uz:"ajralish, taloq",                   level:"B1", example:"The divorce was difficult for the whole family." },
-  { id:124, topic:"Munosabatlar",word:"mutual",          uz:"o'zaro, ikki tomonlama",            level:"B2", example:"Their relationship is based on mutual respect and understanding." },
-  { id:125, topic:"Munosabatlar",word:"argue",           uz:"bahslashmoq, talashmoq",            level:"A2", example:"They always argue about small things but never seriously." },
-  { id:126, topic:"Munosabatlar",word:"bond",            uz:"aloqa, bog'liqlik",                 level:"B2", example:"The shared experience created a strong bond between them." },
-  { id:127, topic:"Munosabatlar",word:"estranged",       uz:"begonalashgan, uzoqlashgan",        level:"C1", example:"He became estranged from his family after moving abroad." },
-  { id:128, topic:"Munosabatlar",word:"cherish",         uz:"qadrlamoq, asrab-avaylamoq",        level:"B2", example:"She cherished the letters her grandmother had written." },
-  { id:129, topic:"Munosabatlar",word:"breakup",         uz:"ajralish, uzilish",                 level:"B1", example:"The breakup was painful but ultimately the right decision." },
-  { id:130, topic:"Munosabatlar",word:"mentor",          uz:"yo'lboshchi, tajribali rahbar",     level:"B2", example:"She found a mentor who guided her through her career." },
-  { id:131, topic:"Munosabatlar",word:"acquaintance",    uz:"tanish",                            level:"B2", example:"He is just an acquaintance, not a close friend." },
-  { id:132, topic:"Munosabatlar",word:"relative",        uz:"qarindosh, yaqin",                  level:"A2", example:"Most of her relatives live in the same city." },
-  { id:133, topic:"Munosabatlar",word:"rivalry",         uz:"raqobat, ziddiyat",                 level:"B2", example:"There has always been a friendly rivalry between the two brothers." },
-  { id:134, topic:"Munosabatlar",word:"commitment",      uz:"majburiyat, sadoqat",               level:"B2", example:"Marriage requires a long-term commitment from both partners." },
-  { id:135, topic:"Munosabatlar",word:"guardian",        uz:"vasiy, homiy",                      level:"B2", example:"His uncle became his legal guardian after his parents' death." },
-  { id:136, topic:"Texnologiya", word:"algorithm",       uz:"algoritm",                          level:"B2", example:"The search engine uses a complex algorithm to rank websites." },
-  { id:137, topic:"Texnologiya", word:"bandwidth",       uz:"o'tkazish quvvati, internet tezligi",level:"C1",example:"Streaming videos requires a high bandwidth connection." },
-  { id:138, topic:"Texnologiya", word:"encryption",      uz:"shifrlash, kodlash",                level:"C1", example:"The app uses end-to-end encryption to protect user data." },
-  { id:139, topic:"Texnologiya", word:"interface",       uz:"interfeys",                         level:"B2", example:"The user interface of this app is very intuitive." },
-  { id:140, topic:"Texnologiya", word:"cloud computing", uz:"bulutli hisoblash",                 level:"B2", example:"Cloud computing allows businesses to store data remotely." },
-  { id:141, topic:"Texnologiya", word:"artificial intelligence",uz:"sun'iy intellekt",           level:"B2", example:"Artificial intelligence is transforming many industries." },
-  { id:142, topic:"Texnologiya", word:"cybersecurity",   uz:"kiberxavfsizlik",                   level:"C1", example:"Cybersecurity threats have increased significantly this year." },
-  { id:143, topic:"Texnologiya", word:"database",        uz:"ma'lumotlar bazasi",                level:"B2", example:"The hospital stores all patient records in a secure database." },
-  { id:144, topic:"Texnologiya", word:"virtual reality", uz:"virtual haqiqat",                   level:"B2", example:"Virtual reality is increasingly used in medical training." },
-  { id:145, topic:"Texnologiya", word:"automation",      uz:"avtomatlashtirish",                 level:"B2", example:"Automation has reduced the need for manual labour in factories." },
-  { id:146, topic:"Texnologiya", word:"software",        uz:"dasturiy ta'minot",                 level:"A2", example:"You need to update the software to fix the bugs." },
-  { id:147, topic:"Texnologiya", word:"hardware",        uz:"apparat, jihozlar",                 level:"A2", example:"The technician replaced the faulty hardware component." },
-  { id:148, topic:"Texnologiya", word:"prototype",       uz:"prototip, namuna",                  level:"B2", example:"Engineers built a prototype to test the new device." },
-  { id:149, topic:"Texnologiya", word:"malware",         uz:"zararli dastur",                    level:"C1", example:"The malware infected thousands of computers overnight." },
-  { id:150, topic:"Texnologiya", word:"streaming",       uz:"onlayn uzatish, strim",             level:"B1", example:"Streaming services have replaced traditional television for many." },
-  { id:151, topic:"Texnologiya", word:"renewable energy",uz:"qayta tiklanadigan energiya",       level:"B2", example:"Solar panels are a popular form of renewable energy." },
-  { id:152, topic:"Texnologiya", word:"semiconductor",   uz:"yarimo'tkazgich",                   level:"C1", example:"The semiconductor shortage affected car production globally." },
-  { id:153, topic:"Texnologiya", word:"pixel",           uz:"piksel",                            level:"B1", example:"This camera captures images at forty megapixels." },
-  { id:154, topic:"Texnologiya", word:"update",          uz:"yangilamoq",                        level:"A2", example:"Please install the latest update to improve performance." },
-  { id:155, topic:"Texnologiya", word:"blockchain",      uz:"blokcheyn texnologiyasi",           level:"C1", example:"Blockchain technology underpins most cryptocurrencies." },
-  { id:156, topic:"Texnologiya", word:"debug",           uz:"xatoliklarni tuzatmoq",             level:"B2", example:"The developer spent hours trying to debug the code." },
-  { id:157, topic:"Texnologiya", word:"router",          uz:"router, tarmoq qurilmasi",          level:"B1", example:"Restarting the router usually solves most connection problems." },
-  { id:158, topic:"Texnologiya", word:"sensor",          uz:"sensor, sezgir qurilma",            level:"B2", example:"The car's parking sensor alerts the driver to obstacles." },
-  { id:159, topic:"Texnologiya", word:"subscription",    uz:"obuna",                             level:"B1", example:"She cancelled her streaming subscription to save money." },
-  { id:160, topic:"Texnologiya", word:"innovation",      uz:"yangilik, ixtiro",                  level:"B2", example:"Innovation is the key to long-term business success." },
-  { id:161, topic:"Atrof-muhit", word:"sustainability",  uz:"barqarorlik",                       level:"B2", example:"Sustainability is at the heart of our company's mission." },
-  { id:162, topic:"Atrof-muhit", word:"carbon footprint",uz:"karbon izi",                        level:"B2", example:"Flying less can significantly reduce your carbon footprint." },
-  { id:163, topic:"Atrof-muhit", word:"deforestation",   uz:"o'rmonlarni yo'q qilish",           level:"B2", example:"Deforestation in the Amazon threatens thousands of species." },
-  { id:164, topic:"Atrof-muhit", word:"biodiversity",    uz:"biologik xilma-xillik",             level:"C1", example:"Loss of biodiversity is one of the greatest environmental threats." },
-  { id:165, topic:"Atrof-muhit", word:"ecosystem",       uz:"ekotizim",                          level:"B2", example:"Human activity has disrupted many fragile ecosystems." },
-  { id:166, topic:"Atrof-muhit", word:"emission",        uz:"chiqindi gaz, emissiya",            level:"B2", example:"Countries have pledged to cut carbon emissions by 2050." },
-  { id:167, topic:"Atrof-muhit", word:"drought",         uz:"qurg'oqchilik, suvsizlik",          level:"B2", example:"The prolonged drought destroyed crops across the region." },
-  { id:168, topic:"Atrof-muhit", word:"pollution",       uz:"ifloslanish",                       level:"B1", example:"Air pollution in big cities is a major public health concern." },
-  { id:169, topic:"Atrof-muhit", word:"recycle",         uz:"qayta ishlash, resiklaj",           level:"A2", example:"She recycles glass, paper, and plastic every week." },
-  { id:170, topic:"Atrof-muhit", word:"fossil fuel",     uz:"qazib olinadigan yoqilg'i",        level:"B2", example:"Burning fossil fuels is the main cause of global warming." },
-  { id:171, topic:"Atrof-muhit", word:"global warming",  uz:"global isish",                      level:"B1", example:"Scientists warn that global warming will accelerate in coming decades." },
-  { id:172, topic:"Atrof-muhit", word:"habitat",         uz:"yashash joyi, muhit",               level:"B2", example:"The polar bear's natural habitat is threatened by climate change." },
-  { id:173, topic:"Atrof-muhit", word:"erosion",         uz:"eroziya, yemirilish",               level:"C1", example:"Soil erosion makes farmland less productive over time." },
-  { id:174, topic:"Atrof-muhit", word:"renewable",       uz:"qayta tiklanadigan",                level:"B2", example:"Wind power is a clean and renewable energy source." },
-  { id:175, topic:"Atrof-muhit", word:"endangered",      uz:"yo'q bo'lish xavfida",              level:"B2", example:"The snow leopard is an endangered species in Central Asia." },
-  { id:176, topic:"Atrof-muhit", word:"contamination",   uz:"ifloslantirish, zaharlanish",       level:"C1", example:"Soil contamination from the factory affected local crops." },
-  { id:177, topic:"Atrof-muhit", word:"conservation",    uz:"muhofaza, saqlash",                 level:"B2", example:"Wildlife conservation is essential to protect future generations." },
-  { id:178, topic:"Atrof-muhit", word:"flood",           uz:"toshqin, sel",                      level:"B1", example:"Heavy rains caused widespread flooding across the valley." },
-  { id:179, topic:"Atrof-muhit", word:"glacier",         uz:"muzlik",                            level:"B2", example:"Glaciers are melting at an alarming rate due to rising temperatures." },
-  { id:180, topic:"Atrof-muhit", word:"compost",         uz:"kompost, organik o'g'it",           level:"B2", example:"Composting kitchen waste reduces the amount sent to landfill." },
-  { id:181, topic:"Atrof-muhit", word:"ozone layer",     uz:"ozon qatlami",                      level:"B1", example:"Certain chemicals have damaged the ozone layer over Antarctica." },
-  { id:182, topic:"Atrof-muhit", word:"toxic",           uz:"zaharli, toksik",                   level:"B2", example:"The factory released toxic waste into the river." },
-  { id:183, topic:"Atrof-muhit", word:"landfill",        uz:"axlatxona, chiqindi poligon",       level:"B2", example:"Plastic that is not recycled often ends up in landfill." },
-  { id:184, topic:"Atrof-muhit", word:"tide",            uz:"to'lqin, suv ko'tarilishi",         level:"B2", example:"High tides can cause coastal flooding in low-lying areas." },
-  { id:185, topic:"Atrof-muhit", word:"urban sprawl",    uz:"shaharning yoyilishi",              level:"C1", example:"Urban sprawl has eaten into farmland on the city's outskirts." },
-  { id:186, topic:"Ovqat",       word:"cuisine",         uz:"oshxona, milliy taom",              level:"B1", example:"Italian cuisine is popular all over the world." },
-  { id:187, topic:"Ovqat",       word:"ingredients",     uz:"tarkibiy qismlar",                  level:"A2", example:"Make sure you have all the ingredients before you start cooking." },
-  { id:188, topic:"Ovqat",       word:"recipe",          uz:"retsept, taom pishirish usuli",     level:"A2", example:"She found a great recipe for chocolate cake online." },
-  { id:189, topic:"Ovqat",       word:"seasoning",       uz:"ziravorlar, osh tuzi",              level:"B1", example:"Add seasoning to taste before serving." },
-  { id:190, topic:"Ovqat",       word:"fermentation",    uz:"fermentatsiya, achitish",           level:"C1", example:"Fermentation is used to make bread, yoghurt, and wine." },
-  { id:191, topic:"Ovqat",       word:"portion",         uz:"ulush, porsiya",                    level:"B1", example:"The restaurant is known for its generous portions." },
-  { id:192, topic:"Ovqat",       word:"dietary",         uz:"ovqatlanish, parhez",               level:"B2", example:"She follows strict dietary guidelines for health reasons." },
-  { id:193, topic:"Ovqat",       word:"marinate",        uz:"marinad qilmoq",                    level:"B2", example:"Marinate the chicken for at least two hours before grilling." },
-  { id:194, topic:"Ovqat",       word:"organic",         uz:"organik, tabiiy",                   level:"B1", example:"She prefers to buy organic vegetables from the local market." },
-  { id:195, topic:"Ovqat",       word:"calorie",         uz:"kaloriya",                          level:"B1", example:"This dessert contains over 500 calories per serving." },
-  { id:196, topic:"Ovqat",       word:"buffet",          uz:"bufet, ochiq dasturxon",            level:"B1", example:"The hotel offers a buffet breakfast from 7am." },
-  { id:197, topic:"Ovqat",       word:"vegetarian",      uz:"vegetarian, go'shtsiz ovqat",       level:"A2", example:"The menu has plenty of vegetarian options." },
-  { id:198, topic:"Ovqat",       word:"gluten",          uz:"gluten, don proteini",              level:"B2", example:"Some people have an intolerance to gluten." },
-  { id:199, topic:"Ovqat",       word:"garnish",         uz:"bezak, taom bezagi",                level:"B2", example:"Add a garnish of fresh herbs before serving." },
-  { id:200, topic:"Ovqat",       word:"protein",         uz:"oqsil, protein",                    level:"B1", example:"Beans and lentils are excellent sources of plant-based protein." },
+  { id:36, topic:"Sog'liq",     word:"symptom",         uz:"belgi, alomat",                     level:"B1", example:"A high temperature is a common symptom of flu." },
+  { id:37, topic:"Sog'liq",     word:"diagnose",        uz:"tashxis qo'ymoq",                   level:"B2", example:"The doctor diagnosed her with type 2 diabetes." },
+  { id:38, topic:"Sog'liq",     word:"prescription",    uz:"retsept, buyruq",                   level:"B1", example:"The pharmacist asked for a valid prescription." },
+  { id:39, topic:"Sog'liq",     word:"immunity",        uz:"immunitet, kasalliklarga chidamlilik",level:"B2", example:"Vaccines help build immunity against serious diseases." },
+  { id:40, topic:"Sog'liq",     word:"chronic",         uz:"surunkali, uzoq muddatli",          level:"B2", example:"She has been living with a chronic back condition for years." },
+  { id:41, topic:"Sog'liq",     word:"rehabilitation",  uz:"reabilitatsiya, tiklanish",         level:"C1", example:"After the accident, he spent three months in rehabilitation." },
+  { id:42, topic:"Sog'liq",     word:"endurance",       uz:"chidamlilik, bardoshlilik",         level:"B2", example:"Long-distance running builds endurance over time." },
+  { id:43, topic:"Sog'liq",     word:"flexibility",     uz:"egiluvchanlik, moslashuvchanlik",   level:"B1", example:"Yoga improves both flexibility and mental focus." },
+  { id:44, topic:"Sog'liq",     word:"nutrition",       uz:"oziqlanish, ovqatlanish",           level:"B1", example:"Good nutrition is essential for children's development." },
+  { id:45, topic:"Sog'liq",     word:"obesity",         uz:"semizlik, to'liqlik",               level:"B2", example:"Obesity is linked to an increased risk of heart disease." },
+  { id:46, topic:"Sog'liq",     word:"prevention",      uz:"oldini olish, profilaktika",        level:"B2", example:"Prevention is always better than treatment." },
+  { id:47, topic:"Sog'liq",     word:"mental health",   uz:"ruhiy sog'liq",                     level:"B1", example:"Mental health awareness has grown significantly in recent years." },
+  { id:48, topic:"Sog'liq",     word:"dosage",          uz:"doza, me'yor",                      level:"B2", example:"Always follow the correct dosage instructions on the label." },
+  { id:49, topic:"Sog'liq",     word:"surgery",         uz:"jarrohlik, operatsiya",             level:"B1", example:"She underwent surgery to remove the tumour." },
+  { id:50, topic:"Sog'liq",     word:"contagious",      uz:"yuqumli, o'tuvchi",                 level:"B2", example:"Chickenpox is highly contagious and spreads quickly." },
+  { id:51, topic:"Sog'liq",     word:"vaccine",         uz:"vaktsina, emlash",                  level:"B1", example:"The flu vaccine is recommended every year for older adults." },
+  { id:52, topic:"Sog'liq",     word:"allergy",         uz:"allergiya",                         level:"B1", example:"She has a severe allergy to peanuts." },
+  { id:53, topic:"Sog'liq",     word:"sedentary",       uz:"o'tirib ish qiladigan, harakatsiz", level:"C1", example:"A sedentary lifestyle increases the risk of many health problems." },
+  { id:54, topic:"Sog'liq",     word:"metabolism",      uz:"moddalar almashinuvi, metabolizm",  level:"C1", example:"Regular exercise helps to boost your metabolism." },
+  { id:55, topic:"Sog'liq",     word:"well-being",      uz:"farovonlik, yaxshi his etish",      level:"B2", example:"Physical activity contributes greatly to overall well-being." },
+  { id:56, topic:"Sog'liq",     word:"therapy",         uz:"terapiya, davolash",                level:"B1", example:"Cognitive behavioural therapy is widely used for anxiety disorders." },
+  { id:57, topic:"Sog'liq",     word:"paramedic",       uz:"tibbiy xodim, feldsher",            level:"B2", example:"The paramedic gave first aid at the scene of the accident." },
+  { id:58, topic:"Sog'liq",     word:"insomnia",        uz:"uyqusizlik",                        level:"B2", example:"Stress is a common cause of insomnia." },
+  { id:59, topic:"Sog'liq",     word:"epidemic",        uz:"epidemiya, kasallik tarqalishi",    level:"B2", example:"Authorities acted quickly to contain the cholera epidemic." },
+  { id:60, topic:"Sog'liq",     word:"hygiene",         uz:"gigiena, tozalik",                  level:"A2", example:"Washing your hands regularly is basic personal hygiene." },
+  { id:61, topic:"Sog'liq",     word:"cardiac",         uz:"yurak, kardiak",                    level:"C1", example:"He was rushed to hospital with a cardiac arrest." },
+  { id:62, topic:"Sog'liq",     word:"fracture",        uz:"suyak sinishi, yoriq",              level:"B2", example:"She suffered a fracture in her wrist after the fall." },
+  { id:63, topic:"Sog'liq",     word:"anaesthetic",     uz:"narkoz, og'riq qoldiruvchi",        level:"C1", example:"The patient was placed under general anaesthetic during the procedure." },
+  { id:64, topic:"Sog'liq",     word:"inflammation",    uz:"yallig'lanish, shish",              level:"C1", example:"The injury caused significant inflammation around the knee joint." },
+  { id:65, topic:"Sog'liq",     word:"clinical",        uz:"klinik, tibbiy",                    level:"B2", example:"The drug passed all clinical trials before being approved." },
+  { id:66, topic:"Biznes",      word:"revenue",         uz:"daromad, tushum",                   level:"B2", example:"The company reported record revenue in the last financial quarter." },
+  { id:67, topic:"Biznes",      word:"investment",      uz:"investitsiya, qo'yilma",            level:"B1", example:"She made a long-term investment in renewable energy stocks." },
+  { id:68, topic:"Biznes",      word:"entrepreneur",    uz:"tadbirkor, bizneschi",              level:"B2", example:"Young entrepreneurs are driving innovation in the tech sector." },
+  { id:69, topic:"Biznes",      word:"merger",          uz:"birlashish, qo'shilish",            level:"C1", example:"The merger between the two airlines created the world's largest carrier." },
+  { id:70, topic:"Biznes",      word:"dividend",        uz:"dividend, foyda ulushi",            level:"C1", example:"Shareholders received a generous dividend this year." },
+  { id:71, topic:"Biznes",      word:"franchise",       uz:"franchayzing, litsenziya",          level:"C1", example:"She opened a coffee franchise in the city centre." },
+  { id:72, topic:"Biznes",      word:"liability",       uz:"javobgarlik, majburiyat",           level:"C1", example:"The company accepted liability for the faulty product." },
+  { id:73, topic:"Biznes",      word:"negotiate",       uz:"muzokaralar olib bormoq",           level:"B1", example:"They negotiated a better deal with the supplier." },
+  { id:74, topic:"Biznes",      word:"asset",           uz:"aktiv, mulk",                       level:"B2", example:"Property is often considered a safe long-term asset." },
+  { id:75, topic:"Biznes",      word:"profit margin",   uz:"foyda chegarasi, rentabellik",      level:"C1", example:"Rising costs have reduced the company's profit margin." },
+  { id:76, topic:"Biznes",      word:"supply chain",    uz:"ta'minot zanjiri",                  level:"B2", example:"The pandemic disrupted global supply chains significantly." },
+  { id:77, topic:"Biznes",      word:"inflation",       uz:"inflyatsiya, narxlar o'sishi",      level:"B2", example:"High inflation reduces the purchasing power of consumers." },
+  { id:78, topic:"Biznes",      word:"audit",           uz:"audit, tekshirish",                 level:"C1", example:"An external audit revealed several accounting errors." },
+  { id:79, topic:"Biznes",      word:"outsource",       uz:"autsorsing, tashqaridan topshirish",level:"C1", example:"Many firms outsource their IT support to specialist companies." },
+  { id:80, topic:"Biznes",      word:"stakeholder",     uz:"manfaatdor tomon",                  level:"B2", example:"All stakeholders were consulted before the decision was made." },
+  { id:81, topic:"Biznes",      word:"brand",           uz:"brend, tovar belgisi",              level:"B1", example:"A strong brand builds customer loyalty over time." },
+  { id:82, topic:"Biznes",      word:"budget",          uz:"byudjet, moliyaviy reja",           level:"A2", example:"The project went over budget by twenty per cent." },
+  { id:83, topic:"Biznes",      word:"marketing",       uz:"marketing, bozorga chiqarish",      level:"B1", example:"Effective marketing is key to the success of any new product." },
+  { id:84, topic:"Biznes",      word:"headquarters",    uz:"markaziy ofis, bosh idora",         level:"B2", example:"The company's headquarters are located in New York." },
+  { id:85, topic:"Biznes",      word:"bankruptcy",      uz:"bankrotlik, to'lovga qodir emaslik",level:"C1", example:"The airline filed for bankruptcy after years of financial losses." },
+  { id:86, topic:"Hissiyotlar", word:"anxious",         uz:"xavotirli, bezovta",               level:"B1", example:"She felt anxious before the job interview." },
+  { id:87, topic:"Hissiyotlar", word:"frustrated",      uz:"umidsiz, g'azablangan",            level:"B1", example:"He was frustrated by the constant delays." },
+  { id:88, topic:"Hissiyotlar", word:"overwhelmed",     uz:"toliqan, bosimi ostida",           level:"B2", example:"She felt overwhelmed by the amount of work she had to complete." },
+  { id:89, topic:"Hissiyotlar", word:"melancholy",      uz:"g'amgin, tushkunlik",              level:"C1", example:"A sense of melancholy settled over him as he left his hometown." },
+  { id:90, topic:"Hissiyotlar", word:"content",         uz:"qoniqarli, xotirjam",              level:"B1", example:"After moving to the countryside, she felt truly content." },
+  { id:91, topic:"Hissiyotlar", word:"irritated",       uz:"jahli chiqqan, ta'sirlangan",      level:"B1", example:"He was irritated by the constant noise from the construction site." },
+  { id:92, topic:"Hissiyotlar", word:"compassion",      uz:"rahm-shafqat, hamdardlik",         level:"B2", example:"The nurse showed great compassion to her patients." },
+  { id:93, topic:"Hissiyotlar", word:"resentment",      uz:"nafrat, xafa bo'lish",             level:"C1", example:"Years of unfair treatment built deep resentment within the team." },
+  { id:94, topic:"Hissiyotlar", word:"relief",          uz:"yengillik, xavotirdan qutulish",   level:"B1", example:"She felt a great sense of relief when the exam results came back positive." },
+  { id:95, topic:"Hissiyotlar", word:"loneliness",      uz:"yolg'izlik",                       level:"B2", example:"Moving to a new city can lead to feelings of loneliness." },
+  { id:96, topic:"Hissiyotlar", word:"pride",           uz:"g'urur, iftixor",                  level:"B1", example:"She looked at her daughter's painting with pride." },
+  { id:97, topic:"Hissiyotlar", word:"shame",           uz:"uyat, sharmandachilik",            level:"B2", example:"He felt deep shame after lying to his parents." },
+  { id:98, topic:"Hissiyotlar", word:"excitement",      uz:"hayajon, zavq",                    level:"A2", example:"There was a great sense of excitement before the festival." },
+  { id:99, topic:"Hissiyotlar", word:"apprehensive",    uz:"xavotirli, hadiksirab",            level:"B2", example:"She was apprehensive about starting her new job." },
+  { id:100,topic:"Hissiyotlar", word:"grief",           uz:"qayg'u, aza",                      level:"B2", example:"He was still dealing with grief after the loss of his father." },
+  { id:101,topic:"Hissiyotlar", word:"contempt",        uz:"nafrat, mensimovchilik",            level:"C1", example:"She looked at him with barely concealed contempt." },
+  { id:102,topic:"Hissiyotlar", word:"ecstatic",        uz:"juda xursand, extaz holatida",     level:"C1", example:"She was ecstatic when she found out she had won first prize." },
+  { id:103,topic:"Hissiyotlar", word:"guilty",          uz:"aybdor, vijdoni qiynalgan",        level:"B1", example:"He felt guilty for not telling the truth sooner." },
+  { id:104,topic:"Hissiyotlar", word:"nostalgic",       uz:"o'tmishni sog'inish, nostalgiya",  level:"C1", example:"Old photos make her feel nostalgic for her school days." },
+  { id:105,topic:"Hissiyotlar", word:"confident",       uz:"ishonchli, o'ziga ishongan",       level:"B1", example:"Public speaking made him feel much more confident over time." },
+  { id:106,topic:"Hissiyotlar", word:"jealous",         uz:"hasadgo'y, havaskor",              level:"B1", example:"She was jealous of her friend's success abroad." },
+  { id:107,topic:"Hissiyotlar", word:"embarrassed",     uz:"uyalgan, xijolat bo'lgan",         level:"B1", example:"She was embarrassed when she forgot her teacher's name." },
+  { id:108,topic:"Hissiyotlar", word:"optimistic",      uz:"optimistik, umidvor",              level:"B1", example:"Despite the challenges, she remained optimistic about the future." },
+  { id:109,topic:"Hissiyotlar", word:"desperate",       uz:"umidsiz, yoqasiga yetgan",         level:"B2", example:"He was desperate for work after months of unemployment." },
+  { id:110,topic:"Hissiyotlar", word:"sympathetic",     uz:"hamdard, mehribon",                level:"B2", example:"Her friends were sympathetic when she told them the news." },
+  { id:111,topic:"Hissiyotlar", word:"indifferent",     uz:"befarq, loqayd",                   level:"C1", example:"He seemed completely indifferent to the criticism." },
+  { id:112,topic:"Hissiyotlar", word:"enthusiastic",    uz:"ishtiyoqli, shavqli",              level:"B1", example:"The students were enthusiastic about the new science project." },
+  { id:113,topic:"Hissiyotlar", word:"furious",         uz:"g'azablangan, qattiq jahli chiqqan",level:"B2", example:"She was furious when she discovered her bag had been stolen." },
+  { id:114,topic:"Munosabatlar",word:"compromise",      uz:"murosa, kelishuv",                  level:"B1", example:"A good relationship requires compromise from both sides." },
+  { id:115,topic:"Munosabatlar",word:"reconcile",       uz:"yarashmoq, murosaga kelmoq",        level:"C1", example:"They reconciled after years of disagreement." },
+  { id:116,topic:"Munosabatlar",word:"sibling",         uz:"aka-uka yoki opa-singil",           level:"A2", example:"Do you have any siblings?" },
+  { id:117,topic:"Munosabatlar",word:"loyalty",         uz:"sodiqlik, vafolilik",               level:"B2", example:"Loyalty is one of the most important values in friendship." },
+  { id:118,topic:"Munosabatlar",word:"trust",           uz:"ishonch",                           level:"A2", example:"It takes time to build trust in any relationship." },
+  { id:119,topic:"Munosabatlar",word:"supportive",      uz:"qo'llab-quvvatlovchi",              level:"B1", example:"Her family was very supportive during her recovery." },
+  { id:120,topic:"Munosabatlar",word:"affection",       uz:"mehrli munosabat, sevgi",           level:"B2", example:"She showed great affection for her younger brother." },
+  { id:121,topic:"Munosabatlar",word:"divorce",         uz:"ajralish, taloq",                   level:"B1", example:"The divorce was difficult for the whole family." },
+  { id:122,topic:"Munosabatlar",word:"mutual",          uz:"o'zaro, ikki tomonlama",            level:"B2", example:"Their relationship is based on mutual respect and understanding." },
+  { id:123,topic:"Munosabatlar",word:"argue",           uz:"bahslashmoq, talashmoq",            level:"A2", example:"They always argue about small things but never seriously." },
+  { id:124,topic:"Munosabatlar",word:"bond",            uz:"aloqa, bog'liqlik",                 level:"B2", example:"The shared experience created a strong bond between them." },
+  { id:125,topic:"Munosabatlar",word:"estranged",       uz:"begonalashgan, uzoqlashgan",        level:"C1", example:"He became estranged from his family after moving abroad." },
+  { id:126,topic:"Munosabatlar",word:"cherish",         uz:"qadrlamoq, asrab-avaylamoq",        level:"B2", example:"She cherished the letters her grandmother had written." },
+  { id:127,topic:"Munosabatlar",word:"breakup",         uz:"ajralish, uzilish",                 level:"B1", example:"The breakup was painful but ultimately the right decision." },
+  { id:128,topic:"Munosabatlar",word:"mentor",          uz:"yo'lboshchi, tajribali rahbar",     level:"B2", example:"She found a mentor who guided her through her career." },
+  { id:129,topic:"Munosabatlar",word:"acquaintance",    uz:"tanish",                            level:"B2", example:"He is just an acquaintance, not a close friend." },
+  { id:130,topic:"Munosabatlar",word:"relative",        uz:"qarindosh, yaqin",                  level:"A2", example:"Most of her relatives live in the same city." },
+  { id:131,topic:"Munosabatlar",word:"rivalry",         uz:"raqobat, ziddiyat",                 level:"B2", example:"There has always been a friendly rivalry between the two brothers." },
+  { id:132,topic:"Munosabatlar",word:"commitment",      uz:"majburiyat, sadoqat",               level:"B2", example:"Marriage requires a long-term commitment from both partners." },
+  { id:133,topic:"Munosabatlar",word:"guardian",        uz:"vasiy, homiy",                      level:"B2", example:"His uncle became his legal guardian after his parents' death." },
+  { id:134,topic:"Texnologiya", word:"algorithm",       uz:"algoritm",                          level:"B2", example:"The search engine uses a complex algorithm to rank websites." },
+  { id:135,topic:"Texnologiya", word:"bandwidth",       uz:"o'tkazish quvvati, internet tezligi",level:"C1",example:"Streaming videos requires a high bandwidth connection." },
+  { id:136,topic:"Texnologiya", word:"encryption",      uz:"shifrlash, kodlash",                level:"C1", example:"The app uses end-to-end encryption to protect user data." },
+  { id:137,topic:"Texnologiya", word:"interface",       uz:"interfeys",                         level:"B2", example:"The user interface of this app is very intuitive." },
+  { id:138,topic:"Texnologiya", word:"cloud computing", uz:"bulutli hisoblash",                 level:"B2", example:"Cloud computing allows businesses to store data remotely." },
+  { id:139,topic:"Texnologiya", word:"artificial intelligence",uz:"sun'iy intellekt",           level:"B2", example:"Artificial intelligence is transforming many industries." },
+  { id:140,topic:"Texnologiya", word:"cybersecurity",   uz:"kiberxavfsizlik",                   level:"C1", example:"Cybersecurity threats have increased significantly this year." },
+  { id:141,topic:"Texnologiya", word:"database",        uz:"ma'lumotlar bazasi",                level:"B2", example:"The hospital stores all patient records in a secure database." },
+  { id:142,topic:"Texnologiya", word:"virtual reality", uz:"virtual haqiqat",                   level:"B2", example:"Virtual reality is increasingly used in medical training." },
+  { id:143,topic:"Texnologiya", word:"automation",      uz:"avtomatlashtirish",                 level:"B2", example:"Automation has reduced the need for manual labour in factories." },
+  { id:144,topic:"Texnologiya", word:"software",        uz:"dasturiy ta'minot",                 level:"A2", example:"You need to update the software to fix the bugs." },
+  { id:145,topic:"Texnologiya", word:"hardware",        uz:"apparat, jihozlar",                 level:"A2", example:"The technician replaced the faulty hardware component." },
+  { id:146,topic:"Texnologiya", word:"prototype",       uz:"prototip, namuna",                  level:"B2", example:"Engineers built a prototype to test the new device." },
+  { id:147,topic:"Texnologiya", word:"malware",         uz:"zararli dastur",                    level:"C1", example:"The malware infected thousands of computers overnight." },
+  { id:148,topic:"Texnologiya", word:"streaming",       uz:"onlayn uzatish, strim",             level:"B1", example:"Streaming services have replaced traditional television for many." },
+  { id:149,topic:"Texnologiya", word:"renewable energy",uz:"qayta tiklanadigan energiya",       level:"B2", example:"Solar panels are a popular form of renewable energy." },
+  { id:150,topic:"Texnologiya", word:"semiconductor",   uz:"yarimo'tkazgich",                   level:"C1", example:"The semiconductor shortage affected car production globally." },
+  { id:151,topic:"Texnologiya", word:"pixel",           uz:"piksel",                            level:"B1", example:"This camera captures images at forty megapixels." },
+  { id:152,topic:"Texnologiya", word:"update",          uz:"yangilamoq",                        level:"A2", example:"Please install the latest update to improve performance." },
+  { id:153,topic:"Texnologiya", word:"blockchain",      uz:"blokcheyn texnologiyasi",           level:"C1", example:"Blockchain technology underpins most cryptocurrencies." },
+  { id:154,topic:"Texnologiya", word:"debug",           uz:"xatoliklarni tuzatmoq",             level:"B2", example:"The developer spent hours trying to debug the code." },
+  { id:155,topic:"Texnologiya", word:"router",          uz:"router, tarmoq qurilmasi",          level:"B1", example:"Restarting the router usually solves most connection problems." },
+  { id:156,topic:"Texnologiya", word:"sensor",          uz:"sensor, sezgir qurilma",            level:"B2", example:"The car's parking sensor alerts the driver to obstacles." },
+  { id:157,topic:"Texnologiya", word:"subscription",    uz:"obuna",                             level:"B1", example:"She cancelled her streaming subscription to save money." },
+  { id:158,topic:"Texnologiya", word:"innovation",      uz:"yangilik, ixtiro",                  level:"B2", example:"Innovation is the key to long-term business success." },
+  { id:159,topic:"Atrof-muhit", word:"sustainability",  uz:"barqarorlik",                       level:"B2", example:"Sustainability is at the heart of our company's mission." },
+  { id:160,topic:"Atrof-muhit", word:"carbon footprint",uz:"karbon izi",                        level:"B2", example:"Flying less can significantly reduce your carbon footprint." },
+  { id:161,topic:"Atrof-muhit", word:"deforestation",   uz:"o'rmonlarni yo'q qilish",           level:"B2", example:"Deforestation in the Amazon threatens thousands of species." },
+  { id:162,topic:"Atrof-muhit", word:"biodiversity",    uz:"biologik xilma-xillik",             level:"C1", example:"Loss of biodiversity is one of the greatest environmental threats." },
+  { id:163,topic:"Atrof-muhit", word:"ecosystem",       uz:"ekotizim",                          level:"B2", example:"Human activity has disrupted many fragile ecosystems." },
+  { id:164,topic:"Atrof-muhit", word:"emission",        uz:"chiqindi gaz, emissiya",            level:"B2", example:"Countries have pledged to cut carbon emissions by 2050." },
+  { id:165,topic:"Atrof-muhit", word:"drought",         uz:"qurg'oqchilik, suvsizlik",          level:"B2", example:"The prolonged drought destroyed crops across the region." },
+  { id:166,topic:"Atrof-muhit", word:"pollution",       uz:"ifloslanish",                       level:"B1", example:"Air pollution in big cities is a major public health concern." },
+  { id:167,topic:"Atrof-muhit", word:"recycle",         uz:"qayta ishlash, resiklaj",           level:"A2", example:"She recycles glass, paper, and plastic every week." },
+  { id:168,topic:"Atrof-muhit", word:"fossil fuel",     uz:"qazib olinadigan yoqilg'i",        level:"B2", example:"Burning fossil fuels is the main cause of global warming." },
+  { id:169,topic:"Atrof-muhit", word:"global warming",  uz:"global isish",                      level:"B1", example:"Scientists warn that global warming will accelerate in coming decades." },
+  { id:170,topic:"Atrof-muhit", word:"habitat",         uz:"yashash joyi, muhit",               level:"B2", example:"The polar bear's natural habitat is threatened by climate change." },
+  { id:171,topic:"Atrof-muhit", word:"erosion",         uz:"eroziya, yemirilish",               level:"C1", example:"Soil erosion makes farmland less productive over time." },
+  { id:172,topic:"Atrof-muhit", word:"renewable",       uz:"qayta tiklanadigan",                level:"B2", example:"Wind power is a clean and renewable energy source." },
+  { id:173,topic:"Atrof-muhit", word:"endangered",      uz:"yo'q bo'lish xavfida",              level:"B2", example:"The snow leopard is an endangered species in Central Asia." },
+  { id:174,topic:"Atrof-muhit", word:"contamination",   uz:"ifloslantirish, zaharlanish",       level:"C1", example:"Soil contamination from the factory affected local crops." },
+  { id:175,topic:"Atrof-muhit", word:"conservation",    uz:"muhofaza, saqlash",                 level:"B2", example:"Wildlife conservation is essential to protect future generations." },
+  { id:176,topic:"Atrof-muhit", word:"flood",           uz:"toshqin, sel",                      level:"B1", example:"Heavy rains caused widespread flooding across the valley." },
+  { id:177,topic:"Atrof-muhit", word:"glacier",         uz:"muzlik",                            level:"B2", example:"Glaciers are melting at an alarming rate due to rising temperatures." },
+  { id:178,topic:"Atrof-muhit", word:"compost",         uz:"kompost, organik o'g'it",           level:"B2", example:"Composting kitchen waste reduces the amount sent to landfill." },
+  { id:179,topic:"Atrof-muhit", word:"ozone layer",     uz:"ozon qatlami",                      level:"B1", example:"Certain chemicals have damaged the ozone layer over Antarctica." },
+  { id:180,topic:"Atrof-muhit", word:"toxic",           uz:"zaharli, toksik",                   level:"B2", example:"The factory released toxic waste into the river." },
+  { id:181,topic:"Atrof-muhit", word:"landfill",        uz:"axlatxona, chiqindi poligon",       level:"B2", example:"Plastic that is not recycled often ends up in landfill." },
+  { id:182,topic:"Atrof-muhit", word:"tide",            uz:"to'lqin, suv ko'tarilishi",         level:"B2", example:"High tides can cause coastal flooding in low-lying areas." },
+  { id:183,topic:"Atrof-muhit", word:"urban sprawl",    uz:"shaharning yoyilishi",              level:"C1", example:"Urban sprawl has eaten into farmland on the city's outskirts." },
+  { id:184,topic:"Ovqat",       word:"cuisine",         uz:"oshxona, milliy taom",              level:"B1", example:"Italian cuisine is popular all over the world." },
+  { id:185,topic:"Ovqat",       word:"ingredients",     uz:"tarkibiy qismlar",                  level:"A2", example:"Make sure you have all the ingredients before you start cooking." },
+  { id:186,topic:"Ovqat",       word:"recipe",          uz:"retsept, taom pishirish usuli",     level:"A2", example:"She found a great recipe for chocolate cake online." },
+  { id:187,topic:"Ovqat",       word:"seasoning",       uz:"ziravorlar, osh tuzi",              level:"B1", example:"Add seasoning to taste before serving." },
+  { id:188,topic:"Ovqat",       word:"fermentation",    uz:"fermentatsiya, achitish",           level:"C1", example:"Fermentation is used to make bread, yoghurt, and wine." },
+  { id:189,topic:"Ovqat",       word:"portion",         uz:"ulush, porsiya",                    level:"B1", example:"The restaurant is known for its generous portions." },
+  { id:190,topic:"Ovqat",       word:"dietary",         uz:"ovqatlanish, parhez",               level:"B2", example:"She follows strict dietary guidelines for health reasons." },
+  { id:191,topic:"Ovqat",       word:"marinate",        uz:"marinad qilmoq",                    level:"B2", example:"Marinate the chicken for at least two hours before grilling." },
+  { id:192,topic:"Ovqat",       word:"organic",         uz:"organik, tabiiy",                   level:"B1", example:"She prefers to buy organic vegetables from the local market." },
+  { id:193,topic:"Ovqat",       word:"calorie",         uz:"kaloriya",                          level:"B1", example:"This dessert contains over 500 calories per serving." },
+  { id:194,topic:"Ovqat",       word:"buffet",          uz:"bufet, ochiq dasturxon",            level:"B1", example:"The hotel offers a buffet breakfast from 7am." },
+  { id:195,topic:"Ovqat",       word:"vegetarian",      uz:"vegetarian, go'shtsiz ovqat",       level:"A2", example:"The menu has plenty of vegetarian options." },
+  { id:196,topic:"Ovqat",       word:"gluten",          uz:"gluten, don proteini",              level:"B2", example:"Some people have an intolerance to gluten." },
+  { id:197,topic:"Ovqat",       word:"garnish",         uz:"bezak, taom bezagi",                level:"B2", example:"Add a garnish of fresh herbs before serving." },
+  { id:198,topic:"Ovqat",       word:"protein",         uz:"oqsil, protein",                    level:"B1", example:"Beans and lentils are excellent sources of plant-based protein." },
+  { id:199,topic:"Ovqat",       word:"ferment",         uz:"achitmoq, bijg'itmoq",              level:"C1", example:"You need to ferment the dough overnight for best results." },
+  { id:200,topic:"Ovqat",       word:"condiment",       uz:"sous, ziravorlar",                  level:"B2", example:"She kept a variety of condiments in her kitchen." },
 ];
 
-// Topic emoji map
 const TOPIC_EMOJI = {
   "Ta'lim":'📚', "Sog'liq":'🏥', "Biznes":'💼',
   "Hissiyotlar":'😊', "Munosabatlar":'🤝',
@@ -650,9 +787,11 @@ const TOPIC_EMOJI = {
 };
 
 // ── STATE ──────────────────────────────────────────────────
-let learnedIds  = [];
-let currentUser = null;
+let learnedIds   = [];
+let currentUser  = null;
 let activeFilter = 'Hammasi';
+// Rejim: 'image' = rasmli (front: rasm), 'classic' = klassik (front: so'z)
+let fcMode       = 'image';
 
 // ── FLASHCARD ENGINE ──────────────────────────────────────
 let fcWords   = [];
@@ -661,7 +800,6 @@ let fcFlipped = false;
 let fcGood    = 0;
 let fcAgain   = 0;
 let fcSkip    = 0;
-let fcDeckName = '';
 
 // ── FIREBASE AUTH ─────────────────────────────────────────
 firebase.auth().onAuthStateChanged(function(user){
@@ -673,7 +811,6 @@ firebase.auth().onAuthStateChanged(function(user){
     if(doc.exists && doc.data().learned){
       learnedIds = doc.data().learned.map(function(x){ return Number(x); });
     }
-    // Sync localStorage
     localStorage.setItem('vz_learned', JSON.stringify(learnedIds));
     renderMain();
   }).catch(function(){
@@ -686,7 +823,7 @@ firebase.auth().onAuthStateChanged(function(user){
 // ── RENDER MAIN PAGE ──────────────────────────────────────
 function renderMain(){
   const total = learnedIds.length;
-  document.getElementById('totalCount').textContent = total + ' ta so\'z';
+  document.getElementById('totalCount').textContent = total + " ta so'z";
 
   const page = document.getElementById('mainPage');
 
@@ -697,7 +834,7 @@ function renderMain(){
           <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#2196F3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M8 10h8M8 14h5"/></svg>
         </div>
         <div class="empty-title">Hali so'z o'rganilmagan</div>
-        <div class="empty-sub">Topic vocabulary sahifasida so'zlar yonidagi ✅ <strong>Urgandim</strong> tugmasini bosib boshlang!</div>
+        <div class="empty-sub">Topic sahifasida so'zlar yonidagi ✅ <strong>Urgandim</strong> tugmasini bosib boshlang!</div>
         <button class="empty-btn" onclick="location.href='topic.html'">So'zlarga o'tish →</button>
       </div>`;
     return;
@@ -711,16 +848,14 @@ function renderMain(){
     if(!topicMap[w.topic]) topicMap[w.topic] = [];
     topicMap[w.topic].push(w);
   });
-
   const topics = Object.keys(topicMap);
-  const allLearned = ALL_WORDS.filter(function(w){ return learnedIds.includes(w.id); });
 
   // Stats row
   let html = `
     <div class="stats-row">
       <div class="stat-box">
         <div class="stat-num">${total}</div>
-        <div class="stat-lbl">Jami o'rganilgan</div>
+        <div class="stat-lbl">O'rganilgan</div>
       </div>
       <div class="stat-box">
         <div class="stat-num">${topics.length}</div>
@@ -732,8 +867,21 @@ function renderMain(){
       </div>
     </div>`;
 
+  // Mode toggle
+  html += `
+    <div class="mode-toggle">
+      <button class="mode-btn${fcMode==='image'?' active':''}" onclick="setMode('image')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        Rasmli lug'at
+      </button>
+      <button class="mode-btn${fcMode==='classic'?' active':''}" onclick="setMode('classic')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+        Klassik
+      </button>
+    </div>`;
+
   // Filter pills
-  html += '<div class="filter-wrap" id="filterWrap">';
+  html += '<div class="filter-wrap">';
   html += `<button class="filter-pill${activeFilter==='Hammasi'?' active':''}" onclick="setFilter('Hammasi')">Hammasi (${total})</button>`;
   topics.forEach(function(t){
     html += `<button class="filter-pill${activeFilter===t?' active':''}" onclick="setFilter('${t}')">${TOPIC_EMOJI[t]||''} ${t} (${topicMap[t].length})</button>`;
@@ -742,11 +890,9 @@ function renderMain(){
 
   // Deck cards
   html += '<div class="deck-list">';
-
-  // "Hammasi" deck
   if(activeFilter === 'Hammasi'){
     html += `
-      <div class="deck-card" onclick="startFC(null,'Barcha so\\'zlar')">
+      <div class="deck-card" onclick="startFC(null,&quot;Barcha so'zlar&quot;)">
         <div class="deck-icon" style="background:#E3F2FD;">🃏</div>
         <div class="deck-info">
           <div class="deck-title">Barcha o'rganilgan so'zlar</div>
@@ -769,7 +915,6 @@ function renderMain(){
         </div>`;
     });
   } else {
-    // Filtered topic
     const filtered = topicMap[activeFilter] || [];
     html += `
       <div class="deck-card" onclick="startFC('${activeFilter}','${(TOPIC_EMOJI[activeFilter]||'')+' '+activeFilter}')">
@@ -781,16 +926,16 @@ function renderMain(){
         <div class="deck-progress">${filtered.length} ta</div>
         <svg class="deck-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
       </div>`;
-    // Individual level groups within topic
     const levels = {};
     filtered.forEach(function(w){
       if(!levels[w.level]) levels[w.level] = [];
       levels[w.level].push(w);
     });
     Object.keys(levels).sort().forEach(function(lv){
-      const cnt = levels[lv].length;
+      const ids = levels[lv].map(function(w){ return w.id; });
+      const cnt = ids.length;
       html += `
-        <div class="deck-card" onclick="startFCWords(${JSON.stringify(levels[lv].map(function(w){return w.id;}))}, '${activeFilter} · ${lv}')">
+        <div class="deck-card" onclick='startFCWords(${JSON.stringify(ids)},"${activeFilter} · ${lv}")'>
           <div class="deck-icon" style="background:#FEF3C7;font-size:1rem;font-weight:900;color:#B45309;">${lv}</div>
           <div class="deck-info">
             <div class="deck-title">${lv} darajasi</div>
@@ -801,13 +946,17 @@ function renderMain(){
         </div>`;
     });
   }
-
   html += '</div>';
   page.innerHTML = html;
 }
 
 function setFilter(f){
   activeFilter = f;
+  renderMain();
+}
+
+function setMode(m){
+  fcMode = m;
   renderMain();
 }
 
@@ -819,7 +968,7 @@ function startFC(topic, title){
   } else {
     words = ALL_WORDS.filter(function(w){ return learnedIds.includes(w.id) && w.topic === topic; });
   }
-  if(!words.length){ showToast('So\'z yo\'q!'); return; }
+  if(!words.length){ showToast("So'z yo'q!"); return; }
   launchFC(words, title);
 }
 
@@ -829,20 +978,41 @@ function startFCWords(ids, title){
 }
 
 function launchFC(words, title){
-  // Shuffle
   fcWords  = words.slice().sort(function(){ return Math.random() - .5; });
   fcIndex  = 0;
   fcGood   = 0;
   fcAgain  = 0;
   fcSkip   = 0;
   fcFlipped = false;
-  fcDeckName = title;
 
   document.getElementById('fcTitle').textContent = title;
   document.getElementById('fcResult').style.display = 'none';
   document.getElementById('fcBody').style.display   = 'flex';
   document.getElementById('fcScreen').classList.add('open');
+
+  // Mode ni ko'rsatish
+  applyMode();
   showFCCard();
+}
+
+function applyMode(){
+  const imgFront     = document.getElementById('fcFrontImg');
+  const classicFront = document.getElementById('fcFrontClassic');
+  if(fcMode === 'image'){
+    imgFront.style.display     = '';
+    classicFront.style.display = 'none';
+  } else {
+    imgFront.style.display     = 'none';
+    classicFront.style.display = '';
+  }
+}
+
+// Unsplash: matndan rasm olish
+function getImageUrl(word){
+  // Unsplash Source API — so'z asosida rasm
+  const encoded = encodeURIComponent(word);
+  // 600x400, tasodifiy (sig: id asosida)
+  return 'https://source.unsplash.com/600x400/?' + encoded;
 }
 
 function showFCCard(){
@@ -852,13 +1022,43 @@ function showFCCard(){
   document.getElementById('fcCard').classList.remove('flipped');
   document.getElementById('fcTapHint').style.display = 'flex';
 
-  document.getElementById('fcLevel').textContent    = w.level;
-  document.getElementById('fcWord').textContent     = w.word;
-  document.getElementById('fcTopic').textContent    = (TOPIC_EMOJI[w.topic]||'') + ' ' + w.topic;
-  document.getElementById('fcUz').textContent       = w.uz;
-  document.getElementById('fcLevelBack').textContent= w.level + ' · ' + w.topic;
-  document.getElementById('fcExample').textContent  = w.example || '';
+  // ── FRONT rasmli ──
+  document.getElementById('fcLevel').textContent  = w.level;
+  document.getElementById('fcWord').textContent   = w.word;
+  document.getElementById('fcTopic').textContent  = (TOPIC_EMOJI[w.topic]||'') + ' ' + w.topic;
 
+  // Rasm yuklash
+  const img = document.getElementById('fcImg');
+  const placeholder = document.getElementById('fcImgPlaceholder');
+  img.classList.remove('loaded');
+  placeholder.classList.remove('hidden');
+  img.src = '';
+  // Kechiktirib yuklaymiz (flip animatsiya tugagach)
+  setTimeout(function(){
+    const newSrc = getImageUrl(w.word);
+    img.onload = function(){
+      img.classList.add('loaded');
+      placeholder.classList.add('hidden');
+    };
+    img.onerror = function(){
+      // Rasm yuklanmasa placeholder qoladi
+    };
+    img.src = newSrc;
+  }, 100);
+
+  // ── FRONT klassik ──
+  document.getElementById('fcLevelCl').textContent  = w.level;
+  document.getElementById('fcWordCl').textContent   = w.word;
+  document.getElementById('fcTopicCl').textContent  = (TOPIC_EMOJI[w.topic]||'') + ' ' + w.topic;
+
+  // ── BACK ──
+  document.getElementById('fcBackWord').textContent  = w.word;
+  document.getElementById('fcUz').textContent        = w.uz;
+  document.getElementById('fcLevelBack').textContent = w.level;
+  document.getElementById('fcTopicBack').textContent = w.topic;
+  document.getElementById('fcExample').textContent   = w.example || '';
+
+  // Counter & progress
   const total = fcWords.length;
   const cur   = fcIndex + 1;
   document.getElementById('fcCounter').textContent = cur + '/' + total;
@@ -892,10 +1092,10 @@ function showFCResult(){
   if(pct===100){ emoji='🏆'; title='Mukammal natija!'; }
   else if(pct>=70){ emoji='🎉'; title='Yaxshi natija!'; }
   else if(pct>=40){ emoji='💪'; title='Davom eting!'; }
-  else { emoji='📚'; title='Ko\'proq mashq kerak'; }
+  else { emoji='📚'; title="Ko'proq mashq kerak"; }
   document.getElementById('fcEmoji').textContent   = emoji;
   document.getElementById('fcResTitle').textContent= title;
-  document.getElementById('fcResSub').textContent  = total+' ta so\'zdan '+fcGood+' tasini bildingiz ('+pct+'%)';
+  document.getElementById('fcResSub').textContent  = total+" ta so'zdan "+fcGood+" tasini bildingiz ("+pct+"%)";
   document.getElementById('fcGoodN').textContent   = fcGood;
   document.getElementById('fcAgainN').textContent  = fcAgain;
   document.getElementById('fcSkipN').textContent   = fcSkip;
@@ -924,8 +1124,7 @@ function showToast(msg){
   toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 2200);
 }
 
-// ── REAL-TIME LISTEN: topic.html "Urgandim" bosishni ushlaydi ──
-// localStorage eventini listen qilamiz (boshqa tab)
+// ── REAL-TIME LISTEN ──────────────────────────────────────
 window.addEventListener('storage', function(e){
   if(e.key === 'vz_learned'){
     learnedIds = JSON.parse(e.newValue || '[]').map(Number);
