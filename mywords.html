@@ -842,39 +842,32 @@ if(typeof firebase !== 'undefined'){
 
 // Save learned word to Firestore + update activity log
 function markLearned(id){
+  var fdb = typeof firebase !== 'undefined' ? firebase.firestore() : null;
+  var d = new Date();
+  var todayKey = 'activityLog.' + d.getFullYear()+'-'+
+    (d.getMonth()+1).toString().padStart(2,'0')+'-'+
+    d.getDate().toString().padStart(2,'0');
+
   if(learned.includes(id)){
     learned = learned.filter(function(x){ return x!==id; });
     saveLearned();
-    if(currentUser){
-      firebase.firestore().collection('users').doc(currentUser.uid).update({
-        learned: learned
-      }).catch(function(){});
+    if(currentUser && fdb){
+      var upd = { learned: learned };
+      upd[todayKey] = firebase.firestore.FieldValue.increment(-1);
+      fdb.collection('users').doc(currentUser.uid).set(upd,{merge:true}).catch(function(){});
     }
     showToast('So\'z o\'rganilganlardan olib tashlandi');
     render();
     return;
   }
+
   learned.push(id);
   saveLearned();
-
-  if(currentUser){
-    var today = (function(){
-      var d=new Date();
-      return d.getFullYear()+'-'+(d.getMonth()+1).toString().padStart(2,'0')+'-'+d.getDate().toString().padStart(2,'0');
-    })();
-    var db = firebase.firestore();
-    db.collection('users').doc(currentUser.uid).get().then(function(doc){
-      var log = doc.exists && doc.data().activityLog ? doc.data().activityLog : {};
-      log[today] = (log[today]||0) + 1;
-      return db.collection('users').doc(currentUser.uid).update({
-        learned: learned,
-        activityLog: log
-      });
-    }).catch(function(){
-      db.collection('users').doc(currentUser.uid).set({
-        learned: learned,
-        activityLog: (function(){ var o={}; o[today]=1; return o; })()
-      },{merge:true}).catch(function(){});
+  if(currentUser && fdb){
+    var upd = { learned: learned };
+    upd[todayKey] = firebase.firestore.FieldValue.increment(1);
+    fdb.collection('users').doc(currentUser.uid).set(upd,{merge:true}).catch(function(err){
+      console.warn('Firestore write error:', err);
     });
   }
   showToast('🎉 Barakalla! So\'z o\'rganildi!');
