@@ -559,6 +559,9 @@ function markLearned(id){
     if(btn) updateLearnedBtn(btn, learnedIds.includes(numId));
   }
 
+  // localStorage ham yangilaymiz (mywords.html tez o'qishi uchun)
+  localStorage.setItem('vz_learned', JSON.stringify(learnedIds));
+
   // Firestore yangilash
   const today = todayStr();
   const userRef = db.collection('users').doc(currentUser.uid);
