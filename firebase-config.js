@@ -1,16 +1,10 @@
-// ============================================================
-//  VocaabUZ — Firebase Configuration
-//  Firebase Console → Project Settings → Your apps → Web app
-//  Quyidagi qiymatlarni o'zingiznikiga almashtiring
-// ============================================================
-
 const firebaseConfig = {
-  apiKey:            "AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-  authDomain:        "loyiha-id.firebaseapp.com",
-  projectId:         "loyiha-id",
-  storageBucket:     "loyiha-id.appspot.com",
-  messagingSenderId: "123456789012",
-  appId:             "1:123456789012:web:abcdef1234567890"
+  apiKey:            "AIzaSyCkMHAAIBEom-mxeo_hmFwguaTxJDLy7rE",
+  authDomain:        "vocabuz-f61c1.firebaseapp.com",
+  projectId:         "vocabuz-f61c1",
+  storageBucket:     "vocabuz-f61c1.firebasestorage.app",
+  messagingSenderId: "535277710706",
+  appId:             "1:535277710706:web:92e4afea24612ee4c601eb"
 };
 
 firebase.initializeApp(firebaseConfig);
