@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Statistika — VocaabUZ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#1DA1F2;
+  --blue-deep:#0D8AD4;
+  --blue-soft:#E3F2FD;
+  --blue-mid:#BBDEFB;
+  --ink:#1A2333;
+  --ink-mid:#4A5568;
+  --ink-soft:#8A9BB0;
+  --white:#FFFFFF;
+  --bg:#E8F4FD;
+  --card:#FFFFFF;
+  --green:#22C55E;
+  --green-soft:#DCFCE7;
+  --amber:#F59E0B;
+  --amber-soft:#FEF3C7;
+  --red:#EF4444;
+  --red-soft:#FEE2E2;
+  --line:#E2ECF5;
+  --radius-sm:10px;
+  --radius-md:16px;
+  --radius-lg:22px;
+  --shadow-sm:0 2px 8px rgba(29,161,242,.08);
+  --shadow-md:0 4px 20px rgba(29,161,242,.12);
+  --nav-h:60px;
+  --bottom-h:68px;
+}
+html,body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:var(--ink);}
+body{padding-bottom:calc(var(--bottom-h) + 20px);}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;}
+
+/* TOPBAR */
+.topbar{
+  position:sticky;top:0;z-index:100;
+  height:var(--nav-h);background:var(--bg);
+  display:flex;align-items:center;padding:0 16px;gap:12px;
+}
+.topbar-back{
+  width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+  border-radius:50%;flex-shrink:0;transition:background .15s;
+}
+.topbar-back:active{background:var(--blue-mid);}
+.topbar-title{flex:1;font-size:1.05rem;font-weight:700;color:var(--ink);text-align:center;}
+.topbar-spacer{width:36px;height:36px;flex-shrink:0;}
+
+/* PAGE */
+.page{padding:12px 16px;}
+
+/* HERO CARD */
+.hero-card{
+  background:linear-gradient(135deg,#1565C0 0%,var(--blue) 100%);
+  border-radius:var(--radius-lg);padding:22px 20px 18px;
+  margin-bottom:16px;color:#fff;
+  box-shadow:0 6px 24px rgba(29,161,242,.28);
+}
+.hero-label{font-size:.75rem;font-weight:600;opacity:.8;margin-bottom:6px;letter-spacing:.04em;text-transform:uppercase;}
+.hero-number{font-size:3.2rem;font-weight:900;line-height:1;margin-bottom:4px;}
+.hero-sub{font-size:.85rem;opacity:.8;}
+.hero-row{display:flex;gap:16px;margin-top:18px;}
+.hero-stat{flex:1;background:rgba(255,255,255,.15);border-radius:12px;padding:12px 10px;text-align:center;}
+.hero-stat-val{font-size:1.5rem;font-weight:800;}
+.hero-stat-label{font-size:.7rem;opacity:.8;margin-top:2px;}
+
+/* SECTION TITLE */
+.sec-title{font-size:.8rem;font-weight:700;color:var(--ink-soft);letter-spacing:.06em;text-transform:uppercase;margin:20px 0 10px;}
+
+/* STAT ROW CARDS */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px;}
+.stat-card{
+  background:var(--card);border-radius:var(--radius-md);
+  padding:14px 16px;box-shadow:var(--shadow-sm);
+}
+.stat-card-icon{
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;margin-bottom:10px;
+}
+.stat-card-val{font-size:1.6rem;font-weight:800;color:var(--ink);line-height:1;}
+.stat-card-label{font-size:.75rem;color:var(--ink-soft);margin-top:4px;font-weight:500;}
+
+/* STREAK CARD */
+.streak-card{
+  background:var(--card);border-radius:var(--radius-md);
+  padding:16px;box-shadow:var(--shadow-sm);margin-bottom:4px;
+}
+.streak-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.streak-title{font-size:.9rem;font-weight:700;}
+.streak-badge{
+  background:var(--amber-soft);color:var(--amber);
+  font-size:.78rem;font-weight:700;
+  padding:4px 10px;border-radius:20px;
+}
+
+/* CALENDAR */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;}
+.cal-day-name{font-size:.65rem;font-weight:600;color:var(--ink-soft);text-align:center;padding-bottom:4px;}
+.cal-cell{
+  aspect-ratio:1;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;font-weight:600;
+}
+.cal-cell.empty{background:transparent;}
+.cal-cell.none{background:#F1F5F9;color:var(--ink-soft);}
+.cal-cell.active{background:var(--blue);color:#fff;}
+.cal-cell.today{background:var(--blue-deep);color:#fff;box-shadow:0 2px 8px rgba(29,161,242,.4);}
+.cal-cell.missed{background:var(--red-soft);color:var(--red);}
+.cal-legend{display:flex;gap:14px;margin-top:10px;flex-wrap:wrap;}
+.cal-legend-item{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--ink-soft);}
+.cal-legend-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+
+/* WEEKLY CHART */
+.chart-card{
+  background:var(--card);border-radius:var(--radius-md);
+  padding:16px;box-shadow:var(--shadow-sm);margin-bottom:4px;
+}
+.chart-title{font-size:.9rem;font-weight:700;margin-bottom:14px;}
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:100px;}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.bar-val{font-size:.65rem;font-weight:700;color:var(--blue);}
+.bar-fill{
+  width:100%;border-radius:6px 6px 0 0;
+  background:var(--blue);
+  transition:height .4s ease;
+  min-height:4px;
+}
+.bar-fill.today-bar{background:linear-gradient(180deg,var(--blue-deep),var(--blue));}
+.bar-fill.zero{background:var(--line);}
+.bar-day{font-size:.65rem;color:var(--ink-soft);font-weight:500;}
+
+/* LEVEL CARD */
+.level-card{
+  background:var(--card);border-radius:var(--radius-md);
+  padding:16px;box-shadow:var(--shadow-sm);margin-bottom:4px;
+}
+.level-title{font-size:.9rem;font-weight:700;margin-bottom:12px;}
+.level-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.level-badge{
+  font-size:.72rem;font-weight:700;min-width:30px;
+  padding:3px 8px;border-radius:8px;text-align:center;
+}
+.level-badge.a2{background:#DCFCE7;color:#16A34A;}
+.level-badge.b1{background:#DBEAFE;color:#1D4ED8;}
+.level-badge.b2{background:#FEF3C7;color:#B45309;}
+.level-badge.c1{background:#FCE7F3;color:#9D174D;}
+.level-bar-wrap{flex:1;height:8px;background:var(--line);border-radius:4px;overflow:hidden;}
+.level-bar-fill{height:100%;border-radius:4px;transition:width .5s ease;}
+.level-bar-fill.a2{background:#22C55E;}
+.level-bar-fill.b1{background:var(--blue);}
+.level-bar-fill.b2{background:var(--amber);}
+.level-bar-fill.c1{background:#EC4899;}
+.level-count{font-size:.78rem;font-weight:700;color:var(--ink-mid);min-width:28px;text-align:right;}
+
+/* TOPIC CARD */
+.topic-card{
+  background:var(--card);border-radius:var(--radius-md);
+  padding:16px;box-shadow:var(--shadow-sm);margin-bottom:4px;
+}
+.topic-title{font-size:.9rem;font-weight:700;margin-bottom:12px;}
+.topic-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.topic-name{font-size:.85rem;font-weight:600;color:var(--ink);}
+.topic-count{font-size:.78rem;font-weight:700;color:var(--blue);}
+
+/* BOTTOM NAV */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  height:var(--bottom-h);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  background:var(--white);border-top:1px solid var(--line);
+  display:flex;align-items:stretch;z-index:200;
+}
+.bottom-nav-item{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:3px;
+  color:var(--ink-soft);font-size:.62rem;font-weight:600;
+}
+.bottom-nav-item.is-active{color:var(--blue);}
+
+/* SKELETON */
+.skeleton{
+  background:linear-gradient(90deg,#e8f0f8 25%,#d8e8f4 50%,#e8f0f8 75%);
+  background-size:200% 100%;
+  animation:shimmer 1.4s infinite;
+  border-radius:8px;
+}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* SPINNER */
+.spinner{
+  width:40px;height:40px;
+  border:3px solid var(--blue-mid);
+  border-top-color:var(--blue);
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+  margin:40px auto;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* EMPTY */
+.empty-state{
+  text-align:center;padding:48px 20px;
+  color:var(--ink-soft);
+}
+.empty-state-emoji{font-size:3rem;margin-bottom:12px;}
+.empty-state-title{font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:6px;}
+.empty-state-sub{font-size:.85rem;line-height:1.5;}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <a class="topbar-back" href="profile.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+  <div class="topbar-title">Statistika</div>
+  <div class="topbar-spacer"></div>
+</div>
+
+<!-- PAGE CONTENT -->
+<div class="page" id="mainContent">
+  <div class="spinner" id="loader"></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <a class="bottom-nav-item" href="index.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    Asosiy
+  </a>
+  <a class="bottom-nav-item" href="mywords.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    So'zlarim
+  </a>
+  <a class="bottom-nav-item" href="search.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    Qidirish
+  </a>
+  <a class="bottom-nav-item" href="roadmap.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+    Yo'l xaritasi
+  </a>
+  <a class="bottom-nav-item is-active" href="profile.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Profil
+  </a>
+</nav>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+
+// ─── WORD DATA (same as mywords) ────────────────────────────
+const ALL_WORDS = [
+  {id:1,topic:"Ta'lim",word:"curriculum",level:"B2"},
+  {id:2,topic:"Ta'lim",word:"syllabus",level:"B2"},
+  {id:3,topic:"Ta'lim",word:"assessment",level:"B2"},
+  {id:4,topic:"Ta'lim",word:"scholarship",level:"B1"},
+  {id:5,topic:"Ta'lim",word:"graduate",level:"A2"},
+  {id:6,topic:"Ta'lim",word:"tuition",level:"B2"},
+  {id:7,topic:"Ta'lim",word:"extracurricular",level:"C1"},
+  {id:8,topic:"Ta'lim",word:"dissertation",level:"C1"},
+  {id:9,topic:"Ta'lim",word:"plagiarism",level:"B2"},
+  {id:10,topic:"Ta'lim",word:"lecture",level:"A2"},
+  {id:11,topic:"Ta'lim",word:"elaborate",level:"B2"},
+  {id:12,topic:"Ta'lim",word:"clarify",level:"B1"},
+  {id:13,topic:"Ta'lim",word:"summarise",level:"B1"},
+  {id:14,topic:"Ta'lim",word:"enrol",level:"B1"},
+  {id:15,topic:"Ta'lim",word:"undergraduate",level:"B2"},
+  {id:16,topic:"Ta'lim",word:"postgraduate",level:"B2"},
+  {id:17,topic:"Ta'lim",word:"vocational",level:"B2"},
+  {id:18,topic:"Ta'lim",word:"academic",level:"B1"},
+  {id:19,topic:"Ta'lim",word:"semester",level:"A2"},
+  {id:20,topic:"Ta'lim",word:"assignment",level:"A2"},
+  {id:21,topic:"Ta'lim",word:"thesis",level:"C1"},
+  {id:22,topic:"Ta'lim",word:"debate",level:"B1"},
+  {id:23,topic:"Ta'lim",word:"discipline",level:"B2"},
+  {id:24,topic:"Ta'lim",word:"revision",level:"B1"},
+  {id:25,topic:"Ta'lim",word:"tutor",level:"A2"},
+  {id:26,topic:"Ta'lim",word:"seminar",level:"B1"},
+  {id:27,topic:"Ta'lim",word:"campus",level:"A2"},
+  {id:28,topic:"Ta'lim",word:"faculty",level:"B2"},
+  {id:29,topic:"Ta'lim",word:"curriculum vitae",level:"B2"},
+  {id:30,topic:"Ta'lim",word:"distance learning",level:"B1"},
+  {id:31,topic:"Ta'lim",word:"literacy",level:"B2"},
+  {id:32,topic:"Ta'lim",word:"numeracy",level:"B2"},
+  {id:33,topic:"Ta'lim",word:"portfolio",level:"B1"},
+  {id:34,topic:"Ta'lim",word:"internship",level:"B1"},
+  {id:35,topic:"Ta'lim",word:"peer review",level:"C1"},
+  {id:36,topic:"Sog'liq",word:"symptom",level:"B1"},
+  {id:37,topic:"Sog'liq",word:"diagnose",level:"B2"},
+  {id:38,topic:"Sog'liq",word:"prescription",level:"B1"},
+  {id:39,topic:"Sog'liq",word:"immunity",level:"B2"},
+  {id:40,topic:"Sog'liq",word:"chronic",level:"B2"},
+  {id:41,topic:"Sog'liq",word:"rehabilitation",level:"C1"},
+  {id:42,topic:"Sog'liq",word:"endurance",level:"B2"},
+  {id:43,topic:"Sog'liq",word:"flexibility",level:"B1"},
+  {id:44,topic:"Sog'liq",word:"nutrition",level:"B1"},
+  {id:45,topic:"Sog'liq",word:"obesity",level:"B2"},
+  {id:46,topic:"Sog'liq",word:"prevention",level:"B2"},
+  {id:47,topic:"Sog'liq",word:"mental health",level:"B1"},
+  {id:48,topic:"Sog'liq",word:"dosage",level:"B2"},
+  {id:49,topic:"Sog'liq",word:"surgery",level:"B1"},
+  {id:50,topic:"Sog'liq",word:"contagious",level:"B2"},
+  {id:51,topic:"Sog'liq",word:"vaccine",level:"B1"},
+  {id:52,topic:"Sog'liq",word:"allergy",level:"B1"},
+  {id:53,topic:"Sog'liq",word:"sedentary",level:"C1"},
+  {id:54,topic:"Sog'liq",word:"metabolism",level:"C1"},
+  {id:55,topic:"Sog'liq",word:"well-being",level:"B2"},
+  {id:56,topic:"Sog'liq",word:"therapy",level:"B1"},
+  {id:57,topic:"Sog'liq",word:"paramedic",level:"B2"},
+  {id:58,topic:"Sog'liq",word:"insomnia",level:"B2"},
+  {id:59,topic:"Sog'liq",word:"epidemic",level:"B2"},
+  {id:60,topic:"Sog'liq",word:"hygiene",level:"A2"},
+  {id:61,topic:"Sog'liq",word:"cardiac",level:"C1"},
+  {id:62,topic:"Sog'liq",word:"fracture",level:"B2"},
+  {id:63,topic:"Sog'liq",word:"physiotherapy",level:"C1"},
+  {id:64,topic:"Sog'liq",word:"stethoscope",level:"B2"},
+  {id:65,topic:"Sog'liq",word:"inflammation",level:"C1"},
+  {id:66,topic:"Ish & Kasb",word:"entrepreneur",level:"B2"},
+  {id:67,topic:"Ish & Kasb",word:"negotiate",level:"B2"},
+  {id:68,topic:"Ish & Kasb",word:"colleague",level:"A2"},
+  {id:69,topic:"Ish & Kasb",word:"deadline",level:"A2"},
+  {id:70,topic:"Ish & Kasb",word:"redundancy",level:"C1"},
+  {id:71,topic:"Ish & Kasb",word:"promotion",level:"B1"},
+  {id:72,topic:"Ish & Kasb",word:"recruitment",level:"B2"},
+  {id:73,topic:"Ish & Kasb",word:"proficiency",level:"B2"},
+  {id:74,topic:"Ish & Kasb",word:"remote work",level:"B1"},
+  {id:75,topic:"Ish & Kasb",word:"freelance",level:"B1"},
+  {id:76,topic:"Ish & Kasb",word:"appraisal",level:"C1"},
+  {id:77,topic:"Ish & Kasb",word:"agenda",level:"B1"},
+  {id:78,topic:"Ish & Kasb",word:"liability",level:"C1"},
+  {id:79,topic:"Ish & Kasb",word:"initiative",level:"B2"},
+  {id:80,topic:"Ish & Kasb",word:"resignation",level:"B2"},
+  {id:81,topic:"Ish & Kasb",word:"payroll",level:"C1"},
+  {id:82,topic:"Ish & Kasb",word:"commission",level:"B2"},
+  {id:83,topic:"Ish & Kasb",word:"workload",level:"B2"},
+  {id:84,topic:"Ish & Kasb",word:"outsource",level:"C1"},
+  {id:85,topic:"Ish & Kasb",word:"merger",level:"C1"},
+  {id:86,topic:"Ish & Kasb",word:"stakeholder",level:"C1"},
+  {id:87,topic:"Ish & Kasb",word:"budget",level:"B1"},
+  {id:88,topic:"Ish & Kasb",word:"revenue",level:"B2"},
+  {id:89,topic:"Ish & Kasb",word:"strike",level:"B2"},
+  {id:90,topic:"Ish & Kasb",word:"conference",level:"B1"},
+  {id:91,topic:"Ish & Kasb",word:"pension",level:"B1"},
+  {id:92,topic:"Ish & Kasb",word:"overtime",level:"B1"},
+  {id:93,topic:"Ish & Kasb",word:"self-employed",level:"B1"},
+  {id:94,topic:"Ish & Kasb",word:"networking",level:"B2"},
+  {id:95,topic:"Ish & Kasb",word:"mentor",level:"B2"},
+  {id:96,topic:"Hissiyotlar",word:"anxious",level:"B1"},
+  {id:97,topic:"Hissiyotlar",word:"overwhelmed",level:"B2"},
+  {id:98,topic:"Hissiyotlar",word:"empathy",level:"B2"},
+  {id:99,topic:"Hissiyotlar",word:"resilient",level:"C1"},
+  {id:100,topic:"Hissiyotlar",word:"melancholy",level:"C1"},
+  {id:101,topic:"Hissiyotlar",word:"frustrated",level:"B1"},
+  {id:102,topic:"Hissiyotlar",word:"ecstatic",level:"C1"},
+  {id:103,topic:"Hissiyotlar",word:"guilty",level:"B1"},
+  {id:104,topic:"Hissiyotlar",word:"nostalgic",level:"C1"},
+  {id:105,topic:"Hissiyotlar",word:"confident",level:"B1"},
+  {id:106,topic:"Hissiyotlar",word:"jealous",level:"B1"},
+  {id:107,topic:"Hissiyotlar",word:"content",level:"B2"},
+  {id:108,topic:"Hissiyotlar",word:"grief",level:"B2"},
+  {id:109,topic:"Hissiyotlar",word:"embarrassed",level:"B1"},
+  {id:110,topic:"Hissiyotlar",word:"optimistic",level:"B1"},
+  {id:111,topic:"Hissiyotlar",word:"desperate",level:"B2"},
+  {id:112,topic:"Hissiyotlar",word:"sympathetic",level:"B2"},
+  {id:113,topic:"Hissiyotlar",word:"indifferent",level:"C1"},
+  {id:114,topic:"Hissiyotlar",word:"enthusiastic",level:"B1"},
+  {id:115,topic:"Hissiyotlar",word:"furious",level:"B2"},
+  {id:116,topic:"Munosabatlar",word:"compromise",level:"B1"},
+  {id:117,topic:"Munosabatlar",word:"reconcile",level:"C1"},
+  {id:118,topic:"Munosabatlar",word:"sibling",level:"A2"},
+  {id:119,topic:"Munosabatlar",word:"loyalty",level:"B2"},
+  {id:120,topic:"Munosabatlar",word:"trust",level:"A2"},
+  {id:121,topic:"Munosabatlar",word:"supportive",level:"B1"},
+  {id:122,topic:"Munosabatlar",word:"affection",level:"B2"},
+  {id:123,topic:"Munosabatlar",word:"divorce",level:"B1"},
+  {id:124,topic:"Munosabatlar",word:"mutual",level:"B2"},
+  {id:125,topic:"Munosabatlar",word:"argue",level:"A2"},
+  {id:126,topic:"Munosabatlar",word:"bond",level:"B2"},
+  {id:127,topic:"Munosabatlar",word:"estranged",level:"C1"},
+  {id:128,topic:"Munosabatlar",word:"cherish",level:"B2"},
+  {id:129,topic:"Munosabatlar",word:"breakup",level:"B1"},
+  {id:130,topic:"Munosabatlar",word:"mentor",level:"B2"},
+  {id:131,topic:"Munosabatlar",word:"acquaintance",level:"B2"},
+  {id:132,topic:"Munosabatlar",word:"relative",level:"A2"},
+  {id:133,topic:"Munosabatlar",word:"rivalry",level:"B2"},
+  {id:134,topic:"Munosabatlar",word:"commitment",level:"B2"},
+  {id:135,topic:"Munosabatlar",word:"guardian",level:"B2"},
+  {id:136,topic:"Texnologiya",word:"algorithm",level:"B2"},
+  {id:137,topic:"Texnologiya",word:"bandwidth",level:"C1"},
+  {id:138,topic:"Texnologiya",word:"encryption",level:"C1"},
+  {id:139,topic:"Texnologiya",word:"interface",level:"B2"},
+  {id:140,topic:"Texnologiya",word:"cloud computing",level:"B2"},
+  {id:141,topic:"Texnologiya",word:"artificial intelligence",level:"B2"},
+  {id:142,topic:"Texnologiya",word:"cybersecurity",level:"C1"},
+  {id:143,topic:"Texnologiya",word:"database",level:"B2"},
+  {id:144,topic:"Texnologiya",word:"virtual reality",level:"B2"},
+  {id:145,topic:"Texnologiya",word:"automation",level:"B2"},
+  {id:146,topic:"Texnologiya",word:"software",level:"A2"},
+  {id:147,topic:"Texnologiya",word:"hardware",level:"A2"},
+  {id:148,topic:"Texnologiya",word:"prototype",level:"B2"},
+  {id:149,topic:"Texnologiya",word:"malware",level:"C1"},
+  {id:150,topic:"Texnologiya",word:"streaming",level:"B1"},
+  {id:151,topic:"Texnologiya",word:"renewable energy",level:"B2"},
+  {id:152,topic:"Texnologiya",word:"semiconductor",level:"C1"},
+  {id:153,topic:"Texnologiya",word:"pixel",level:"B1"},
+  {id:154,topic:"Texnologiya",word:"update",level:"A2"},
+  {id:155,topic:"Texnologiya",word:"blockchain",level:"C1"},
+  {id:156,topic:"Texnologiya",word:"debug",level:"B2"},
+  {id:157,topic:"Texnologiya",word:"router",level:"B1"},
+  {id:158,topic:"Texnologiya",word:"sensor",level:"B2"},
+  {id:159,topic:"Texnologiya",word:"subscription",level:"B1"},
+  {id:160,topic:"Texnologiya",word:"innovation",level:"B2"},
+  {id:161,topic:"Atrof-muhit",word:"sustainability",level:"B2"},
+  {id:162,topic:"Atrof-muhit",word:"carbon footprint",level:"B2"},
+  {id:163,topic:"Atrof-muhit",word:"deforestation",level:"B2"},
+  {id:164,topic:"Atrof-muhit",word:"biodiversity",level:"C1"},
+  {id:165,topic:"Atrof-muhit",word:"ecosystem",level:"B2"},
+  {id:166,topic:"Atrof-muhit",word:"emission",level:"B2"},
+  {id:167,topic:"Atrof-muhit",word:"drought",level:"B2"},
+  {id:168,topic:"Atrof-muhit",word:"pollution",level:"B1"},
+  {id:169,topic:"Atrof-muhit",word:"recycle",level:"A2"},
+  {id:170,topic:"Atrof-muhit",word:"fossil fuel",level:"B2"},
+  {id:171,topic:"Atrof-muhit",word:"global warming",level:"B1"},
+  {id:172,topic:"Atrof-muhit",word:"habitat",level:"B2"},
+  {id:173,topic:"Atrof-muhit",word:"erosion",level:"C1"},
+  {id:174,topic:"Atrof-muhit",word:"renewable",level:"B2"},
+  {id:175,topic:"Atrof-muhit",word:"endangered",level:"B2"},
+  {id:176,topic:"Atrof-muhit",word:"contamination",level:"C1"},
+  {id:177,topic:"Atrof-muhit",word:"conservation",level:"B2"},
+  {id:178,topic:"Atrof-muhit",word:"flood",level:"B1"},
+  {id:179,topic:"Atrof-muhit",word:"glacier",level:"B2"},
+  {id:180,topic:"Atrof-muhit",word:"compost",level:"B2"},
+  {id:181,topic:"Atrof-muhit",word:"ozone layer",level:"B1"},
+  {id:182,topic:"Atrof-muhit",word:"toxic",level:"B2"},
+  {id:183,topic:"Atrof-muhit",word:"landfill",level:"B2"},
+  {id:184,topic:"Atrof-muhit",word:"tide",level:"B2"},
+  {id:185,topic:"Atrof-muhit",word:"urban sprawl",level:"C1"},
+  {id:186,topic:"Ovqat",word:"cuisine",level:"B1"},
+  {id:187,topic:"Ovqat",word:"ingredients",level:"A2"},
+  {id:188,topic:"Ovqat",word:"recipe",level:"A2"},
+  {id:189,topic:"Ovqat",word:"seasoning",level:"B1"},
+  {id:190,topic:"Ovqat",word:"fermentation",level:"C1"},
+  {id:191,topic:"Ovqat",word:"portion",level:"B1"},
+  {id:192,topic:"Ovqat",word:"dietary",level:"B2"},
+  {id:193,topic:"Ovqat",word:"marinate",level:"B2"},
+  {id:194,topic:"Ovqat",word:"organic",level:"B1"},
+  {id:195,topic:"Ovqat",word:"calorie",level:"B1"},
+  {id:196,topic:"Ovqat",word:"buffet",level:"B1"},
+  {id:197,topic:"Ovqat",word:"vegetarian",level:"A2"},
+  {id:198,topic:"Ovqat",word:"gluten",level:"B2"},
+  {id:199,topic:"Ovqat",word:"garnish",level:"B2"},
+  {id:200,topic:"Ovqat",word:"protein",level:"B1"},
+];
+
+// ─── HELPERS ────────────────────────────────────────────────
+function todayStr(){
+  var d = new Date();
+  return d.getFullYear()+'-'+(d.getMonth()+1).toString().padStart(2,'0')+'-'+d.getDate().toString().padStart(2,'0');
+}
+function dateStr(d){
+  return d.getFullYear()+'-'+(d.getMonth()+1).toString().padStart(2,'0')+'-'+d.getDate().toString().padStart(2,'0');
+}
+function dayName(i){ return ['Du','Se','Ch','Pa','Ju','Sh','Ya'][i]; }
+
+// ─── MAIN ────────────────────────────────────────────────────
+firebase.auth().onAuthStateChanged(function(user){
+  if(!user){ location.href='login.html'; return; }
+
+  db.collection('users').doc(user.uid).get().then(function(doc){
+    document.getElementById('loader').style.display='none';
+
+    var data = doc.exists ? doc.data() : {};
+    var learnedIds  = data.learned  || [];
+    var bookmarks   = data.bookmarks || [];
+    var activityLog = data.activityLog || {}; // { "2025-01-15": 5, ... }
+
+    // ── COMPUTE STATS ──────────────────────────────────────
+    var totalLearned = learnedIds.length;
+    var totalWords   = ALL_WORDS.length;
+
+    // Bugungi o'rganilganlar
+    var today = todayStr();
+    var todayCount = activityLog[today] || 0;
+
+    // Haftalik (oxirgi 7 kun)
+    var weekDays = [];
+    var weekTotal = 0;
+    for(var i=6;i>=0;i--){
+      var d = new Date(); d.setDate(d.getDate()-i);
+      var ds = dateStr(d);
+      var cnt = activityLog[ds]||0;
+      weekDays.push({date:ds, count:cnt, dayIdx:d.getDay(), isToday:ds===today});
+      weekTotal += cnt;
+    }
+
+    // Oylik (oxirgi 30 kun)
+    var monthTotal = 0;
+    for(var i=0;i<30;i++){
+      var d = new Date(); d.setDate(d.getDate()-i);
+      monthTotal += activityLog[dateStr(d)]||0;
+    }
+
+    // Necha kun kirdi / kirmadi (oxirgi 28 kun - 4 hafta)
+    var calDays = [];
+    for(var i=27;i>=0;i--){
+      var d = new Date(); d.setDate(d.getDate()-i);
+      var ds = dateStr(d);
+      calDays.push({ds:ds, count:activityLog[ds]||0, dayIdx:d.getDay(), isToday:ds===today});
+    }
+    var activeDays   = calDays.filter(function(x){ return x.count>0; }).length;
+    var inactiveDays = 28 - activeDays;
+
+    // Streak
+    var streak = 0;
+    for(var i=0;i<60;i++){
+      var d = new Date(); d.setDate(d.getDate()-i);
+      var ds = dateStr(d);
+      if(activityLog[ds] && activityLog[ds]>0) streak++;
+      else if(i>0) break;
+    }
+    var maxStreak = data.maxStreak || streak;
+    if(streak > maxStreak){
+      maxStreak = streak;
+      db.collection('users').doc(user.uid).update({maxStreak: maxStreak}).catch(function(){});
+    }
+
+    // Level breakdown
+    var levelMap = {A2:0,B1:0,B2:0,C1:0};
+    learnedIds.forEach(function(lid){
+      var w = ALL_WORDS.find(function(x){ return String(x.id)===String(lid)||x.id===lid; });
+      if(w && levelMap[w.level]!==undefined) levelMap[w.level]++;
+    });
+
+    // Topic breakdown
+    var topicMap = {};
+    learnedIds.forEach(function(lid){
+      var w = ALL_WORDS.find(function(x){ return String(x.id)===String(lid)||x.id===lid; });
+      if(w){ topicMap[w.topic] = (topicMap[w.topic]||0)+1; }
+    });
+    var topicArr = Object.keys(topicMap).map(function(k){ return {name:k,count:topicMap[k]}; });
+    topicArr.sort(function(a,b){ return b.count-a.count; });
+
+    // ── BUILD UI ───────────────────────────────────────────
+    var maxWeek = Math.max.apply(null, weekDays.map(function(x){ return x.count; })) || 1;
+
+    // Calendar first weekday offset
+    var firstDay = calDays[0];
+    var startOffset = firstDay.dayIdx === 0 ? 6 : firstDay.dayIdx - 1; // Monday=0
+
+    var calHtml = '';
+    // Day names
+    ['Du','Se','Ch','Pa','Ju','Sh','Ya'].forEach(function(n){
+      calHtml += '<div class="cal-day-name">'+n+'</div>';
+    });
+    // Empty cells
+    for(var i=0;i<startOffset;i++) calHtml += '<div class="cal-cell empty"></div>';
+    // Actual days
+    calDays.forEach(function(day){
+      var cls = 'cal-cell ';
+      if(day.isToday) cls += 'today';
+      else if(day.count > 0) cls += 'active';
+      else cls += 'none';
+      calHtml += '<div class="'+cls+'" title="'+day.ds+': '+day.count+' so\'z">'+day.count+'</div>';
+    });
+
+    var barHtml = '';
+    var maxBarH = 80;
+    weekDays.forEach(function(wd){
+      var h = wd.count>0 ? Math.max(6, Math.round(wd.count/maxWeek*maxBarH)) : 4;
+      var isZero = wd.count===0;
+      barHtml += '<div class="bar-col">'+
+        '<div class="bar-val">'+(wd.count>0?wd.count:'')+'</div>'+
+        '<div class="bar-fill'+(wd.isToday?' today-bar':'')+(isZero?' zero':'')+'" style="height:'+h+'px"></div>'+
+        '<div class="bar-day">'+['Ya','Du','Se','Ch','Pa','Ju','Sh'][wd.dayIdx]+'</div>'+
+      '</div>';
+    });
+
+    var maxLevel = Math.max(levelMap.A2,levelMap.B1,levelMap.B2,levelMap.C1,1);
+    function lvlPct(v){ return Math.round(v/maxLevel*100); }
+
+    var html = '';
+
+    // HERO
+    html += '<div class="hero-card">'+
+      '<div class="hero-label">Jami o\'rganilgan so\'zlar</div>'+
+      '<div class="hero-number">'+totalLearned+'</div>'+
+      '<div class="hero-sub">'+totalWords+' ta so\'zdan '+Math.round(totalLearned/totalWords*100)+'% o\'zlashtirildi</div>'+
+      '<div class="hero-row">'+
+        '<div class="hero-stat"><div class="hero-stat-val">'+todayCount+'</div><div class="hero-stat-label">Bugun</div></div>'+
+        '<div class="hero-stat"><div class="hero-stat-val">'+weekTotal+'</div><div class="hero-stat-label">Bu hafta</div></div>'+
+        '<div class="hero-stat"><div class="hero-stat-val">'+monthTotal+'</div><div class="hero-stat-label">Bu oy</div></div>'+
+      '</div>'+
+    '</div>';
+
+    // QUICK STATS
+    html += '<div class="sec-title">Qisqacha ma\'lumot</div>';
+    html += '<div class="stat-grid">'+
+      '<div class="stat-card"><div class="stat-card-icon" style="background:#FEF3C7;font-size:1.3rem">🔥</div>'+
+        '<div class="stat-card-val">'+streak+'</div><div class="stat-card-label">Kunlik zanjir (streak)</div></div>'+
+      '<div class="stat-card"><div class="stat-card-icon" style="background:#DCFCE7;font-size:1.3rem">🏆</div>'+
+        '<div class="stat-card-val">'+maxStreak+'</div><div class="stat-card-label">Eng uzun zanjir</div></div>'+
+      '<div class="stat-card"><div class="stat-card-icon" style="background:#E0F2FE;font-size:1.3rem">✅</div>'+
+        '<div class="stat-card-val">'+activeDays+'</div><div class="stat-card-label">Kirgan kunlar (28)</div></div>'+
+      '<div class="stat-card"><div class="stat-card-icon" style="background:#FEE2E2;font-size:1.3rem">😴</div>'+
+        '<div class="stat-card-val">'+inactiveDays+'</div><div class="stat-card-label">Kirmagan kunlar (28)</div></div>'+
+    '</div>';
+
+    // WEEKLY CHART
+    html += '<div class="sec-title">Haftalik faollik</div>';
+    html += '<div class="chart-card"><div class="chart-title">Oxirgi 7 kun</div>'+
+      '<div class="bar-chart">'+barHtml+'</div>'+
+    '</div>';
+
+    // CALENDAR
+    html += '<div class="sec-title">Oylik ko\'rinish</div>';
+    html += '<div class="streak-card">'+
+      '<div class="streak-header">'+
+        '<div class="streak-title">Oxirgi 28 kun</div>'+
+        '<div class="streak-badge">🔥 '+streak+' kun</div>'+
+      '</div>'+
+      '<div class="cal-grid">'+calHtml+'</div>'+
+      '<div class="cal-legend">'+
+        '<div class="cal-legend-item"><div class="cal-legend-dot" style="background:#1DA1F2"></div>Faol kun</div>'+
+        '<div class="cal-legend-item"><div class="cal-legend-dot" style="background:#1565C0"></div>Bugun</div>'+
+        '<div class="cal-legend-item"><div class="cal-legend-dot" style="background:#F1F5F9"></div>Kirmagan</div>'+
+      '</div>'+
+    '</div>';
+
+    // LEVELS
+    if(totalLearned > 0){
+      html += '<div class="sec-title">Daraja bo\'yicha</div>';
+      html += '<div class="level-card"><div class="level-title">O\'rganilgan so\'zlar darajasi</div>';
+      [['A2','a2'],['B1','b1'],['B2','b2'],['C1','c1']].forEach(function(pair){
+        var lv=pair[0],cls=pair[1];
+        var cnt = levelMap[lv]||0;
+        html += '<div class="level-row">'+
+          '<span class="level-badge '+cls+'">'+lv+'</span>'+
+          '<div class="level-bar-wrap"><div class="level-bar-fill '+cls+'" style="width:'+lvlPct(cnt)+'%"></div></div>'+
+          '<span class="level-count">'+cnt+'</span>'+
+        '</div>';
+      });
+      html += '</div>';
+    }
+
+    // TOPICS
+    if(topicArr.length > 0){
+      html += '<div class="sec-title">Mavzu bo\'yicha</div>';
+      html += '<div class="topic-card"><div class="topic-title">O\'rganilgan mavzular</div>';
+      topicArr.forEach(function(t){
+        html += '<div class="topic-row">'+
+          '<span class="topic-name">'+t.name+'</span>'+
+          '<span class="topic-count">'+t.count+' so\'z</span>'+
+        '</div>';
+      });
+      html += '</div>';
+    }
+
+    if(totalLearned === 0){
+      html += '<div class="empty-state">'+
+        '<div class="empty-state-emoji">📚</div>'+
+        '<div class="empty-state-title">Hali so\'z o\'rganilmagan</div>'+
+        '<div class="empty-state-sub">So\'zlar ro\'yxatida "Urgandim" tugmasini bosib boshlang!</div>'+
+      '</div>';
+    }
+
+    document.getElementById('mainContent').innerHTML = html;
+
+  }).catch(function(err){
+    document.getElementById('loader').style.display='none';
+    document.getElementById('mainContent').innerHTML=
+      '<div class="empty-state"><div class="empty-state-emoji">⚠️</div>'+
+      '<div class="empty-state-title">Xatolik yuz berdi</div>'+
+      '<div class="empty-state-sub">Internet aloqasini tekshiring va qayta urinib ko\'ring.</div></div>';
+  });
+});
+</script>
+</body>
+</html>
