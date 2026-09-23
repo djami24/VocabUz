@@ -749,7 +749,7 @@ function startTest(){
   testCorrect = 0;
   testAnswered= false;
 
-  document.getElementById('testTitle').textContent = TOPIC_EMOJI[topic]+' '+topic+' testi';
+  document.getElementById('testTitle').textContent = topic+' testi';
   document.getElementById('viewTest').classList.add('open');
   renderTestQuestion();
 }
@@ -790,7 +790,7 @@ function renderTestQuestion(){
     <div class="test-question">
       <div class="test-q-label">Tarjimasini tanlang</div>
       <div class="test-q-word">${w.word}</div>
-      <div class="test-q-topic">${TOPIC_EMOJI[w.topic]||''} ${w.topic} · ${w.level}</div>
+      <div class="test-q-topic">${w.topic} · ${w.level}</div>
     </div>
     <div class="test-error-info">
       Xato: ${errDots}
@@ -798,7 +798,7 @@ function renderTestQuestion(){
     </div>
     <div class="test-options">${optsHtml}</div>
     <button class="test-next-btn" id="testNextBtn" onclick="nextQuestion()">
-      ${testIdx+1<testWords.length ? 'Keyingi savol →' : 'Natijani ko\'rish'}
+      ${testIdx+1<testWords.length ? 'Keyingi savol' : 'Natijani ko\'rish'}
     </button>`;
 }
 
