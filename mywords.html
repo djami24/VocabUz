@@ -264,7 +264,7 @@ html,body{
 }
 .bottom-nav-item.is-active{color:var(--blue);}
 
-/* ── MODAL (flash card) ── */
+/* ── WORD DETAIL MODAL ── */
 .modal-overlay{
   position:fixed;inset:0;background:rgba(26,26,46,.55);
   z-index:400;display:flex;align-items:flex-end;
@@ -303,6 +303,151 @@ html,body{
 .flash-btn:active{opacity:.8;}
 .flash-btn.speak{background:var(--blue-light);color:var(--blue);}
 .flash-btn.close-btn{background:var(--bg);color:var(--ink-mid);}
+
+/* ── FLASHCARD FULLSCREEN ── */
+.fc-screen{
+  position:fixed;inset:0;z-index:500;
+  background:var(--bg);
+  display:none;flex-direction:column;
+}
+.fc-screen.open{display:flex;}
+
+.fc-topbar{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;background:var(--white);
+  box-shadow:var(--shadow-sm);
+}
+.fc-close{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--bg);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--ink-mid);flex-shrink:0;
+}
+.fc-title{font-size:.95rem;font-weight:700;flex:1;}
+.fc-progress-text{font-size:.82rem;font-weight:600;color:var(--blue);}
+
+.fc-progress-bar{
+  height:4px;background:var(--blue-mid);
+}
+.fc-progress-fill{
+  height:100%;background:var(--blue);
+  transition:width .3s ease;
+}
+
+.fc-body{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:24px 20px;
+}
+
+/* Flip card */
+.fc-card-wrap{
+  width:100%;max-width:360px;
+  perspective:1000px;
+  cursor:pointer;
+  margin-bottom:28px;
+}
+.fc-card{
+  width:100%;height:220px;
+  position:relative;
+  transform-style:preserve-3d;
+  transition:transform .45s cubic-bezier(.4,0,.2,1);
+  border-radius:24px;
+}
+.fc-card.flipped{transform:rotateY(180deg);}
+.fc-face{
+  position:absolute;inset:0;
+  border-radius:24px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:24px;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+}
+.fc-front{
+  background:linear-gradient(135deg,#1565C0,var(--blue));
+  color:#fff;
+}
+.fc-back{
+  background:var(--white);
+  box-shadow:var(--shadow-md);
+  transform:rotateY(180deg);
+}
+.fc-front-word{
+  font-size:2rem;font-weight:800;
+  margin-bottom:8px;text-align:center;
+}
+.fc-front-hint{
+  font-size:.82rem;opacity:.75;
+}
+.fc-back-uz{
+  font-size:1.3rem;font-weight:700;
+  color:var(--ink);text-align:center;
+  margin-bottom:8px;
+}
+.fc-back-level{
+  display:inline-block;
+  background:var(--blue-light);color:var(--blue);
+  font-size:.72rem;font-weight:700;
+  padding:3px 10px;border-radius:8px;
+  margin-bottom:12px;
+}
+.fc-back-example{
+  font-size:.82rem;font-style:italic;
+  color:var(--ink-mid);text-align:center;
+  line-height:1.5;
+}
+
+/* Tap hint */
+.fc-tap-hint{
+  font-size:.8rem;color:var(--ink-soft);
+  margin-bottom:20px;
+  display:flex;align-items:center;gap:5px;
+}
+
+/* Bottom buttons */
+.fc-btns{
+  display:flex;gap:12px;width:100%;max-width:360px;
+}
+.fc-btn{
+  flex:1;height:54px;border-radius:16px;border:none;cursor:pointer;
+  font-family:inherit;font-size:.88rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:transform .1s,opacity .15s;
+}
+.fc-btn:active{transform:scale(.96);}
+.fc-btn.again{background:#FFEBEE;color:var(--red);}
+.fc-btn.good{background:#E8F5E9;color:#2E7D32;}
+.fc-btn.skip{background:var(--bg);color:var(--ink-soft);}
+
+/* Result screen */
+.fc-result{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:32px 24px;text-align:center;gap:12px;
+}
+.fc-result-emoji{font-size:4rem;margin-bottom:8px;}
+.fc-result-title{font-size:1.3rem;font-weight:800;color:var(--ink);}
+.fc-result-sub{font-size:.9rem;color:var(--ink-mid);line-height:1.5;max-width:260px;}
+.fc-result-stats{
+  display:flex;gap:16px;margin:16px 0;
+}
+.fc-stat{
+  flex:1;background:var(--white);border-radius:16px;
+  padding:14px 12px;box-shadow:var(--shadow-sm);
+}
+.fc-stat-val{font-size:1.4rem;font-weight:800;color:var(--blue);}
+.fc-stat-val.red{color:var(--red);}
+.fc-stat-val.green{color:#2E7D32;}
+.fc-stat-label{font-size:.75rem;color:var(--ink-soft);margin-top:2px;}
+.fc-result-btn{
+  width:100%;max-width:300px;
+  height:52px;border-radius:16px;border:none;cursor:pointer;
+  font-family:inherit;font-size:1rem;font-weight:700;
+  color:#fff;background:var(--blue);
+  box-shadow:0 4px 14px rgba(33,150,243,.3);
+  margin-top:8px;
+}
 </style>
 </head>
 <body>
@@ -363,7 +508,7 @@ html,body{
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- FLASH CARD MODAL -->
+<!-- WORD DETAIL MODAL -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
@@ -378,6 +523,77 @@ html,body{
       </button>
       <button class="flash-btn close-btn" onclick="closeModal()">Yopish</button>
     </div>
+  </div>
+</div>
+
+<!-- ══════ FLASHCARD FULLSCREEN ══════ -->
+<div class="fc-screen" id="fcScreen">
+  <!-- Top bar -->
+  <div class="fc-topbar">
+    <button class="fc-close" onclick="closeFlashcards()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <span class="fc-title" id="fcTitle">Flashcard</span>
+    <span class="fc-progress-text" id="fcProgressText">1 / 1</span>
+  </div>
+  <div class="fc-progress-bar"><div class="fc-progress-fill" id="fcProgressFill" style="width:0%"></div></div>
+
+  <!-- Card area -->
+  <div class="fc-body" id="fcBody">
+    <div class="fc-tap-hint" id="fcHint">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="M12 8v4l3 3"/></svg>
+      Kartochkani bosib o'girib ko'ring
+    </div>
+    <div class="fc-card-wrap" onclick="flipCard()">
+      <div class="fc-card" id="fcCard">
+        <div class="fc-face fc-front">
+          <div class="fc-front-word" id="fcWord">—</div>
+          <div class="fc-front-hint">So'zni eslab ko'ring…</div>
+        </div>
+        <div class="fc-face fc-back">
+          <div class="fc-back-uz" id="fcUz">—</div>
+          <div class="fc-back-level" id="fcLevel">B1</div>
+          <div class="fc-back-example" id="fcExample">—</div>
+        </div>
+      </div>
+    </div>
+    <div class="fc-btns" id="fcBtns">
+      <button class="fc-btn again" onclick="fcAnswer('again')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.16"/></svg>
+        Qayta
+      </button>
+      <button class="fc-btn skip" onclick="fcAnswer('skip')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        O'tkazib
+      </button>
+      <button class="fc-btn good" onclick="fcAnswer('good')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Bildim!
+      </button>
+    </div>
+  </div>
+
+  <!-- Result screen (hidden initially) -->
+  <div class="fc-result" id="fcResult" style="display:none">
+    <div class="fc-result-emoji" id="fcResultEmoji">🎉</div>
+    <div class="fc-result-title" id="fcResultTitle">Barakalla!</div>
+    <div class="fc-result-sub" id="fcResultSub">Barcha so'zlarni ko'rib chiqdingiz</div>
+    <div class="fc-result-stats">
+      <div class="fc-stat">
+        <div class="fc-stat-val green" id="fcGoodCount">0</div>
+        <div class="fc-stat-label">Bildim ✓</div>
+      </div>
+      <div class="fc-stat">
+        <div class="fc-stat-val red" id="fcAgainCount">0</div>
+        <div class="fc-stat-label">Qayta 🔁</div>
+      </div>
+      <div class="fc-stat">
+        <div class="fc-stat-val" id="fcSkipCount">0</div>
+        <div class="fc-stat-label">O'tkazib ›</div>
+      </div>
+    </div>
+    <button class="fc-result-btn" onclick="restartFlashcards()">🔄 Qaytadan boshlash</button>
+    <button class="fc-result-btn" style="background:var(--bg);color:var(--ink-mid);box-shadow:none;margin-top:8px;" onclick="closeFlashcards()">Yopish</button>
   </div>
 </div>
 
@@ -666,11 +882,11 @@ function render(){
   // Quiz banner — only for bookmarks
   if(activeTab === 'bookmark' && list.length > 0){
     html += `
-    <div class="quiz-banner" onclick="showToast('🚀 Quiz tez kunda qo\'shiladi!')">
+    <div class="quiz-banner" onclick="openFlashcards()">
       <div class="quiz-banner-icon">🧠</div>
       <div>
         <div class="quiz-banner-title">Flashcard bilan yodla</div>
-        <div class="quiz-banner-sub">${list.length} ta so'z • Tez test rejimi</div>
+        <div class="quiz-banner-sub">${list.length} ta so'z • Bosing va boshlang!</div>
       </div>
       <svg class="quiz-banner-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
     </div>`;
@@ -795,6 +1011,117 @@ document.getElementById('searchInput').addEventListener('input', function(){
   searchQ = this.value.trim();
   render();
 });
+
+// ═══════════════════════════════════════════════════════════
+//  FLASHCARD ENGINE
+// ═══════════════════════════════════════════════════════════
+let fcWords    = [];
+let fcIndex    = 0;
+let fcFlipped  = false;
+let fcGood     = 0;
+let fcAgain    = 0;
+let fcSkip     = 0;
+
+function openFlashcards(){
+  const ids = bookmarks;
+  fcWords = ALL_WORDS.filter(w => ids.includes(w.id));
+  if(!fcWords.length){ showToast('Hali yodlash ro\'yxati bo\'sh!'); return; }
+  // shuffle
+  fcWords = fcWords.slice().sort(()=>Math.random()-.5);
+  fcIndex  = 0;
+  fcGood   = 0;
+  fcAgain  = 0;
+  fcSkip   = 0;
+
+  document.getElementById('fcScreen').classList.add('open');
+  document.getElementById('fcResult').style.display = 'none';
+  document.getElementById('fcBody').style.display   = 'flex';
+  showFcCard();
+}
+
+function showFcCard(){
+  const w = fcWords[fcIndex];
+  if(!w) return;
+
+  // reset flip
+  fcFlipped = false;
+  const card = document.getElementById('fcCard');
+  card.classList.remove('flipped');
+
+  document.getElementById('fcWord').textContent    = w.word;
+  document.getElementById('fcUz').textContent      = w.uz;
+  document.getElementById('fcLevel').textContent   = w.level + ' · ' + w.topic;
+  document.getElementById('fcExample').textContent = w.example || '';
+
+  const total = fcWords.length;
+  const cur   = fcIndex + 1;
+  document.getElementById('fcProgressText').textContent = cur + ' / ' + total;
+  document.getElementById('fcProgressFill').style.width = (cur / total * 100) + '%';
+  document.getElementById('fcTitle').textContent = 'Flashcard • ' + w.topic;
+  document.getElementById('fcHint').style.display = 'flex';
+}
+
+function flipCard(){
+  fcFlipped = !fcFlipped;
+  document.getElementById('fcCard').classList.toggle('flipped', fcFlipped);
+  if(fcFlipped){
+    document.getElementById('fcHint').style.display = 'none';
+    // speak automatically on flip
+    speakWord(fcWords[fcIndex].word);
+  }
+}
+
+function fcAnswer(type){
+  if(!fcFlipped){
+    // must flip first
+    flipCard();
+    showToast('Avval kartochkani aylantiring 👆');
+    return;
+  }
+  if(type==='good')  fcGood++;
+  if(type==='again') fcAgain++;
+  if(type==='skip')  fcSkip++;
+
+  fcIndex++;
+  if(fcIndex >= fcWords.length){
+    showFcResult();
+  } else {
+    showFcCard();
+  }
+}
+
+function showFcResult(){
+  document.getElementById('fcBody').style.display   = 'none';
+  document.getElementById('fcResult').style.display = 'flex';
+
+  const total = fcWords.length;
+  const pct   = Math.round(fcGood / total * 100);
+  let emoji = '🎉', title = 'Barakalla!';
+  if(pct === 100){ emoji='🏆'; title='Mukammal natija!'; }
+  else if(pct >= 70){ emoji='🎉'; title='Yaxshi natija!'; }
+  else if(pct >= 40){ emoji='💪'; title='Davom eting!'; }
+  else { emoji='📚'; title='Ko\'proq mashq kerak'; }
+
+  document.getElementById('fcResultEmoji').textContent  = emoji;
+  document.getElementById('fcResultTitle').textContent  = title;
+  document.getElementById('fcResultSub').textContent    = `${total} ta so'zdan ${fcGood} tasini bildingiz (${pct}%)`;
+  document.getElementById('fcGoodCount').textContent    = fcGood;
+  document.getElementById('fcAgainCount').textContent   = fcAgain;
+  document.getElementById('fcSkipCount').textContent    = fcSkip;
+  document.getElementById('fcProgressFill').style.width = '100%';
+}
+
+function restartFlashcards(){
+  fcWords = fcWords.sort(()=>Math.random()-.5);
+  fcIndex = fcGood = fcAgain = fcSkip = 0;
+  document.getElementById('fcResult').style.display = 'none';
+  document.getElementById('fcBody').style.display   = 'flex';
+  showFcCard();
+}
+
+function closeFlashcards(){
+  document.getElementById('fcScreen').classList.remove('open');
+}
 
 // ═══════════════════════════════════════════════════════════
 //  INIT — check URL param
