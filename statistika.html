@@ -210,7 +210,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;}
   text-align:center;padding:48px 20px;
   color:var(--ink-soft);
 }
-.empty-state-emoji{font-size:3rem;margin-bottom:12px;}
+.empty-state-icon{margin-bottom:16px;display:flex;align-items:center;justify-content:center;}
 .empty-state-title{font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:6px;}
 .empty-state-sub{font-size:.85rem;line-height:1.5;}
 </style>
@@ -608,13 +608,13 @@ firebase.auth().onAuthStateChanged(function(user){
     // QUICK STATS
     html += '<div class="sec-title">Qisqacha ma\'lumot</div>';
     html += '<div class="stat-grid">'+
-      '<div class="stat-card"><div class="stat-card-icon" style="background:#FEF3C7;font-size:1.3rem">🔥</div>'+
+      '<div class="stat-card"><div class="stat-card-icon" style="background:#FEF3C7"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c0 0-5 4.5-5 9a5 5 0 0 0 10 0c0-4.5-5-9-5-9z"/><path d="M12 2c0 0 2 3 2 6.5a2 2 0 0 1-4 0C10 5 12 2 12 2z" fill="#F59E0B" stroke="none"/><path d="M8.5 14.5c0 0 .5 2.5 3.5 2.5s3.5-2.5 3.5-2.5" stroke="#F59E0B"/></svg></div>'+
         '<div class="stat-card-val">'+streak+'</div><div class="stat-card-label">Kunlik zanjir (streak)</div></div>'+
-      '<div class="stat-card"><div class="stat-card-icon" style="background:#DCFCE7;font-size:1.3rem">🏆</div>'+
+      '<div class="stat-card"><div class="stat-card-icon" style="background:#DCFCE7"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4a2 2 0 0 1-2-2V5h4"/><path d="M18 9h2a2 2 0 0 0 2-2V5h-4"/><path d="M8 21h8"/><path d="M12 17v4"/><path d="M6 3h12v8a6 6 0 0 1-12 0V3z"/></svg></div>'+
         '<div class="stat-card-val">'+maxStreak+'</div><div class="stat-card-label">Eng uzun zanjir</div></div>'+
-      '<div class="stat-card"><div class="stat-card-icon" style="background:#E0F2FE;font-size:1.3rem">✅</div>'+
+      '<div class="stat-card"><div class="stat-card-icon" style="background:#E0F2FE"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1DA1F2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>'+
         '<div class="stat-card-val">'+activeDays+'</div><div class="stat-card-label">Kirgan kunlar (28)</div></div>'+
-      '<div class="stat-card"><div class="stat-card-icon" style="background:#FEE2E2;font-size:1.3rem">😴</div>'+
+      '<div class="stat-card"><div class="stat-card-icon" style="background:#FEE2E2"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></div>'+
         '<div class="stat-card-val">'+inactiveDays+'</div><div class="stat-card-label">Kirmagan kunlar (28)</div></div>'+
     '</div>';
 
@@ -629,7 +629,7 @@ firebase.auth().onAuthStateChanged(function(user){
     html += '<div class="streak-card">'+
       '<div class="streak-header">'+
         '<div class="streak-title">Oxirgi 28 kun</div>'+
-        '<div class="streak-badge">🔥 '+streak+' kun</div>'+
+        '<div class="streak-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c0 0-5 4.5-5 9a5 5 0 0 0 10 0c0-4.5-5-9-5-9z"/><path d="M12 2c0 0 2 3 2 6.5a2 2 0 0 1-4 0C10 5 12 2 12 2z" fill="#F59E0B" stroke="none"/></svg> '+streak+' kun</div>'+
       '</div>'+
       '<div class="cal-grid">'+calHtml+'</div>'+
       '<div class="cal-legend">'+
@@ -670,7 +670,7 @@ firebase.auth().onAuthStateChanged(function(user){
 
     if(totalLearned === 0){
       html += '<div class="empty-state">'+
-        '<div class="empty-state-emoji">📚</div>'+
+        '<div class="empty-state-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#8A9BB0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="7" x2="16" y2="7"/><line x1="10" y1="11" x2="16" y2="11"/></svg></div>'+
         '<div class="empty-state-title">Hali so\'z o\'rganilmagan</div>'+
         '<div class="empty-state-sub">So\'zlar ro\'yxatida "Urgandim" tugmasini bosib boshlang!</div>'+
       '</div>';
@@ -681,7 +681,7 @@ firebase.auth().onAuthStateChanged(function(user){
   }).catch(function(err){
     document.getElementById('loader').style.display='none';
     document.getElementById('mainContent').innerHTML=
-      '<div class="empty-state"><div class="empty-state-emoji">⚠️</div>'+
+      '<div class="empty-state"><div class="empty-state-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>'+
       '<div class="empty-state-title">Xatolik yuz berdi</div>'+
       '<div class="empty-state-sub">Internet aloqasini tekshiring va qayta urinib ko\'ring.</div></div>';
   });
