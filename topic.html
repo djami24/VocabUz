@@ -73,7 +73,7 @@ html,body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;co
 /* ══════════════════════════
    VIEW 2: SO'ZLAR RO'YXATI
 ══════════════════════════ */
-#viewWords{display:none;}
+#viewWords{display:none;padding-bottom:calc(var(--bottom-nav-h)+24px);}
 .words-list{padding:0 16px;display:flex;flex-direction:column;gap:10px;}
 .word-card{background:var(--white);border-radius:var(--radius);padding:14px 16px 12px;box-shadow:var(--shadow-sm);transition:box-shadow .15s;}
 .word-card.learned-card{border-left:3px solid var(--green);}
@@ -677,8 +677,7 @@ function renderWords(){
       </div>
     </div>`;
   }).join('');
-  document.getElementById('wordsList').innerHTML = html +
-    '<div style="height:calc(var(--bottom-nav-h)+32px);flex-shrink:0;"></div>';
+  document.getElementById('wordsList').innerHTML = html;
 }
 
 function markLearned(id){
