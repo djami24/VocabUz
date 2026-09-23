@@ -809,12 +809,77 @@ const ALL_WORDS = [
 // ═══════════════════════════════════════════════════════════
 let bookmarks = JSON.parse(localStorage.getItem('vz_bookmarks') || '[]');
 let likes     = JSON.parse(localStorage.getItem('vz_likes')     || '[]');
+let learned   = JSON.parse(localStorage.getItem('vz_learned')   || '[]');
 let activeTab = 'bookmark';
 let searchQ   = '';
 let currentModalWord = null;
+let currentUser = null;
 
 function saveBookmarks(){ localStorage.setItem('vz_bookmarks', JSON.stringify(bookmarks)); }
 function saveLikes(){     localStorage.setItem('vz_likes',     JSON.stringify(likes));     }
+function saveLearned(){   localStorage.setItem('vz_learned',   JSON.stringify(learned));   }
+
+// Firebase auth
+if(typeof firebase !== 'undefined'){
+  firebase.auth().onAuthStateChanged(function(user){
+    if(user){
+      currentUser = user;
+      // Sync from Firestore
+      firebase.firestore().collection('users').doc(user.uid).get().then(function(doc){
+        if(doc.exists){
+          var data = doc.data();
+          if(data.bookmarks){ bookmarks = data.bookmarks; saveBookmarks(); }
+          if(data.likes)    { likes     = data.likes;     saveLikes(); }
+          if(data.learned)  { learned   = data.learned;   saveLearned(); }
+        }
+        render();
+      }).catch(function(){ render(); });
+    } else {
+      render();
+    }
+  });
+}
+
+// Save learned word to Firestore + update activity log
+function markLearned(id){
+  if(learned.includes(id)){
+    learned = learned.filter(function(x){ return x!==id; });
+    saveLearned();
+    if(currentUser){
+      firebase.firestore().collection('users').doc(currentUser.uid).update({
+        learned: learned
+      }).catch(function(){});
+    }
+    showToast('So\'z o\'rganilganlardan olib tashlandi');
+    render();
+    return;
+  }
+  learned.push(id);
+  saveLearned();
+
+  if(currentUser){
+    var today = (function(){
+      var d=new Date();
+      return d.getFullYear()+'-'+(d.getMonth()+1).toString().padStart(2,'0')+'-'+d.getDate().toString().padStart(2,'0');
+    })();
+    var db = firebase.firestore();
+    db.collection('users').doc(currentUser.uid).get().then(function(doc){
+      var log = doc.exists && doc.data().activityLog ? doc.data().activityLog : {};
+      log[today] = (log[today]||0) + 1;
+      return db.collection('users').doc(currentUser.uid).update({
+        learned: learned,
+        activityLog: log
+      });
+    }).catch(function(){
+      db.collection('users').doc(currentUser.uid).set({
+        learned: learned,
+        activityLog: (function(){ var o={}; o[today]=1; return o; })()
+      },{merge:true}).catch(function(){});
+    });
+  }
+  showToast('🎉 Barakalla! So\'z o\'rganildi!');
+  render();
+}
 
 // ═══════════════════════════════════════════════════════════
 //  TAB SWITCH
@@ -916,6 +981,10 @@ function render(){
         </button>
         <button class="action-btn${isL?' liked':''}" id="lk-${w.id}" onclick="toggleLike(${w.id})">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="${isL?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+        <button class="action-btn${learned.includes(w.id)?' action-btn-learned':''}" id="lrn-${w.id}" onclick="markLearned(${w.id})" title="Urgandim" style="${learned.includes(w.id)?'background:#DCFCE7;color:#16A34A;flex:1.5;font-size:.75rem;font-weight:700;gap:4px;':'flex:1.5;font-size:.75rem;font-weight:700;gap:4px;color:var(--ink-soft);background:var(--bg);'}">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="${learned.includes(w.id)?'currentColor':'none'}" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          ${learned.includes(w.id)?'Urgandim ✓':'Urgandim'}
         </button>
         <button class="action-btn remove-btn" onclick="removeWord(${w.id})" title="Olib tashlash">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
