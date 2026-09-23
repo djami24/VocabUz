@@ -1,17 +1,16 @@
 // ============================================================
 //  VocaabUZ — Firebase Configuration
-//  Bu faylni o'zingizning Firebase loyiha ma'lumotlaringiz
-//  bilan to'ldiring.
 //  Firebase Console → Project Settings → Your apps → Web app
+//  Quyidagi qiymatlarni o'zingiznikiga almashtiring
 // ============================================================
 
 const firebaseConfig = {
-  apiKey:            "YOUR_API_KEY",
-  authDomain:        "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId:         "YOUR_PROJECT_ID",
-  storageBucket:     "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId:             "YOUR_APP_ID"
+  apiKey:            "AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+  authDomain:        "loyiha-id.firebaseapp.com",
+  projectId:         "loyiha-id",
+  storageBucket:     "loyiha-id.appspot.com",
+  messagingSenderId: "123456789012",
+  appId:             "1:123456789012:web:abcdef1234567890"
 };
 
 firebase.initializeApp(firebaseConfig);
