@@ -564,7 +564,7 @@ function renderTopics(){
     }
 
     const cardClass = 'topic-card'+(passed?' completed':'')+((!unlocked)?' locked':'');
-    const clickAttr = unlocked ? `onclick="openTopic('${topic}')"` : '';
+    const clickAttr = unlocked ? `onclick="openTopic(TOPIC_ORDER[${TOPIC_ORDER.indexOf(topic)}])"` : '';
 
     html+=`
       <div class="${cardClass}" ${clickAttr}>
