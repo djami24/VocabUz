@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>So'z — VocaabUZ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+.word-hero {
+  background: linear-gradient(135deg, var(--blue) 0%, #0D47A1 100%);
+  border-radius: var(--radius-lg);
+  padding: 28px 22px 24px;
+  margin-bottom: 16px;
+  color: #fff;
+  position: relative;
+}
+.word-hero-badges {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.word-hero-badge {
+  font-size: .72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: rgba(255,255,255,.2);
+  color: #fff;
+}
+.word-hero-badge.level-a1 { background: #22C55E; }
+.word-hero-badge.level-a2 { background: #22C55E; }
+.word-hero-badge.level-b1 { background: #F59E0B; }
+.word-hero-badge.level-b2 { background: #F59E0B; }
+.word-hero-badge.level-c1 { background: #EF4444; }
+.word-hero-badge.level-c2 { background: #EF4444; }
+.word-hero-word {
+  font-size: 2rem;
+  font-weight: 900;
+  line-height: 1.15;
+  margin-bottom: 4px;
+}
+.word-hero-phonetic {
+  font-size: .88rem;
+  opacity: .8;
+  margin-bottom: 14px;
+}
+.word-hero-translation {
+  font-size: 1.1rem;
+  font-weight: 700;
+  background: rgba(255,255,255,.15);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+}
+.word-hero-audio {
+  position: absolute;
+  top: 22px;
+  right: 18px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.18);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: pointer;
+  transition: background .15s;
+}
+.word-hero-audio:active { background: rgba(255,255,255,.3); }
+
+.info-card {
+  background: var(--white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 18px 18px;
+  margin-bottom: 14px;
+}
+.info-card-label {
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--ink-soft);
+  margin-bottom: 8px;
+}
+.info-card-text {
+  font-size: .95rem;
+  color: var(--ink-mid);
+  font-style: italic;
+  line-height: 1.55;
+}
+.info-card-highlight {
+  background: #FFF9C4;
+  border-left: 3px solid var(--amber);
+  padding: 10px 14px;
+  border-radius: 0 8px 8px 0;
+  font-size: .92rem;
+  color: var(--ink);
+  font-style: italic;
+  line-height: 1.6;
+}
+
+.action-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.action-card {
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  height: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+.action-card:active { background: var(--sky); }
+.action-card.is-active {
+  background: var(--blue-soft);
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.topic-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 14px 16px;
+  margin-bottom: 24px;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--ink);
+}
+.topic-row-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--blue-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--blue);
+}
+.topic-row-label {
+  font-size: .73rem;
+  color: var(--ink-soft);
+}
+.topic-row-name {
+  font-size: .9rem;
+  font-weight: 700;
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--line) 25%, var(--sky-mid) 50%, var(--line) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-pulse 1.4s ease infinite;
+  border-radius: 8px;
+}
+@keyframes skeleton-pulse {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="topbar-back" id="backBtn" href="javascript:history.back()">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+  <div class="topbar-title" id="topbarTitle">So'z</div>
+  <button class="topbar-action" id="shareTopBtn" onclick="shareWord()" style="background:none;border:none;padding:6px;cursor:pointer;color:var(--ink-mid)">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+  </button>
+</div>
+
+<div class="page" id="mainContent" style="display:none">
+
+  <!-- Hero card -->
+  <div class="word-hero">
+    <button class="word-hero-audio" onclick="speak()" id="audioBtn" title="Talaffuzni eshitish">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+    </button>
+    <div class="word-hero-badges">
+      <span class="word-hero-badge" id="typesBadge"></span>
+      <span class="word-hero-badge" id="levelBadge"></span>
+    </div>
+    <div class="word-hero-word" id="heroWord">—</div>
+    <div class="word-hero-phonetic" id="heroPhonetic"></div>
+    <div class="word-hero-translation" id="heroTranslation">—</div>
+  </div>
+
+  <!-- Actions -->
+  <div class="action-row">
+    <button class="action-card" id="bookmarkBtn" onclick="toggleBookmark()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+      <span>Saqlash</span>
+    </button>
+    <button class="action-card" id="likeBtn" onclick="toggleLike()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <span>Yoqdi</span>
+    </button>
+    <button class="action-card" onclick="speak()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+      <span>Audio</span>
+    </button>
+  </div>
+
+  <!-- Example -->
+  <div class="info-card" id="exampleCard" style="display:none">
+    <div class="info-card-label">📖 Misol</div>
+    <div class="info-card-highlight" id="exampleText"></div>
+  </div>
+
+  <!-- Definition if exists -->
+  <div class="info-card" id="definitionCard" style="display:none">
+    <div class="info-card-label">📝 Ta'rif</div>
+    <div class="info-card-text" id="definitionText"></div>
+  </div>
+
+  <!-- Related topic -->
+  <a class="topic-row" id="topicRow" href="#">
+    <div class="topic-row-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    </div>
+    <div>
+      <div class="topic-row-label">Mavzu</div>
+      <div class="topic-row-name" id="topicName">—</div>
+    </div>
+    <svg style="margin-left:auto;color:var(--ink-soft)" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  </a>
+
+</div>
+
+<!-- Skeleton loader -->
+<div class="page" id="skeleton">
+  <div style="height:168px;border-radius:var(--radius-lg);margin-bottom:16px" class="skeleton"></div>
+  <div style="height:72px;border-radius:var(--radius-sm);margin-bottom:14px" class="skeleton"></div>
+  <div style="height:80px;border-radius:var(--radius-md);margin-bottom:14px" class="skeleton"></div>
+</div>
+
+<!-- Error state -->
+<div class="page" id="errorState" style="display:none">
+  <div class="empty-state">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <p>So'z topilmadi</p>
+    <button onclick="history.back()" style="margin-top:12px;padding:10px 24px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius-sm);font-size:.9rem;font-weight:700;cursor:pointer">Orqaga</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<nav class="bottom-nav">
+  <a class="bottom-nav-item" href="index.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    Asosiy
+  </a>
+  <a class="bottom-nav-item" href="mywords.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    So'zlarim
+  </a>
+  <a class="bottom-nav-item" href="search.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    Qidirish
+  </a>
+  <a class="bottom-nav-item" href="roadmap.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+    Yo'l xaritasi
+  </a>
+  <a class="bottom-nav-item" href="profile.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Profil
+  </a>
+</nav>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+var wordId      = new URLSearchParams(location.search).get('id') || '';
+var wordData    = null;
+var currentUser = null;
+var userBookmarks = [];
+var userLikes     = [];
+
+firebase.auth().onAuthStateChanged(function(user) {
+  if (!user) { location.href = 'login.html'; return; }
+  currentUser = user;
+  if (!wordId) { showError(); return; }
+
+  Promise.all([
+    db.collection('users').doc(user.uid).get(),
+    db.collection('words').doc(wordId).get()
+  ]).then(function(results) {
+    var userDoc  = results[0];
+    var wordDoc  = results[1];
+    document.getElementById('skeleton').style.display = 'none';
+    if (!wordDoc.exists) { showError(); return; }
+    wordData = Object.assign({ id: wordDoc.id }, wordDoc.data());
+    if (userDoc.exists) {
+      userBookmarks = userDoc.data().bookmarks || [];
+      userLikes     = userDoc.data().likes     || [];
+    }
+    renderWord();
+  }).catch(function() { showError(); });
+});
+
+function renderWord() {
+  var w = wordData;
+
+  // Topbar
+  document.getElementById('topbarTitle').textContent = w.word || 'So\'z';
+
+  // Hero
+  document.getElementById('heroWord').textContent = w.word || '';
+  document.getElementById('heroTranslation').textContent = w.translation || '';
+  if (w.phonetic) {
+    document.getElementById('heroPhonetic').textContent = '/' + w.phonetic + '/';
+  }
+
+  // Badges
+  var lvl = (w.level || '').toLowerCase();
+  var levelEl = document.getElementById('levelBadge');
+  levelEl.textContent = w.level || '';
+  levelEl.className   = 'word-hero-badge level-' + lvl;
+  document.getElementById('typesBadge').textContent = w.type || '';
+
+  // Example
+  if (w.example) {
+    document.getElementById('exampleText').textContent = w.example;
+    document.getElementById('exampleCard').style.display = '';
+  }
+
+  // Definition
+  if (w.definition) {
+    document.getElementById('definitionText').textContent = w.definition;
+    document.getElementById('definitionCard').style.display = '';
+  }
+
+  // Topic link
+  if (w.topicId && w.subTopic) {
+    document.getElementById('topicName').textContent = w.subTopic;
+    document.getElementById('topicRow').href =
+      'vocab.html?topic=' + encodeURIComponent(w.topicId) + '&sub=' + encodeURIComponent(w.subTopic);
+  }
+
+  // Action buttons state
+  updateButtons();
+
+  // Show page
+  document.getElementById('mainContent').style.display = '';
+}
+
+function updateButtons() {
+  var bk = userBookmarks.includes(wordId);
+  var lk = userLikes.includes(wordId);
+  var bBtn = document.getElementById('bookmarkBtn');
+  var lBtn = document.getElementById('likeBtn');
+  bBtn.classList.toggle('is-active', bk);
+  bBtn.querySelector('svg').setAttribute('fill', bk ? 'currentColor' : 'none');
+  lBtn.classList.toggle('is-active', lk);
+  lBtn.querySelector('svg').setAttribute('fill', lk ? 'currentColor' : 'none');
+}
+
+function toggleBookmark() {
+  if (!currentUser) return;
+  var idx = userBookmarks.indexOf(wordId);
+  if (idx === -1) userBookmarks.push(wordId);
+  else userBookmarks.splice(idx, 1);
+  updateButtons();
+  db.collection('users').doc(currentUser.uid).update({ bookmarks: userBookmarks });
+  showToast(idx === -1 ? '📌 Saqlandi' : 'Olib tashlandi');
+}
+
+function toggleLike() {
+  if (!currentUser) return;
+  var idx = userLikes.indexOf(wordId);
+  if (idx === -1) userLikes.push(wordId);
+  else userLikes.splice(idx, 1);
+  updateButtons();
+  db.collection('users').doc(currentUser.uid).update({ likes: userLikes });
+}
+
+function speak() {
+  if (!wordData || !('speechSynthesis' in window)) return;
+  var utt = new SpeechSynthesisUtterance(wordData.word);
+  utt.lang = 'en-US';
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utt);
+}
+
+function shareWord() {
+  if (!wordData) return;
+  var text = wordData.word + ' — ' + wordData.translation;
+  if (wordData.example) text += '\n\n"' + wordData.example + '"';
+  text += '\n\nVocaabUZ orqali';
+  if (navigator.share) {
+    navigator.share({ text: text }).catch(function(){});
+  } else {
+    navigator.clipboard.writeText(text).then(function(){ showToast('Nusxalandi'); });
+  }
+}
+
+function showError() {
+  document.getElementById('skeleton').style.display   = 'none';
+  document.getElementById('mainContent').style.display = 'none';
+  document.getElementById('errorState').style.display  = '';
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('is-show');
+  setTimeout(function(){ t.classList.remove('is-show'); }, 2000);
+}
+</script>
+</body>
+</html>
