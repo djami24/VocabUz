@@ -82,9 +82,8 @@ html,body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;co
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
   padding-top:66px;
-  padding-bottom:calc(var(--bottom-nav-h)+16px);
 }
-.words-list{padding:0 16px 16px;display:flex;flex-direction:column;gap:10px;}
+.words-list{padding:0 16px;display:flex;flex-direction:column;gap:10px;}
 .word-card{background:var(--white);border-radius:var(--radius);padding:14px 16px 12px;box-shadow:var(--shadow-sm);transition:box-shadow .15s;}
 .word-card.learned-card{border-left:3px solid var(--green);}
 .word-header{display:flex;align-items:baseline;gap:6px;margin-bottom:4px;}
@@ -687,7 +686,8 @@ function renderWords(){
       </div>
     </div>`;
   }).join('');
-  document.getElementById('wordsList').innerHTML=html;
+  document.getElementById('wordsList').innerHTML = html +
+    '<div style="height:calc(var(--bottom-nav-h)+32px);flex-shrink:0;"></div>';
 }
 
 function markLearned(id){
