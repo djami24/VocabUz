@@ -896,7 +896,7 @@ function renderTestResult(){
           <div class="trs"><div class="trs-val" style="color:var(--blue)">${Math.round(testCorrect/total*100)}%</div><div class="trs-lbl">Natija</div></div>
         </div>
         <div class="test-result-btns">
-          ${hasNext?`<button class="trb green" onclick="closeTestGoNext('${nextTopic}')">${nextTopic} mavzusiga o'tish</button>`:''}
+          ${hasNext?`<button class="trb green" onclick="closeTestGoNext(this.dataset.topic)" data-topic="${nextTopic}">${nextTopic} mavzusiga o'tish</button>`:''}
           <button class="trb secondary" onclick="closeTest();renderTopics()">Mavzular ro'yxatiga</button>
         </div>
       </div>`;
