@@ -1021,8 +1021,6 @@ ul, ol { list-style: none; }
 
 /* ── Responsive ── */
 @media (min-width: 600px) {
-  body { padding-bottom: 0; }
-  .bottom-nav { display: none; }
   .page { padding: 0 24px 48px; }
 }
 
