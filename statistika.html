@@ -479,8 +479,24 @@ function dayName(i){ return ['Du','Se','Ch','Pa','Ju','Sh','Ya'][i]; }
 firebase.auth().onAuthStateChanged(function(user){
   if(!user){ location.href='login.html'; return; }
 
-  db.collection('users').doc(user.uid).get().then(function(doc){
+  // Load user data AND admin-added Firestore topic words in parallel
+  Promise.all([
+    db.collection('users').doc(user.uid).get(),
+    db.collection('words').where('vocabType','==','topic').get()
+  ]).then(function(results){
+    var doc       = results[0];
+    var wordsSnap = results[1];
     document.getElementById('loader').style.display='none';
+
+    // Merge Firestore-added topic words into ALL_WORDS
+    var existingIds = new Set(ALL_WORDS.map(function(w){ return w.id; }));
+    wordsSnap.docs.forEach(function(d){
+      var w = d.data();
+      if(w.id && !existingIds.has(w.id)){
+        ALL_WORDS.push(w);
+        existingIds.add(w.id);
+      }
+    });
 
     var data = doc.exists ? doc.data() : {};
     var learnedIds  = data.learned  || [];
