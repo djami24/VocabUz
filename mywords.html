@@ -601,248 +601,75 @@ html,body{
 // ═══════════════════════════════════════════════════════════
 //  ALL 200 WORDS (same dataset as topic.html)
 // ═══════════════════════════════════════════════════════════
-const ALL_WORDS = [
-  { id:1,  topic:"Ta'lim",       word:"curriculum",      uz:"o'quv dasturi, ta'lim dasturi",     level:"B2", example:"A modern curriculum should prepare students for both employment and everyday life." },
-  { id:2,  topic:"Ta'lim",       word:"syllabus",        uz:"kurs rejasi, sillabus",              level:"B2", example:"The lecturer shared the syllabus before the first class." },
-  { id:3,  topic:"Ta'lim",       word:"assessment",      uz:"baholash, tekshirish",               level:"B2", example:"Regular assessment helps teachers identify learning gaps early." },
-  { id:4,  topic:"Ta'lim",       word:"scholarship",     uz:"stipendiya, grant",                  level:"B1", example:"She received a full scholarship to study abroad." },
-  { id:5,  topic:"Ta'lim",       word:"graduate",        uz:"bitirmoq, bitiruvchi",               level:"A2", example:"He graduated from university with honors." },
-  { id:6,  topic:"Ta'lim",       word:"tuition",         uz:"o'qitish to'lovi, dars",             level:"B2", example:"Tuition fees have increased significantly over the past decade." },
-  { id:7,  topic:"Ta'lim",       word:"extracurricular", uz:"darsdan tashqari",                   level:"C1", example:"Extracurricular activities help develop social skills." },
-  { id:8,  topic:"Ta'lim",       word:"dissertation",    uz:"dissertatsiya, ilmiy ish",           level:"C1", example:"She spent two years writing her doctoral dissertation." },
-  { id:9,  topic:"Ta'lim",       word:"plagiarism",      uz:"plagiat, o'girma",                   level:"B2", example:"Plagiarism is a serious academic offence." },
-  { id:10, topic:"Ta'lim",       word:"lecture",         uz:"ma'ruza, dars",                      level:"A2", example:"The professor delivered an interesting lecture on quantum physics." },
-  { id:11, topic:"Ta'lim",       word:"elaborate",       uz:"batafsil tushuntirmoq",              level:"B2", example:"Could you elaborate on your point?" },
-  { id:12, topic:"Ta'lim",       word:"clarify",         uz:"aniqlashtirmoq, tushuntirmoq",       level:"B1", example:"Please clarify what you mean by that." },
-  { id:13, topic:"Ta'lim",       word:"summarise",       uz:"xulosa qilmoq, qisqartirmoq",       level:"B1", example:"Can you summarise the main points of the chapter?" },
-  { id:14, topic:"Ta'lim",       word:"enrol",           uz:"ro'yxatdan o'tmoq, yozilmoq",       level:"B1", example:"She enrolled in a language course last semester." },
-  { id:15, topic:"Ta'lim",       word:"undergraduate",   uz:"bakalavriat talabasi",               level:"B2", example:"Undergraduate students must complete 120 credits to graduate." },
-  { id:16, topic:"Ta'lim",       word:"postgraduate",    uz:"magistratura, aspirantura",          level:"B2", example:"He applied for a postgraduate programme in engineering." },
-  { id:17, topic:"Ta'lim",       word:"vocational",      uz:"kasbiy, amaliy",                    level:"B2", example:"Vocational training prepares students for specific jobs." },
-  { id:18, topic:"Ta'lim",       word:"academic",        uz:"akademik, ilmiy",                   level:"B1", example:"Her academic achievements earned her a place at a top university." },
-  { id:19, topic:"Ta'lim",       word:"semester",        uz:"semestr, o'quv yarim yili",          level:"A2", example:"We have exams at the end of each semester." },
-  { id:20, topic:"Ta'lim",       word:"assignment",      uz:"topshiriq, vazifa",                 level:"A2", example:"The teacher gave a writing assignment for the weekend." },
-  { id:21, topic:"Ta'lim",       word:"thesis",          uz:"dissertatsiya, tezis",              level:"C1", example:"Her thesis explored the impact of social media on teenagers." },
-  { id:22, topic:"Ta'lim",       word:"debate",          uz:"bahs, munozara",                    level:"B1", example:"The class debate improved students' critical thinking skills." },
-  { id:23, topic:"Ta'lim",       word:"discipline",      uz:"fan, soha; intizom",                level:"B2", example:"She studies multiple academic disciplines simultaneously." },
-  { id:24, topic:"Ta'lim",       word:"revision",        uz:"qayta o'qish, takrorlash",           level:"B1", example:"Good revision techniques can improve exam results significantly." },
-  { id:25, topic:"Ta'lim",       word:"tutor",           uz:"repetitor, ustoz",                  level:"A2", example:"She hired a tutor to help her prepare for the IELTS exam." },
-  { id:26, topic:"Ta'lim",       word:"seminar",         uz:"seminar, muhokama darsi",            level:"B1", example:"The professor leads a weekly seminar on modern literature." },
-  { id:27, topic:"Ta'lim",       word:"campus",          uz:"kampus, universitetning hovlisi",    level:"A2", example:"Students can use the library facilities across campus." },
-  { id:28, topic:"Ta'lim",       word:"faculty",         uz:"fakultet, o'qituvchilar guruhi",     level:"B2", example:"The faculty of medicine has an excellent reputation." },
-  { id:29, topic:"Ta'lim",       word:"curriculum vitae",uz:"rezyume, CV",                       level:"B2", example:"Always tailor your curriculum vitae to the job you're applying for." },
-  { id:30, topic:"Ta'lim",       word:"distance learning",uz:"masofaviy ta'lim",                 level:"B1", example:"Distance learning has become increasingly popular worldwide." },
-  { id:31, topic:"Ta'lim",       word:"literacy",        uz:"savodxonlik, o'qish-yozish",        level:"B2", example:"Improving literacy rates is a key educational goal." },
-  { id:32, topic:"Ta'lim",       word:"numeracy",        uz:"matematik savodxonlik",             level:"B2", example:"Strong numeracy skills are essential for everyday life." },
-  { id:33, topic:"Ta'lim",       word:"portfolio",       uz:"portfolio, ishlar to'plami",        level:"B1", example:"The art teacher asked students to build a creative portfolio." },
-  { id:34, topic:"Ta'lim",       word:"internship",      uz:"amaliyot, stajirovka",              level:"B1", example:"She completed a summer internship at a law firm." },
-  { id:35, topic:"Ta'lim",       word:"peer review",     uz:"tengdoshlar baholashi",             level:"C1", example:"Peer review helps students give and receive constructive feedback." },
-  { id:36, topic:"Sog'liq",      word:"symptom",         uz:"belgi, alomat",                     level:"B1", example:"The most common symptom of flu is a high temperature." },
-  { id:37, topic:"Sog'liq",      word:"diagnose",        uz:"tashxis qo'ymoq",                   level:"B2", example:"The doctor diagnosed him with diabetes." },
-  { id:38, topic:"Sog'liq",      word:"prescription",    uz:"retsept, buyurma",                  level:"B1", example:"You will need a prescription to get this medication." },
-  { id:39, topic:"Sog'liq",      word:"immunity",        uz:"immunitet, chidamlilik",             level:"B2", example:"Regular exercise boosts your immunity." },
-  { id:40, topic:"Sog'liq",      word:"chronic",         uz:"surunkali, uzoq davom etuvchi",      level:"B2", example:"She has been dealing with chronic back pain for years." },
-  { id:41, topic:"Sog'liq",      word:"rehabilitation",  uz:"reabilitatsiya, tiklanish",         level:"C1", example:"After the surgery, he needed months of rehabilitation." },
-  { id:42, topic:"Sog'liq",      word:"endurance",       uz:"chidamlilik, bardoshlilik",          level:"B2", example:"Marathon running requires great endurance." },
-  { id:43, topic:"Sog'liq",      word:"flexibility",     uz:"moslashuvchanlik, egiluvchanlik",    level:"B1", example:"Yoga improves flexibility and reduces stress." },
-  { id:44, topic:"Sog'liq",      word:"nutrition",       uz:"ovqatlanish, to'yimlilik",           level:"B1", example:"Good nutrition is the foundation of a healthy lifestyle." },
-  { id:45, topic:"Sog'liq",      word:"obesity",         uz:"semirish, to'qlik",                 level:"B2", example:"Obesity rates have risen sharply over the last two decades." },
-  { id:46, topic:"Sog'liq",      word:"prevention",      uz:"oldini olish, profilaktika",        level:"B2", example:"Prevention is better than cure." },
-  { id:47, topic:"Sog'liq",      word:"mental health",   uz:"ruhiy salomatlik",                  level:"B1", example:"It is important to talk openly about mental health." },
-  { id:48, topic:"Sog'liq",      word:"dosage",          uz:"doza, miqdor",                      level:"B2", example:"Always follow the recommended dosage on the label." },
-  { id:49, topic:"Sog'liq",      word:"surgery",         uz:"jarrohlik, operatsiya",             level:"B1", example:"She underwent surgery to remove the tumour." },
-  { id:50, topic:"Sog'liq",      word:"contagious",      uz:"yuqumli, tarqaladigan",             level:"B2", example:"Chickenpox is highly contagious among children." },
-  { id:51, topic:"Sog'liq",      word:"vaccine",         uz:"vaksina, emlash",                   level:"B1", example:"The government launched a nationwide vaccine campaign." },
-  { id:52, topic:"Sog'liq",      word:"allergy",         uz:"allergiya, ortiqcha sezuvchanlik",  level:"B1", example:"She has a severe allergy to peanuts." },
-  { id:53, topic:"Sog'liq",      word:"sedentary",       uz:"harakatsiz, o'tirgan holda",        level:"C1", example:"A sedentary lifestyle increases the risk of heart disease." },
-  { id:54, topic:"Sog'liq",      word:"metabolism",      uz:"moddalar almashinuvi, metabolizm",  level:"C1", example:"A fast metabolism helps the body burn calories quickly." },
-  { id:55, topic:"Sog'liq",      word:"well-being",      uz:"farovonlik, yaxshi holat",          level:"B2", example:"Exercise has a positive effect on overall well-being." },
-  { id:56, topic:"Sog'liq",      word:"therapy",         uz:"terapiya, davolash",                level:"B1", example:"He attended weekly therapy sessions to manage his anxiety." },
-  { id:57, topic:"Sog'liq",      word:"paramedic",       uz:"feldşer, tibbiy xodim",             level:"B2", example:"The paramedic gave first aid at the scene of the accident." },
-  { id:58, topic:"Sog'liq",      word:"insomnia",        uz:"uyqusizlik",                        level:"B2", example:"Stress is a leading cause of insomnia in adults." },
-  { id:59, topic:"Sog'liq",      word:"epidemic",        uz:"epidemiya, tarqalgan kasallik",     level:"B2", example:"Health authorities worked quickly to contain the epidemic." },
-  { id:60, topic:"Sog'liq",      word:"hygiene",         uz:"gigiena, tozalik",                  level:"A2", example:"Good personal hygiene prevents the spread of infection." },
-  { id:61, topic:"Sog'liq",      word:"cardiac",         uz:"yurak, yurakka oid",                level:"C1", example:"He was admitted to hospital with a cardiac arrest." },
-  { id:62, topic:"Sog'liq",      word:"fracture",        uz:"suyak sinishi, yoriq",              level:"B2", example:"He suffered a fracture in his right arm after the fall." },
-  { id:63, topic:"Sog'liq",      word:"physiotherapy",   uz:"fizioterapiya, jismoniy davolash",  level:"C1", example:"Physiotherapy helped him regain full movement in his knee." },
-  { id:64, topic:"Sog'liq",      word:"stethoscope",     uz:"stetoskop",                         level:"B2", example:"The doctor used a stethoscope to listen to his heartbeat." },
-  { id:65, topic:"Sog'liq",      word:"inflammation",    uz:"yallig'lanish",                     level:"C1", example:"The drug reduces inflammation and relieves pain." },
-  { id:66, topic:"Ish & Kasb",   word:"entrepreneur",    uz:"tadbirkor, biznesmen",              level:"B2", example:"She became a successful entrepreneur at the age of 25." },
-  { id:67, topic:"Ish & Kasb",   word:"negotiate",       uz:"muzokaralar olib bormoq",           level:"B2", example:"He managed to negotiate a higher salary." },
-  { id:68, topic:"Ish & Kasb",   word:"colleague",       uz:"hamkasb, ishkosh",                  level:"A2", example:"My colleagues are very supportive." },
-  { id:69, topic:"Ish & Kasb",   word:"deadline",        uz:"muddati, yakuniy sana",             level:"A2", example:"We need to meet the deadline by Friday." },
-  { id:70, topic:"Ish & Kasb",   word:"redundancy",      uz:"ishdan bo'shatish",                 level:"C1", example:"Many workers faced redundancy during the recession." },
-  { id:71, topic:"Ish & Kasb",   word:"promotion",       uz:"lavozim ko'tarish, ilgarilash",     level:"B1", example:"She was offered a promotion after three years of hard work." },
-  { id:72, topic:"Ish & Kasb",   word:"recruitment",     uz:"ishga qabul qilish, yollash",       level:"B2", example:"The HR team handles all recruitment for the company." },
-  { id:73, topic:"Ish & Kasb",   word:"proficiency",     uz:"malaka, mahorat",                   level:"B2", example:"High proficiency in English is required for this role." },
-  { id:74, topic:"Ish & Kasb",   word:"remote work",     uz:"masofadan ishlash",                 level:"B1", example:"Remote work has increased flexibility for many employees." },
-  { id:75, topic:"Ish & Kasb",   word:"freelance",       uz:"frilanser, erkin ishchi",           level:"B1", example:"She decided to go freelance after leaving her company." },
-  { id:76, topic:"Ish & Kasb",   word:"appraisal",       uz:"baholash, ish natijalari tekshiruvi",level:"C1",example:"His annual appraisal showed excellent performance." },
-  { id:77, topic:"Ish & Kasb",   word:"agenda",          uz:"kun tartibi, reja",                 level:"B1", example:"Please send the agenda for tomorrow's meeting." },
-  { id:78, topic:"Ish & Kasb",   word:"liability",       uz:"javobgarlik, mas'uliyat",           level:"C1", example:"Directors carry personal liability for company debts." },
-  { id:79, topic:"Ish & Kasb",   word:"initiative",      uz:"tashabbuskorlik, yangi g'oya",      level:"B2", example:"Employees are encouraged to show initiative at work." },
-  { id:80, topic:"Ish & Kasb",   word:"resignation",     uz:"iste'fo, ishdan ketish",            level:"B2", example:"She handed in her resignation after ten years of service." },
-  { id:81, topic:"Ish & Kasb",   word:"payroll",         uz:"ish haqi ro'yxati",                 level:"C1", example:"The payroll department processes salaries every month." },
-  { id:82, topic:"Ish & Kasb",   word:"commission",      uz:"komissiya, savdo ulushi",           level:"B2", example:"Sales staff earn a commission on every product they sell." },
-  { id:83, topic:"Ish & Kasb",   word:"workload",        uz:"ish hajmi, yuklanish",              level:"B2", example:"She struggled to manage her workload during the busy period." },
-  { id:84, topic:"Ish & Kasb",   word:"outsource",       uz:"tashqariga topshirmoq",             level:"C1", example:"The company decided to outsource its IT support." },
-  { id:85, topic:"Ish & Kasb",   word:"merger",          uz:"birlashish, qo'shilish",            level:"C1", example:"The merger created one of the largest banks in the country." },
-  { id:86, topic:"Ish & Kasb",   word:"stakeholder",     uz:"manfaatdor tomon",                  level:"C1", example:"All stakeholders were invited to the annual review meeting." },
-  { id:87, topic:"Ish & Kasb",   word:"budget",          uz:"byudjet, moliyaviy reja",           level:"B1", example:"The project went over budget by twenty per cent." },
-  { id:88, topic:"Ish & Kasb",   word:"revenue",         uz:"daromad, tushum",                   level:"B2", example:"The company's annual revenue exceeded ten million dollars." },
-  { id:89, topic:"Ish & Kasb",   word:"strike",          uz:"ish tashlash, strike",              level:"B2", example:"Workers went on strike to demand better pay." },
-  { id:90, topic:"Ish & Kasb",   word:"conference",      uz:"konferentsiya, yig'ilish",          level:"B1", example:"She presented her research at an international conference." },
-  { id:91, topic:"Ish & Kasb",   word:"pension",         uz:"pensiya, nafaqa",                   level:"B1", example:"He has been saving into a private pension since the age of 30." },
-  { id:92, topic:"Ish & Kasb",   word:"overtime",        uz:"qo'shimcha vaqt, oshirma",          level:"B1", example:"She worked overtime every weekend to finish the project." },
-  { id:93, topic:"Ish & Kasb",   word:"self-employed",   uz:"o'z biznesida ishlovchi",           level:"B1", example:"As a self-employed photographer, he manages his own schedule." },
-  { id:94, topic:"Ish & Kasb",   word:"networking",      uz:"aloqalar o'rnatish",                level:"B2", example:"Networking at industry events can open new career opportunities." },
-  { id:95, topic:"Ish & Kasb",   word:"mentor",          uz:"murabbiy, yo'lboshchi",             level:"B2", example:"Having a good mentor can accelerate your career development." },
-  { id:96,  topic:"Hissiyotlar", word:"anxious",         uz:"xavotirli, tashvishli",             level:"B1", example:"She felt anxious before the interview." },
-  { id:97,  topic:"Hissiyotlar", word:"overwhelmed",     uz:"haddan tashqari bosim ostida",      level:"B2", example:"He felt overwhelmed by the amount of work." },
-  { id:98,  topic:"Hissiyotlar", word:"empathy",         uz:"empatiya, boshqani his etish",      level:"B2", example:"Good leaders show empathy towards their team." },
-  { id:99,  topic:"Hissiyotlar", word:"resilient",       uz:"bardoshli, tez tiklanadigan",       level:"C1", example:"Children are surprisingly resilient in difficult situations." },
-  { id:100, topic:"Hissiyotlar", word:"melancholy",      uz:"qayg'u, g'am",                      level:"C1", example:"There was a deep melancholy in her eyes after the news." },
-  { id:101, topic:"Hissiyotlar", word:"frustrated",      uz:"umidsizlangan, jig'ibiyron",        level:"B1", example:"He felt frustrated when his ideas were ignored." },
-  { id:102, topic:"Hissiyotlar", word:"ecstatic",        uz:"cho'qqisi, behad xursand",          level:"C1", example:"She was ecstatic when she heard she had passed the exam." },
-  { id:103, topic:"Hissiyotlar", word:"guilty",          uz:"aybdor, gunohkor his",              level:"B1", example:"He felt guilty for forgetting his mother's birthday." },
-  { id:104, topic:"Hissiyotlar", word:"nostalgic",       uz:"nostaljik, o'tkinchi sog'inch",     level:"C1", example:"Old photos always make her feel nostalgic." },
-  { id:105, topic:"Hissiyotlar", word:"confident",       uz:"ishonchli, o'ziga ishonuvchi",      level:"B1", example:"She felt confident walking into the job interview." },
-  { id:106, topic:"Hissiyotlar", word:"jealous",         uz:"hasad qiluvchi, rashkchi",          level:"B1", example:"He was jealous of his colleague's promotion." },
-  { id:107, topic:"Hissiyotlar", word:"content",         uz:"qoniqarli, xotirjam",               level:"B2", example:"She felt content with her simple but peaceful life." },
-  { id:108, topic:"Hissiyotlar", word:"grief",           uz:"qayg'u, motam",                     level:"B2", example:"She experienced deep grief after the loss of her father." },
-  { id:109, topic:"Hissiyotlar", word:"embarrassed",     uz:"uyalgan, xijolat",                  level:"B1", example:"He was embarrassed when he forgot the presenter's name." },
-  { id:110, topic:"Hissiyotlar", word:"optimistic",      uz:"optimist, umidli",                  level:"B1", example:"She remained optimistic despite the difficult circumstances." },
-  { id:111, topic:"Hissiyotlar", word:"desperate",       uz:"umidsiz, qo'rquv ichida",           level:"B2", example:"He was desperate to find a solution before the deadline." },
-  { id:112, topic:"Hissiyotlar", word:"sympathetic",     uz:"hamdard, achinuvchi",               level:"B2", example:"Her sympathetic response made him feel less alone." },
-  { id:113, topic:"Hissiyotlar", word:"indifferent",     uz:"befarq, loqayd",                    level:"C1", example:"The crowd seemed indifferent to the speaker's emotional appeal." },
-  { id:114, topic:"Hissiyotlar", word:"enthusiastic",    uz:"ishtiyoqli, g'ayratli",             level:"B1", example:"The students were enthusiastic about the new project." },
-  { id:115, topic:"Hissiyotlar", word:"furious",         uz:"g'azabli, qattiq jahli chiqqan",    level:"B2", example:"She was furious when she discovered the mistake." },
-  { id:116, topic:"Munosabatlar",word:"compromise",      uz:"murosa, kelishuv",                  level:"B1", example:"A good relationship requires compromise from both sides." },
-  { id:117, topic:"Munosabatlar",word:"reconcile",       uz:"yarashmog, murosaga kelmoq",        level:"C1", example:"They reconciled after years of disagreement." },
-  { id:118, topic:"Munosabatlar",word:"sibling",         uz:"aka-uka yoki opa-singil",           level:"A2", example:"Do you have any siblings?" },
-  { id:119, topic:"Munosabatlar",word:"loyalty",         uz:"sodiqlik, vafolilik",               level:"B2", example:"Loyalty is one of the most important values in friendship." },
-  { id:120, topic:"Munosabatlar",word:"trust",           uz:"ishonch, imon",                     level:"A2", example:"It takes time to build trust in any relationship." },
-  { id:121, topic:"Munosabatlar",word:"supportive",      uz:"qo'llab-quvvatlovchi",              level:"B1", example:"Her family was very supportive during her recovery." },
-  { id:122, topic:"Munosabatlar",word:"affection",       uz:"mehrli munosabat, sevgi",           level:"B2", example:"She showed great affection for her younger brother." },
-  { id:123, topic:"Munosabatlar",word:"divorce",         uz:"ajralish, taloq",                   level:"B1", example:"The divorce was difficult for the whole family." },
-  { id:124, topic:"Munosabatlar",word:"mutual",          uz:"o'zaro, ikki tomonlama",            level:"B2", example:"Their relationship is based on mutual respect and understanding." },
-  { id:125, topic:"Munosabatlar",word:"argue",           uz:"bahslashmoq, talashmoq",            level:"A2", example:"They always argue about small things but never seriously." },
-  { id:126, topic:"Munosabatlar",word:"bond",            uz:"aloqa, bog'liqlik",                 level:"B2", example:"The shared experience created a strong bond between them." },
-  { id:127, topic:"Munosabatlar",word:"estranged",       uz:"begonalashgan, uzoqlashgan",        level:"C1", example:"He became estranged from his family after moving abroad." },
-  { id:128, topic:"Munosabatlar",word:"cherish",         uz:"qadrlamoq, asrab-avaylamoq",        level:"B2", example:"She cherished the letters her grandmother had written." },
-  { id:129, topic:"Munosabatlar",word:"breakup",         uz:"ajralish, uzilish",                 level:"B1", example:"The breakup was painful but ultimately the right decision." },
-  { id:130, topic:"Munosabatlar",word:"mentor",          uz:"yo'lboshchi, tajribali rahbar",     level:"B2", example:"She found a mentor who guided her through her career." },
-  { id:131, topic:"Munosabatlar",word:"acquaintance",    uz:"tanish, notanish emas",             level:"B2", example:"He is just an acquaintance, not a close friend." },
-  { id:132, topic:"Munosabatlar",word:"relative",        uz:"qarindosh, yaqin",                  level:"A2", example:"Most of her relatives live in the same city." },
-  { id:133, topic:"Munosabatlar",word:"rivalry",         uz:"raqobat, ziddiyat",                 level:"B2", example:"There has always been a friendly rivalry between the two brothers." },
-  { id:134, topic:"Munosabatlar",word:"commitment",      uz:"majburiyat, sadoqat",               level:"B2", example:"Marriage requires a long-term commitment from both partners." },
-  { id:135, topic:"Munosabatlar",word:"guardian",        uz:"vasiy, homiy",                      level:"B2", example:"His uncle became his legal guardian after his parents' death." },
-  { id:136, topic:"Texnologiya", word:"algorithm",       uz:"algoritm, dasturiy ko'rsatma",      level:"B2", example:"The search engine uses a complex algorithm to rank websites." },
-  { id:137, topic:"Texnologiya", word:"bandwidth",       uz:"o'tkazish quvvati",                 level:"C1", example:"Streaming videos requires a high bandwidth connection." },
-  { id:138, topic:"Texnologiya", word:"encryption",      uz:"shifrlash, kodlash",                level:"C1", example:"The app uses end-to-end encryption to protect user data." },
-  { id:139, topic:"Texnologiya", word:"interface",       uz:"interfeys",                         level:"B2", example:"The user interface of this app is very intuitive." },
-  { id:140, topic:"Texnologiya", word:"cloud computing", uz:"bulutli hisoblash",                 level:"B2", example:"Cloud computing allows businesses to store data remotely." },
-  { id:141, topic:"Texnologiya", word:"artificial intelligence",uz:"sun'iy intellekt",           level:"B2", example:"Artificial intelligence is transforming many industries." },
-  { id:142, topic:"Texnologiya", word:"cybersecurity",   uz:"kiberxavfsizlik",                   level:"C1", example:"Cybersecurity threats have increased significantly this year." },
-  { id:143, topic:"Texnologiya", word:"database",        uz:"ma'lumotlar bazasi",                level:"B2", example:"The hospital stores all patient records in a secure database." },
-  { id:144, topic:"Texnologiya", word:"virtual reality", uz:"virtual haqiqat",                   level:"B2", example:"Virtual reality is increasingly used in medical training." },
-  { id:145, topic:"Texnologiya", word:"automation",      uz:"avtomatlashtirish",                 level:"B2", example:"Automation has reduced the need for manual labour in factories." },
-  { id:146, topic:"Texnologiya", word:"software",        uz:"dasturiy ta'minot",                 level:"A2", example:"You need to update the software to fix the bugs." },
-  { id:147, topic:"Texnologiya", word:"hardware",        uz:"apparat, jihozlar",                 level:"A2", example:"The technician replaced the faulty hardware component." },
-  { id:148, topic:"Texnologiya", word:"prototype",       uz:"prototip, namuna",                  level:"B2", example:"Engineers built a prototype to test the new device." },
-  { id:149, topic:"Texnologiya", word:"malware",         uz:"zararli dastur",                    level:"C1", example:"The malware infected thousands of computers overnight." },
-  { id:150, topic:"Texnologiya", word:"streaming",       uz:"onlayn uzatish, strim",             level:"B1", example:"Streaming services have replaced traditional television for many." },
-  { id:151, topic:"Texnologiya", word:"renewable energy",uz:"qayta tiklanadigan energiya",       level:"B2", example:"Solar panels are a popular form of renewable energy." },
-  { id:152, topic:"Texnologiya", word:"semiconductor",   uz:"yarimo'tkazgich",                   level:"C1", example:"The semiconductor shortage affected car production globally." },
-  { id:153, topic:"Texnologiya", word:"pixel",           uz:"piksel",                            level:"B1", example:"This camera captures images at forty megapixels." },
-  { id:154, topic:"Texnologiya", word:"update",          uz:"yangilamoq",                        level:"A2", example:"Please install the latest update to improve performance." },
-  { id:155, topic:"Texnologiya", word:"blockchain",      uz:"blokcheyn texnologiyasi",           level:"C1", example:"Blockchain technology underpins most cryptocurrencies." },
-  { id:156, topic:"Texnologiya", word:"debug",           uz:"xatoliklarni tuzatmoq",             level:"B2", example:"The developer spent hours trying to debug the code." },
-  { id:157, topic:"Texnologiya", word:"router",          uz:"router, tarmoq qurilmasi",          level:"B1", example:"Restarting the router usually solves most connection problems." },
-  { id:158, topic:"Texnologiya", word:"sensor",          uz:"sensor, sezgir qurilma",            level:"B2", example:"The car's parking sensor alerts the driver to obstacles." },
-  { id:159, topic:"Texnologiya", word:"subscription",    uz:"obuna, obuna xizmati",              level:"B1", example:"She cancelled her streaming subscription to save money." },
-  { id:160, topic:"Texnologiya", word:"innovation",      uz:"yangilik, ixtiro",                  level:"B2", example:"Innovation is the key to long-term business success." },
-  { id:161, topic:"Atrof-muhit", word:"sustainability",  uz:"barqarorlik",                       level:"B2", example:"Sustainability is at the heart of our company's mission." },
-  { id:162, topic:"Atrof-muhit", word:"carbon footprint",uz:"karbon izi",                        level:"B2", example:"Flying less can significantly reduce your carbon footprint." },
-  { id:163, topic:"Atrof-muhit", word:"deforestation",   uz:"o'rmonlarni yo'q qilish",           level:"B2", example:"Deforestation in the Amazon threatens thousands of species." },
-  { id:164, topic:"Atrof-muhit", word:"biodiversity",    uz:"biologik xilma-xillik",             level:"C1", example:"Loss of biodiversity is one of the greatest environmental threats." },
-  { id:165, topic:"Atrof-muhit", word:"ecosystem",       uz:"ekotizim",                          level:"B2", example:"Human activity has disrupted many fragile ecosystems." },
-  { id:166, topic:"Atrof-muhit", word:"emission",        uz:"chiqindi gaz, emissiya",            level:"B2", example:"Countries have pledged to cut carbon emissions by 2050." },
-  { id:167, topic:"Atrof-muhit", word:"drought",         uz:"qurg'oqchilik, suvsizlik",          level:"B2", example:"The prolonged drought destroyed crops across the region." },
-  { id:168, topic:"Atrof-muhit", word:"pollution",       uz:"ifloslanish, chiqindi",             level:"B1", example:"Air pollution in big cities is a major public health concern." },
-  { id:169, topic:"Atrof-muhit", word:"recycle",         uz:"qayta ishlash, resiklaj",           level:"A2", example:"She recycles glass, paper, and plastic every week." },
-  { id:170, topic:"Atrof-muhit", word:"fossil fuel",     uz:"qazib olinadigan yoqilg'i",        level:"B2", example:"Burning fossil fuels is the main cause of global warming." },
-  { id:171, topic:"Atrof-muhit", word:"global warming",  uz:"global isish",                      level:"B1", example:"Scientists warn that global warming will accelerate in coming decades." },
-  { id:172, topic:"Atrof-muhit", word:"habitat",         uz:"yashash joyi, muhit",               level:"B2", example:"The polar bear's natural habitat is threatened by climate change." },
-  { id:173, topic:"Atrof-muhit", word:"erosion",         uz:"eroziya, yemirilish",               level:"C1", example:"Soil erosion makes farmland less productive over time." },
-  { id:174, topic:"Atrof-muhit", word:"renewable",       uz:"qayta tiklanadigan",                level:"B2", example:"Wind power is a clean and renewable energy source." },
-  { id:175, topic:"Atrof-muhit", word:"endangered",      uz:"yo'q bo'lish xavfida",              level:"B2", example:"The snow leopard is an endangered species in Central Asia." },
-  { id:176, topic:"Atrof-muhit", word:"contamination",   uz:"ifloslantirish, zaharlanish",       level:"C1", example:"Soil contamination from the factory affected local crops." },
-  { id:177, topic:"Atrof-muhit", word:"conservation",    uz:"muhofaza, saqlash",                 level:"B2", example:"Wildlife conservation is essential to protect future generations." },
-  { id:178, topic:"Atrof-muhit", word:"flood",           uz:"toshqin, sel",                      level:"B1", example:"Heavy rains caused widespread flooding across the valley." },
-  { id:179, topic:"Atrof-muhit", word:"glacier",         uz:"muzlik",                            level:"B2", example:"Glaciers are melting at an alarming rate due to rising temperatures." },
-  { id:180, topic:"Atrof-muhit", word:"compost",         uz:"kompost, organik o'g'it",           level:"B2", example:"Composting kitchen waste reduces the amount sent to landfill." },
-  { id:181, topic:"Atrof-muhit", word:"ozone layer",     uz:"ozon qatlami",                      level:"B1", example:"Certain chemicals have damaged the ozone layer over Antarctica." },
-  { id:182, topic:"Atrof-muhit", word:"toxic",           uz:"zaharli, toksik",                   level:"B2", example:"The factory released toxic waste into the river." },
-  { id:183, topic:"Atrof-muhit", word:"landfill",        uz:"axlatxona, chiqindi poligon",       level:"B2", example:"Plastic that is not recycled often ends up in landfill." },
-  { id:184, topic:"Atrof-muhit", word:"tide",            uz:"to'lqin, suv ko'tarilishi",         level:"B2", example:"High tides can cause coastal flooding in low-lying areas." },
-  { id:185, topic:"Atrof-muhit", word:"urban sprawl",    uz:"shaharning yoyilishi",              level:"C1", example:"Urban sprawl has eaten into farmland on the city's outskirts." },
-  { id:186, topic:"Ovqat",       word:"cuisine",         uz:"oshxona, milliy taom",              level:"B1", example:"Italian cuisine is popular all over the world." },
-  { id:187, topic:"Ovqat",       word:"ingredients",     uz:"tarkibiy qismlar",                  level:"A2", example:"Make sure you have all the ingredients before you start cooking." },
-  { id:188, topic:"Ovqat",       word:"recipe",          uz:"retsept, taom pishirish usuli",     level:"A2", example:"She found a great recipe for chocolate cake online." },
-  { id:189, topic:"Ovqat",       word:"seasoning",       uz:"ziravorlar, osh tuzi",              level:"B1", example:"Add seasoning to taste before serving." },
-  { id:190, topic:"Ovqat",       word:"fermentation",    uz:"fermentatsiya, achitish",           level:"C1", example:"Fermentation is used to make bread, yoghurt, and wine." },
-  { id:191, topic:"Ovqat",       word:"portion",         uz:"ulush, porsiya",                    level:"B1", example:"The restaurant is known for its generous portions." },
-  { id:192, topic:"Ovqat",       word:"dietary",         uz:"ovqatlanish, parhez",               level:"B2", example:"She follows strict dietary guidelines for health reasons." },
-  { id:193, topic:"Ovqat",       word:"marinate",        uz:"marinad qilmoq",                    level:"B2", example:"Marinate the chicken for at least two hours before grilling." },
-  { id:194, topic:"Ovqat",       word:"organic",         uz:"organik, tabiiy",                   level:"B1", example:"She prefers to buy organic vegetables from the local market." },
-  { id:195, topic:"Ovqat",       word:"calorie",         uz:"kaloriya",                          level:"B1", example:"This dessert contains over 500 calories per serving." },
-  { id:196, topic:"Ovqat",       word:"buffet",          uz:"bufet, ochiq dasturxon",            level:"B1", example:"The hotel offers a buffet breakfast from 7am." },
-  { id:197, topic:"Ovqat",       word:"vegetarian",      uz:"vegetarian, go'shtsiz ovqat",       level:"A2", example:"The menu has plenty of vegetarian options." },
-  { id:198, topic:"Ovqat",       word:"gluten",          uz:"gluten, don proteini",              level:"B2", example:"Some people have an intolerance to gluten." },
-  { id:199, topic:"Ovqat",       word:"garnish",         uz:"bezak, taom bezagi",                level:"B2", example:"Add a garnish of fresh herbs before serving." },
-  { id:200, topic:"Ovqat",       word:"protein",         uz:"oqsil, protein",                    level:"B1", example:"Beans and lentils are excellent sources of plant-based protein." },
-];
+//  ALL_WORDS — Firestore'dan dinamik yuklanadi
+// ═══════════════════════════════════════════════════════════
+let ALL_WORDS = [];
 
 // ═══════════════════════════════════════════════════════════
 //  STATE
 // ═══════════════════════════════════════════════════════════
-let bookmarks = JSON.parse(localStorage.getItem('vz_bookmarks') || '[]');
-let likes     = JSON.parse(localStorage.getItem('vz_likes')     || '[]');
-let learned   = JSON.parse(localStorage.getItem('vz_learned')   || '[]');
+let bookmarks = JSON.parse(localStorage.getItem('vz_bookmarks') || '[]').map(Number);
+let likes     = JSON.parse(localStorage.getItem('vz_likes')     || '[]').map(Number);
+let learned   = JSON.parse(localStorage.getItem('vz_learned')   || '[]').map(Number);
 let activeTab = 'bookmark';
 let searchQ   = '';
 let currentModalWord = null;
 let currentUser = null;
 
-function saveBookmarks(){ localStorage.setItem('vz_bookmarks', JSON.stringify(bookmarks)); }
-function saveLikes(){     localStorage.setItem('vz_likes',     JSON.stringify(likes));     }
+function saveBookmarks(){
+  localStorage.setItem('vz_bookmarks', JSON.stringify(bookmarks));
+  if(currentUser && typeof db !== 'undefined'){
+    db.collection('users').doc(currentUser.uid).set({ bookmarks: bookmarks }, { merge: true }).catch(function(){});
+  }
+}
+function saveLikes(){
+  localStorage.setItem('vz_likes', JSON.stringify(likes));
+  if(currentUser && typeof db !== 'undefined'){
+    db.collection('users').doc(currentUser.uid).set({ likes: likes }, { merge: true }).catch(function(){});
+  }
+}
 function saveLearned(){   localStorage.setItem('vz_learned',   JSON.stringify(learned));   }
 
-// Firebase auth
-if(typeof firebase !== 'undefined'){
-  firebase.auth().onAuthStateChanged(function(user){
-    if(user){
-      currentUser = user;
-      // Sync from Firestore
-      firebase.firestore().collection('users').doc(user.uid).get().then(function(doc){
-        if(doc.exists){
-          var data = doc.data();
-          if(data.bookmarks){ bookmarks = data.bookmarks; saveBookmarks(); }
-          if(data.likes)    { likes     = data.likes;     saveLikes(); }
-          if(data.learned)  { learned   = data.learned;   saveLearned(); }
-        }
-        render();
-      }).catch(function(){ render(); });
-    } else {
+// Firebase auth + Firestore so'zlarni yuklash
+// Firebase script teglar <body> oxirida yuklanadi
+document.addEventListener('DOMContentLoaded', function(){
+  auth.onAuthStateChanged(function(user){
+    if(!user){ location.href = 'login.html'; return; }
+    currentUser = user;
+
+    // Foydalanuvchi ma'lumotlari + barcha so'zlarni parallel yuklash
+    Promise.all([
+      db.collection('users').doc(user.uid).get(),
+      db.collection('words').get()
+    ]).then(function(results){
+      var userDoc   = results[0];
+      var wordsSnap = results[1];
+
+      // Foydalanuvchi ma'lumotlari
+      if(userDoc.exists){
+        var data = userDoc.data();
+        if(data.bookmarks){ bookmarks = data.bookmarks.map(Number); saveBookmarks(); }
+        if(data.likes)    { likes     = data.likes.map(Number);     saveLikes(); }
+        if(data.learned)  { learned   = data.learned.map(Number);   saveLearned(); }
+      }
+
+      // Barcha so'zlarni yuklash va id bo'yicha tartiblash
+      ALL_WORDS = wordsSnap.docs
+        .map(function(d){ return Object.assign({}, d.data(), { _docId: d.id }); })
+        .filter(function(w){ return w.id != null; })
+        .sort(function(a,b){ return Number(a.id) - Number(b.id); });
+
       render();
-    }
+    }).catch(function(err){
+      console.error('Yuklash xatosi:', err);
+      render();
+    });
   });
-}
+});
 
 // Save learned word to Firestore + update activity log
 function markLearned(id){
-  var fdb = typeof firebase !== 'undefined' ? firebase.firestore() : null;
+  var fdb = (typeof db !== 'undefined') ? db : null;
   var d = new Date();
   var todayKey = 'activityLog.' + d.getFullYear()+'-'+
     (d.getMonth()+1).toString().padStart(2,'0')+'-'+
@@ -1186,11 +1013,15 @@ function closeFlashcards(){
 }
 
 // ═══════════════════════════════════════════════════════════
-//  INIT — check URL param
+//  INIT — check URL param (tab holati Firebase yuklanishidan oldin belgilanadi)
 // ═══════════════════════════════════════════════════════════
 const urlTab = new URLSearchParams(location.search).get('tab');
-if(urlTab === 'like') switchTab('like');
-else render();
+if(urlTab === 'like') activeTab = 'like';
 </script>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
 </body>
 </html>
