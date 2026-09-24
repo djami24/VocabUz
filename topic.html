@@ -84,6 +84,24 @@ body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:v
 .word-dash{color:var(--ink-mid);font-size:.92rem;font-weight:400;}
 .word-uz{font-size:.9rem;font-weight:500;color:var(--ink-mid);flex:1;}
 .level-badge{display:inline-flex;align-items:center;background:var(--blue-light);color:var(--blue);font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:8px;margin-left:4px;vertical-align:middle;}
+
+/* ── DARAJA KARTOCHKALARI ── */
+.level-select-card{
+  background:var(--white);border-radius:var(--radius);
+  padding:18px 20px;box-shadow:var(--shadow-sm);
+  cursor:pointer;transition:box-shadow .15s,transform .12s,border-color .12s;
+  display:flex;align-items:center;gap:16px;
+  border:2px solid transparent;
+  -webkit-tap-highlight-color:transparent;
+  position:relative;overflow:hidden;
+}
+.level-select-card:active{transform:scale(.98);box-shadow:var(--shadow-md);}
+.level-select-icon{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;}
+.level-select-info{flex:1;}
+.level-select-name{font-size:1.15rem;font-weight:800;color:var(--ink);}
+.level-select-sub{font-size:.78rem;color:var(--ink-soft);margin-top:2px;}
+.level-select-meta{font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:20px;background:var(--blue-light);color:var(--blue);white-space:nowrap;}
+.level-select-card-bar{position:absolute;bottom:0;left:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--blue-deep));}
 .word-example{font-size:.84rem;color:var(--ink-mid);font-style:italic;line-height:1.5;padding:6px 0 8px;border-bottom:1px solid var(--blue-light);margin-bottom:8px;}
 .word-example::before{content:'• ';}
 .word-actions{display:flex;gap:8px;align-items:center;}
@@ -205,8 +223,14 @@ body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:v
   <span class="topbar-count" id="topbarCount">—</span>
 </div>
 
+<!-- VIEW 0: DARAJA TANLASH -->
+<div id="viewLevels" style="display:none;padding:0 16px calc(var(--bottom-nav-h)+24px);">
+  <div style="padding:18px 0 14px;font-size:.82rem;color:var(--ink-soft);font-weight:500;">Qaysi darajadan o'rganmoqchisiz?</div>
+  <div id="levelsGrid" style="display:flex;flex-direction:column;gap:12px;"></div>
+</div>
+
 <!-- VIEW 1: MAVZULAR -->
-<div id="viewTopics">
+<div id="viewTopics" style="display:none;">
   <div class="topics-grid" id="topicsGrid">
     <div class="spinner-wrap"><div class="spinner"></div></div>
   </div>
@@ -285,6 +309,7 @@ let bookmarks    = [];   // yodlash ro'yxati
 let likes        = [];   // yoqtirganlar
 let currentUser  = null;
 let currentTopic = null; // Ochiq mavzu
+let currentLevel = null; // Tanlangan daraja
 
 // ─── YORDAMCHI FUNKSIYALAR ────────────────────────────────
 function topicWords(topic){ return ALL_WORDS.filter(w=>w.topic===topic); }
@@ -352,10 +377,10 @@ firebase.auth().onAuthStateChanged(function(user){
     });
 
     saveState();
-    renderTopics();
+    renderLevels();
   }).catch(function(e){
     console.error('Yuklash xatosi:', e);
-    renderTopics();
+    renderLevels();
   });
 });
 
@@ -376,41 +401,95 @@ function showToast(msg){
 }
 
 // ════════════════════════════════════════
-//  VIEW 1: MAVZULAR
+//  VIEW 0: DARAJALAR
+// ════════════════════════════════════════
+const LEVEL_CONFIG = {
+  'A1': { emoji:'🌱', label:'Boshlang\'ich',      color:'#E8F5E9', textColor:'#2E7D32' },
+  'A2': { emoji:'🌿', label:'Boshlang\'ich-o\'rta', color:'#F1F8E9', textColor:'#558B2F' },
+  'B1': { emoji:'⭐', label:'O\'rta daraja',       color:'#E3F2FD', textColor:'#1565C0' },
+  'B2': { emoji:'⭐⭐',label:'O\'rta-yuqori',       color:'#E8EAF6', textColor:'#283593' },
+  'C1': { emoji:'🏆', label:'Ilg\'or daraja',      color:'#FFF8E1', textColor:'#F57F17' },
+  'C2': { emoji:'🎓', label:'Mukammal daraja',     color:'#FCE4EC', textColor:'#880E4F' },
+};
+const LEVEL_ORDER = ['A1','A2','B1','B2','C1','C2'];
+
+function renderLevels(){
+  currentLevel = null;
+  document.getElementById('topbarTitle').textContent = 'Topic Vocabulary';
+  document.getElementById('topbarCount').textContent = learnedIds.length + " ta o'rganilgan";
+  document.getElementById('viewLevels').style.display = 'block';
+  document.getElementById('viewTopics').style.display = 'none';
+  document.getElementById('viewWords').style.display  = 'none';
+
+  let html = '';
+  LEVEL_ORDER.forEach(function(lvl){
+    const cfg       = LEVEL_CONFIG[lvl];
+    // words in this level
+    const lvlWords  = ALL_WORDS.filter(function(w){ return (w.level||'').toUpperCase() === lvl; });
+    const count     = lvlWords.length;
+    if(count === 0) return; // bu darajada so'z yo'q — ko'rsatma
+    // distinct topics
+    const topicsInLevel = [...new Set(lvlWords.map(function(w){ return w.topic; }).filter(Boolean))];
+    const learnedInLvl  = lvlWords.filter(function(w){ return learnedIds.includes(w.id); }).length;
+    const pct           = count > 0 ? Math.round(learnedInLvl / count * 100) : 0;
+
+    html += `<div class="level-select-card" onclick="openLevel('${lvl}')" style="border-color:${pct===100?'var(--green)':'transparent'}">
+      <div class="level-select-icon" style="background:${cfg.color};">${cfg.emoji}</div>
+      <div class="level-select-info">
+        <div class="level-select-name" style="color:${cfg.textColor}">${lvl} <span style="font-size:.82rem;font-weight:600;color:var(--ink-mid)">— ${cfg.label}</span></div>
+        <div class="level-select-sub">${topicsInLevel.length} ta mavzu · ${count} ta so'z</div>
+      </div>
+      <div class="level-select-meta" style="background:${cfg.color};color:${cfg.textColor}">${learnedInLvl}/${count}</div>
+      <div class="level-select-card-bar" style="width:${pct}%;background:${cfg.textColor}"></div>
+    </div>`;
+  });
+
+  if(!html) html = '<div style="text-align:center;padding:40px;color:var(--ink-soft);font-size:.88rem;">Hali so\'zlar qo\'shilmagan</div>';
+  document.getElementById('levelsGrid').innerHTML = html;
+}
+
+function openLevel(level){
+  currentLevel = level;
+  document.getElementById('viewLevels').style.display = 'none';
+  renderTopics();
+}
+
+// ════════════════════════════════════════
+//  VIEW 1: MAVZULAR (daraja bo'yicha filtered)
 // ════════════════════════════════════════
 function renderTopics(){
-  const total = learnedIds.length;
-  document.getElementById('topbarTitle').textContent = 'Topic Vocabulary';
-  document.getElementById('topbarCount').textContent = total+" ta o'rganilgan";
+  const cfg = LEVEL_CONFIG[currentLevel] || { emoji:'📚', label:currentLevel, color:'#E3F2FD', textColor:'#1565C0' };
+  document.getElementById('topbarTitle').textContent = currentLevel + ' — Mavzular';
+  document.getElementById('topbarCount').textContent = currentLevel;
+  document.getElementById('viewTopics').style.display = 'block';
+
+  // Faqat shu darajadagi mavzular
+  const levelWords = ALL_WORDS.filter(function(w){ return (w.level||'').toUpperCase() === currentLevel; });
+  const levelTopics = [];
+  levelWords.forEach(function(w){
+    if(w.topic && levelTopics.indexOf(w.topic) === -1) levelTopics.push(w.topic);
+  });
 
   let html='';
-  TOPIC_ORDER.forEach(function(topic){
-    const words    = topicWords(topic);
-    const learned  = topicLearnedCount(topic);
+  levelTopics.forEach(function(topic){
+    const words    = levelWords.filter(function(w){ return w.topic === topic; });
+    const learned  = words.filter(function(w){ return learnedIds.includes(w.id); }).length;
     const total    = words.length;
-    const pct      = Math.round(learned/total*100);
-    const full     = isTopicFull(topic);
-    const passed   = isTopicPassed(topic);
-    const unlocked = isTopicUnlocked(topic);
+    const pct      = total > 0 ? Math.round(learned/total*100) : 0;
+    const full     = learned === total && total > 0;
     const color    = TOPIC_COLOR[topic]||'#E3F2FD';
 
     let badgeHtml, rightHtml;
-    if(passed){
-      badgeHtml=`<span class="topic-badge done">O'tildi</span>`;
+    if(full){
+      badgeHtml=`<span class="topic-badge done">✓ Tugallandi</span>`;
       rightHtml=`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
-    } else if(!unlocked){
-      badgeHtml=`<span class="topic-badge locked">Qulflangan</span>`;
-      rightHtml=`<svg class="lock-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`;
-    } else if(full){
-      badgeHtml=`<span class="topic-badge" style="background:var(--amber-light);color:var(--amber)">Test tayyor!</span>`;
-      rightHtml=`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>`;
     } else {
       badgeHtml=`<span class="topic-badge">${learned}/${total}</span>`;
       rightHtml=`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink-soft)" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>`;
     }
 
-    const cardClass = 'topic-card'+(passed?' completed':'')+((!unlocked)?' locked':'');
-    const clickAttr = unlocked ? `onclick="openTopic(TOPIC_ORDER[${TOPIC_ORDER.indexOf(topic)}])"` : '';
+    const cardClass = 'topic-card'+(full?' completed':'');
+    const clickAttr = `onclick="openTopic('${topic.replace(/'/g,\"\\\\'\")}', '${currentLevel}')"`;
 
     html+=`
       <div class="${cardClass}" ${clickAttr}>
@@ -422,6 +501,7 @@ function renderTopics(){
         <div class="topic-card-progress-bar" style="width:${pct}%"></div>
       </div>`;
   });
+  if(!html) html = '<div style="text-align:center;padding:40px;color:var(--ink-soft);font-size:.88rem;">Bu darajada mavzular mavjud emas</div>';
   document.getElementById('topicsGrid').innerHTML = html +
     '<div style="height:120px;flex-shrink:0;display:block;"></div>';
 }
@@ -429,8 +509,9 @@ function renderTopics(){
 // ════════════════════════════════════════
 //  VIEW 2: SO'ZLAR
 // ════════════════════════════════════════
-function openTopic(topic){
+function openTopic(topic, level){
   currentTopic = topic;
+  if(level) currentLevel = level;
   document.getElementById('viewTopics').style.display='none';
   const vw = document.getElementById('viewWords');
   vw.style.display='block';
@@ -441,12 +522,15 @@ function openTopic(topic){
 
 function goBack(){
   if(document.getElementById('viewWords').style.display==='block'){
+    // So'zlar → Mavzular (shu daraja)
     document.getElementById('viewWords').style.display='none';
-    document.getElementById('viewTopics').style.display='block';
     currentTopic=null;
-    document.getElementById('topbarTitle').textContent='Topic Vocabulary';
-    document.getElementById('topbarCount').textContent=learnedIds.length+" ta o'rganilgan";
     renderTopics();
+  } else if(document.getElementById('viewTopics').style.display==='block'){
+    // Mavzular → Darajalar
+    document.getElementById('viewTopics').style.display='none';
+    currentLevel=null;
+    renderLevels();
   } else {
     history.back();
   }
