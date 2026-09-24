@@ -7,6 +7,269 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<style>
+/* ═══ TOPIC VOCABULARY PANEL ═══ */
+.tv-panel{
+  position:fixed;inset:0;z-index:300;background:#F0F6FF;
+  display:none;flex-direction:column;overflow:hidden;
+}
+.tv-panel.open{ display:flex; }
+
+/* Top bar */
+.tv-topbar{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 16px 12px;background:#F0F6FF;
+  position:sticky;top:0;z-index:10;
+  border-bottom:1px solid #E2ECF5;
+}
+.tv-back{
+  width:38px;height:38px;border-radius:50%;background:#fff;
+  border:none;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;box-shadow:0 1px 4px rgba(33,150,243,.1);
+  color:#5A6070;flex-shrink:0;
+}
+.tv-topbar-title{ font-size:1.05rem;font-weight:700;flex:1;color:#1A1A2E; }
+.tv-topbar-badge{
+  font-size:.75rem;font-weight:700;padding:4px 10px;border-radius:20px;
+  background:#E3F2FD;color:#2196F3;white-space:nowrap;
+}
+
+/* Scroll area */
+.tv-body{
+  flex:1;overflow-y:auto;padding:0 16px 100px;
+}
+
+/* Section header */
+.tv-section-label{
+  padding:18px 0 10px;font-size:.78rem;font-weight:600;
+  color:#9AA0AD;letter-spacing:.3px;text-transform:uppercase;
+}
+
+/* ── Level cards ── */
+.tv-level-card{
+  background:#fff;border-radius:16px;padding:16px;
+  box-shadow:0 1px 4px rgba(33,150,243,.1);
+  display:flex;align-items:center;gap:14px;
+  cursor:pointer;margin-bottom:10px;
+  border:2px solid transparent;
+  transition:border-color .15s,transform .12s;
+  -webkit-tap-highlight-color:transparent;
+  position:relative;overflow:hidden;
+}
+.tv-level-card:active{ transform:scale(.98); }
+.tv-level-icon{
+  width:48px;height:48px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;
+}
+.tv-level-info{ flex:1;min-width:0; }
+.tv-level-name{ font-size:1rem;font-weight:800;color:#1A1A2E; }
+.tv-level-sub{ font-size:.75rem;color:#9AA0AD;margin-top:2px; }
+.tv-level-badge{
+  font-size:.72rem;font-weight:700;padding:3px 9px;
+  border-radius:20px;white-space:nowrap;flex-shrink:0;
+}
+.tv-level-bar{
+  position:absolute;bottom:0;left:0;height:3px;
+  border-radius:0 2px 0 0;
+  transition:width .4s ease;
+}
+
+/* ── Topic cards ── */
+.tv-topic-card{
+  background:#fff;border-radius:14px;padding:14px 16px;
+  box-shadow:0 1px 4px rgba(33,150,243,.1);
+  display:flex;align-items:center;gap:12px;
+  cursor:pointer;margin-bottom:10px;
+  position:relative;overflow:hidden;
+  -webkit-tap-highlight-color:transparent;
+  transition:transform .12s;
+}
+.tv-topic-card:active{ transform:scale(.98); }
+.tv-topic-card.completed{ border-left:3px solid #22C55E; }
+.tv-topic-name{ font-size:.95rem;font-weight:700;color:#1A1A2E;margin-bottom:2px; }
+.tv-topic-meta{ font-size:.75rem;color:#9AA0AD;display:flex;align-items:center;gap:6px; }
+.tv-topic-badge{
+  font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:8px;
+  background:#E3F2FD;color:#2196F3;
+}
+.tv-topic-badge.done{ background:#DCFCE7;color:#16A34A; }
+.tv-topic-bar{
+  position:absolute;bottom:0;left:0;height:3px;
+  background:linear-gradient(90deg,#2196F3,#1565C0);
+}
+
+/* ── Word cards ── */
+.tv-word-card{
+  background:#fff;border-radius:14px;padding:13px 15px 11px;
+  box-shadow:0 1px 4px rgba(33,150,243,.1);margin-bottom:10px;
+}
+.tv-word-card.learned{ border-left:3px solid #22C55E; }
+.tv-word-head{
+  display:flex;align-items:baseline;gap:6px;margin-bottom:4px;flex-wrap:wrap;
+}
+.tv-word-num{ font-size:.8rem;font-weight:700;color:#2196F3;flex-shrink:0;min-width:20px; }
+.tv-word-en{ font-size:.95rem;font-weight:700;color:#1A1A2E; }
+.tv-word-dash{ color:#8A9BB0; }
+.tv-word-uz{ font-size:.88rem;font-weight:500;color:#5A6070;flex:1; }
+.tv-level-pill{
+  display:inline-flex;align-items:center;
+  background:#E3F2FD;color:#2196F3;
+  font-size:.65rem;font-weight:700;padding:2px 6px;border-radius:6px;
+  flex-shrink:0;
+}
+.tv-word-example{
+  font-size:.82rem;color:#5A6070;font-style:italic;line-height:1.5;
+  padding:5px 0 8px;border-bottom:1px solid #E3F2FD;margin-bottom:8px;
+}
+.tv-word-example::before{ content:'• '; }
+.tv-word-actions{ display:flex;gap:8px; }
+.tv-btn-learned{
+  flex:1;height:36px;border-radius:10px;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+  font-size:.8rem;font-weight:700;font-family:inherit;
+  background:#DCFCE7;color:#16A34A;
+  transition:background .15s,color .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.tv-btn-learned.done{ background:#22C55E;color:#fff; }
+.tv-btn-icon{
+  width:36px;height:36px;border-radius:10px;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  background:#E3F2FD;color:#9AA0AD;
+  transition:background .15s,color .15s;
+  -webkit-tap-highlight-color:transparent;flex-shrink:0;
+}
+.tv-btn-icon.bookmarked{ background:#EFF6FF;color:#2196F3; }
+.tv-btn-icon.liked{ background:#FEE2E2;color:#EF4444; }
+
+/* Progress banner */
+.tv-progress-box{
+  background:#fff;border-radius:12px;padding:13px 15px;
+  box-shadow:0 1px 4px rgba(33,150,243,.1);margin-bottom:12px;
+}
+.tv-progress-row{ display:flex;justify-content:space-between;align-items:center;margin-bottom:7px; }
+.tv-progress-label{ font-size:.82rem;font-weight:700;color:#1A1A2E; }
+.tv-progress-pct{ font-size:.82rem;font-weight:800;color:#2196F3; }
+.tv-progress-track{ height:7px;background:#E3F2FD;border-radius:7px;overflow:hidden; }
+.tv-progress-fill{ height:100%;background:linear-gradient(90deg,#2196F3,#1565C0);border-radius:7px;transition:width .4s; }
+
+/* Test ready */
+.tv-test-ready{
+  background:linear-gradient(135deg,#16A34A,#22C55E);
+  border-radius:12px;padding:13px 15px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  cursor:pointer;margin-bottom:12px;
+  box-shadow:0 4px 14px rgba(34,197,94,.3);
+  -webkit-tap-highlight-color:transparent;
+}
+.tv-test-ready-title{ font-size:.9rem;font-weight:800;color:#fff;margin-bottom:2px; }
+.tv-test-ready-sub{ font-size:.75rem;color:rgba(255,255,255,.85); }
+.tv-test-ready-btn{
+  background:rgba(255,255,255,.25);color:#fff;border:none;
+  border-radius:9px;padding:7px 12px;font-family:inherit;
+  font-size:.8rem;font-weight:700;cursor:pointer;white-space:nowrap;
+}
+
+/* Passed banner */
+.tv-passed-box{
+  background:#DCFCE7;border-radius:12px;padding:13px 15px;
+  display:flex;align-items:center;gap:10px;margin-bottom:12px;
+}
+
+/* ── TEST FULLSCREEN ── */
+#tvTest{
+  position:fixed;inset:0;z-index:500;background:#F0F6FF;
+  display:none;flex-direction:column;
+}
+#tvTest.open{ display:flex; }
+.tv-test-topbar{
+  display:flex;align-items:center;gap:10px;padding:13px 16px;
+  background:#fff;box-shadow:0 1px 4px rgba(33,150,243,.1);flex-shrink:0;
+}
+.tv-test-close{
+  width:34px;height:34px;border-radius:50%;background:#F0F6FF;
+  border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#5A6070;
+}
+.tv-test-title{ font-size:.92rem;font-weight:700;flex:1;color:#1A1A2E; }
+.tv-test-counter{ font-size:.8rem;font-weight:700;color:#2196F3; }
+.tv-test-pbar{ height:4px;background:#BBDEFB;flex-shrink:0; }
+.tv-test-pfill{ height:100%;background:#2196F3;transition:width .3s; }
+.tv-test-body{
+  flex:1;overflow-y:auto;padding:22px 16px 32px;
+  display:flex;flex-direction:column;align-items:center;
+}
+.tv-test-question{
+  width:100%;max-width:420px;
+  background:linear-gradient(135deg,#1565C0,#2196F3);
+  border-radius:18px;padding:24px 20px;text-align:center;color:#fff;margin-bottom:20px;
+}
+.tv-test-qlabel{
+  font-size:.72rem;font-weight:700;opacity:.7;
+  letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px;
+}
+.tv-test-qword{ font-size:1.8rem;font-weight:900;letter-spacing:-.5px;margin-bottom:5px; }
+.tv-test-qtopic{ font-size:.75rem;opacity:.7; }
+.tv-test-errs{
+  width:100%;max-width:420px;display:flex;align-items:center;
+  justify-content:center;gap:7px;margin-bottom:14px;
+  font-size:.8rem;font-weight:600;color:#EF4444;
+}
+.tv-err-dot{ width:9px;height:9px;border-radius:50%;background:#EF4444; }
+.tv-err-dot.empty{ background:#FEE2E2;border:2px solid #EF4444; }
+.tv-test-opts{ width:100%;max-width:420px;display:flex;flex-direction:column;gap:9px; }
+.tv-test-opt{
+  width:100%;padding:14px 16px;border-radius:12px;
+  border:2px solid #E3F2FD;background:#fff;
+  font-family:inherit;font-size:.88rem;font-weight:600;color:#1A1A2E;
+  cursor:pointer;text-align:left;transition:all .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.tv-test-opt:active:not([disabled]){ background:#E3F2FD; }
+.tv-test-opt.correct{ background:#DCFCE7!important;border-color:#22C55E!important;color:#16A34A!important; }
+.tv-test-opt.wrong{ background:#FEE2E2!important;border-color:#EF4444!important;color:#EF4444!important; }
+.tv-test-opt.show-correct{ background:#DCFCE7!important;border-color:#22C55E!important; }
+.tv-test-opt[disabled]{ cursor:default; }
+.tv-test-next{
+  width:100%;max-width:420px;height:50px;margin-top:16px;
+  border-radius:14px;border:none;cursor:pointer;
+  font-family:inherit;font-size:.95rem;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,#1565C0,#2196F3);
+  box-shadow:0 4px 14px rgba(33,150,243,.3);display:none;
+}
+.tv-result{ flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 20px;text-align:center;gap:12px; }
+.tv-result-title{ font-size:1.3rem;font-weight:900;color:#1A1A2E; }
+.tv-result-sub{ font-size:.88rem;color:#5A6070;line-height:1.6;max-width:280px; }
+.tv-result-stats{ display:flex;gap:9px;width:100%;max-width:320px;margin:6px 0; }
+.tv-rs{ flex:1;background:#fff;border-radius:12px;padding:12px 6px;text-align:center;box-shadow:0 1px 4px rgba(33,150,243,.1); }
+.tv-rs-val{ font-size:1.5rem;font-weight:900; }
+.tv-rs-lbl{ font-size:.68rem;color:#9AA0AD;margin-top:2px; }
+.tv-result-btns{ display:flex;flex-direction:column;gap:9px;width:100%;max-width:320px;margin-top:4px; }
+.tv-rb{
+  width:100%;height:50px;border-radius:14px;border:none;cursor:pointer;
+  font-family:inherit;font-size:.95rem;font-weight:700;
+  -webkit-tap-highlight-color:transparent;
+}
+.tv-rb.primary{ color:#fff;background:linear-gradient(135deg,#1565C0,#2196F3);box-shadow:0 4px 14px rgba(33,150,243,.3); }
+.tv-rb.secondary{ background:#F1F5F9;color:#5A6070; }
+.tv-rb.green{ color:#fff;background:linear-gradient(135deg,#16A34A,#22C55E);box-shadow:0 4px 14px rgba(34,197,94,.3); }
+
+/* Spinner */
+.tv-spinner-wrap{ display:flex;align-items:center;justify-content:center;padding:48px 0; }
+.tv-spinner{ width:32px;height:32px;border:3px solid #BBDEFB;border-top-color:#2196F3;border-radius:50%;animation:tvSpin .8s linear infinite; }
+@keyframes tvSpin{ to{ transform:rotate(360deg) } }
+
+/* Toast */
+.tv-toast{
+  position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:#1A1A2E;color:#fff;padding:9px 18px;border-radius:20px;
+  font-size:.8rem;font-weight:600;pointer-events:none;opacity:0;
+  transition:opacity .25s,transform .25s;white-space:nowrap;z-index:600;
+}
+.tv-toast.show{ opacity:1;transform:translateX(-50%) translateY(0); }
+
+/* Empty state */
+.tv-empty{ text-align:center;padding:48px 16px;color:#9AA0AD;font-size:.88rem; }
+</style>
 </head>
 <body>
 
@@ -34,6 +297,24 @@
 
   <!-- Menu -->
   <div class="profile-menu">
+
+    <!-- ★ TOPIC VOCABULARY button ★ -->
+    <div class="profile-menu-item" onclick="openTopicVocab()" style="cursor:pointer">
+      <div class="profile-menu-icon" style="background:#E3F2FD;color:#2196F3">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          <line x1="12" y1="7" x2="16" y2="7"/>
+          <line x1="10" y1="11" x2="16" y2="11"/>
+        </svg>
+      </div>
+      <div style="flex:1">
+        <div class="profile-menu-label">Topic Vocabulary</div>
+        <div class="profile-menu-sub" id="tvMenuSub">Mavzu bo'yicha so'zlar</div>
+      </div>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+
     <div class="profile-menu-item" onclick="location.href='mywords.html'">
       <div class="profile-menu-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
@@ -152,13 +433,55 @@
   </a>
 </nav>
 
+<!-- ═══════════════════════════════════════════
+     TOPIC VOCABULARY FULLSCREEN PANEL
+═══════════════════════════════════════════ -->
+<div class="tv-panel" id="tvPanel">
+
+  <!-- Top bar -->
+  <div class="tv-topbar">
+    <button class="tv-back" id="tvBackBtn" onclick="tvGoBack()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <span class="tv-topbar-title" id="tvTitle">Topic Vocabulary</span>
+    <span class="tv-topbar-badge" id="tvBadge"></span>
+  </div>
+
+  <div class="tv-body" id="tvBody">
+    <div class="tv-spinner-wrap"><div class="tv-spinner"></div></div>
+  </div>
+</div>
+
+<!-- TEST FULLSCREEN -->
+<div id="tvTest">
+  <div class="tv-test-topbar">
+    <button class="tv-test-close" onclick="tvCloseTest()">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <span class="tv-test-title" id="tvTestTitle">Test</span>
+    <span class="tv-test-counter" id="tvTestCounter">1/10</span>
+  </div>
+  <div class="tv-test-pbar"><div class="tv-test-pfill" id="tvTestFill" style="width:0%"></div></div>
+  <div class="tv-test-body" id="tvTestBody"></div>
+</div>
+
+<!-- Toast -->
+<div class="tv-toast" id="tvToast"></div>
+
+<!-- ═══════════════════════════════════════════
+     FIREBASE + SCRIPTS
+═══════════════════════════════════════════ -->
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script>
+// ══════════════════════════════════════════════
+//  PROFILE: Auth
+// ══════════════════════════════════════════════
 firebase.auth().onAuthStateChanged(function(user){
   if(!user){ location.href='login.html'; return; }
+  currentUser = user;
   var name = user.displayName || user.email || 'Foydalanuvchi';
   var parts = name.trim().split(/\s+/);
   var initials = parts.length >= 2
@@ -167,11 +490,569 @@ firebase.auth().onAuthStateChanged(function(user){
   document.getElementById('profAvatar').textContent = initials;
   document.getElementById('profName').textContent = name;
   document.getElementById('profEmail').textContent = user.email || '';
+
+  // Load topic vocab state from Firestore
+  loadLocalState();
+  db.collection('users').doc(user.uid).get().then(function(doc){
+    if(doc.exists){
+      if(doc.data().tvLearned)    tvLearned    = doc.data().tvLearned.map(Number);
+      if(doc.data().tvPassed)     tvPassed     = doc.data().tvPassed;
+      if(doc.data().tvBookmarks)  tvBookmarks  = doc.data().tvBookmarks;
+      if(doc.data().tvLikes)      tvLikes      = doc.data().tvLikes;
+    }
+    saveLocalState();
+    updateMenuSub();
+  });
 });
 
 function doLogout(){
   if(!confirm('Ilovadan chiqishni xohlaysizmi?')) return;
   firebase.auth().signOut().then(function(){ location.href='login.html'; });
+}
+
+// ══════════════════════════════════════════════
+//  TOPIC VOCAB: State
+// ══════════════════════════════════════════════
+var currentUser   = null;
+var TV_WORDS      = [];   // All words from Firestore
+var TV_LEVEL      = null; // Selected level (e.g. 'A1')
+var TV_TOPIC      = null; // Selected topic
+
+var tvLearned     = [];
+var tvPassed      = [];
+var tvBookmarks   = [];
+var tvLikes       = [];
+
+var tvView        = 'levels'; // 'levels' | 'topics' | 'words'
+var tvLoaded      = false;
+
+// Test state
+var tvTestWords   = [];
+var tvTestIdx     = 0;
+var tvTestErrors  = 0;
+var tvTestCorrect = 0;
+var tvTestAnswered= false;
+var TV_MAX_ERR    = 1;
+
+// Level config
+var LEVEL_CFG = {
+  'A1': { emoji:'🌱', label:"Boshlang'ich",        color:'#E8F5E9', text:'#2E7D32' },
+  'A2': { emoji:'🌿', label:"Boshlang'ich-o'rta",  color:'#F1F8E9', text:'#558B2F' },
+  'B1': { emoji:'⭐',  label:"O'rta daraja",        color:'#E3F2FD', text:'#1565C0' },
+  'B2': { emoji:'⭐⭐', label:"O'rta-yuqori",        color:'#E8EAF6', text:'#283593' },
+  'C1': { emoji:'🏆', label:"Ilg'or daraja",       color:'#FFF8E1', text:'#F57F17' },
+  'C2': { emoji:'🎓', label:'Mukammal daraja',      color:'#FCE4EC', text:'#880E4F' }
+};
+var LEVEL_ORDER = ['A1','A2','B1','B2','C1','C2'];
+
+var TOPIC_COLORS = [
+  '#E3F2FD','#FCE4EC','#E8F5E9','#FFF8E1',
+  '#F3E5F5','#E0F7FA','#F1F8E9','#FBE9E7',
+  '#EDE7F6','#FFF3E0','#E8EAF6','#F9FBE7'
+];
+var TOPIC_COLOR_MAP = {};
+
+function loadLocalState(){
+  tvLearned    = JSON.parse(localStorage.getItem('tv_learned')   || '[]').map(Number);
+  tvPassed     = JSON.parse(localStorage.getItem('tv_passed')    || '[]');
+  tvBookmarks  = JSON.parse(localStorage.getItem('tv_bookmarks') || '[]');
+  tvLikes      = JSON.parse(localStorage.getItem('tv_likes')     || '[]');
+}
+function saveLocalState(){
+  localStorage.setItem('tv_learned',   JSON.stringify(tvLearned));
+  localStorage.setItem('tv_passed',    JSON.stringify(tvPassed));
+  localStorage.setItem('tv_bookmarks', JSON.stringify(tvBookmarks));
+  localStorage.setItem('tv_likes',     JSON.stringify(tvLikes));
+}
+function saveToFirestore(){
+  if(!currentUser) return;
+  var ref = db.collection('users').doc(currentUser.uid);
+  var data = { tvLearned:tvLearned, tvPassed:tvPassed, tvBookmarks:tvBookmarks, tvLikes:tvLikes };
+  ref.update(data).catch(function(){ ref.set(data,{merge:true}); });
+}
+
+function updateMenuSub(){
+  var sub = document.getElementById('tvMenuSub');
+  if(!sub) return;
+  var total = TV_WORDS.filter(function(w){ return w.vocabType==='topic'; }).length;
+  if(total > 0){
+    sub.textContent = tvLearned.length + '/' + total + " so'z o'rganildi";
+  }
+}
+
+// ══════════════════════════════════════════════
+//  OPEN / CLOSE PANEL
+// ══════════════════════════════════════════════
+function openTopicVocab(){
+  var panel = document.getElementById('tvPanel');
+  panel.classList.add('open');
+  panel.scrollTop = 0;
+
+  if(!tvLoaded){
+    tvLoaded = true;
+    loadTVWords();
+  } else {
+    tvView = 'levels';
+    TV_LEVEL = null;
+    TV_TOPIC = null;
+    renderLevels();
+  }
+}
+
+function closeTopicVocab(){
+  document.getElementById('tvPanel').classList.remove('open');
+  TV_LEVEL = null;
+  TV_TOPIC = null;
+  tvView = 'levels';
+  updateMenuSub();
+}
+
+function tvGoBack(){
+  if(tvView === 'words'){
+    TV_TOPIC = null;
+    tvView = 'topics';
+    renderTopics();
+  } else if(tvView === 'topics'){
+    TV_LEVEL = null;
+    tvView = 'levels';
+    renderLevels();
+  } else {
+    closeTopicVocab();
+  }
+}
+
+// ══════════════════════════════════════════════
+//  LOAD WORDS FROM FIRESTORE
+// ══════════════════════════════════════════════
+function loadTVWords(){
+  document.getElementById('tvTitle').textContent = 'Topic Vocabulary';
+  document.getElementById('tvBadge').textContent = '';
+  document.getElementById('tvBody').innerHTML = '<div class="tv-spinner-wrap"><div class="tv-spinner"></div></div>';
+
+  db.collection('words').where('vocabType','==','topic').get().then(function(snap){
+    TV_WORDS = [];
+    TOPIC_COLOR_MAP = {};
+    var colorIdx = 0;
+
+    var sorted = snap.docs.slice().sort(function(a,b){
+      return (Number(a.data().id)||0) - (Number(b.data().id)||0);
+    });
+
+    sorted.forEach(function(d){
+      var w = Object.assign({ _docId: d.id }, d.data());
+      TV_WORDS.push(w);
+      if(w.topic && !TOPIC_COLOR_MAP[w.topic]){
+        TOPIC_COLOR_MAP[w.topic] = TOPIC_COLORS[colorIdx % TOPIC_COLORS.length];
+        colorIdx++;
+      }
+    });
+
+    saveLocalState();
+    updateMenuSub();
+    renderLevels();
+  }).catch(function(e){
+    console.error(e);
+    document.getElementById('tvBody').innerHTML = '<div class="tv-empty">Ma\'lumotlarni yuklashda xato yuz berdi.<br>Qayta urinib ko\'ring.</div>';
+  });
+}
+
+// ══════════════════════════════════════════════
+//  VIEW 1: DARAJALAR
+// ══════════════════════════════════════════════
+function renderLevels(){
+  tvView = 'levels';
+  TV_LEVEL = null;
+  TV_TOPIC = null;
+  document.getElementById('tvTitle').textContent = 'Topic Vocabulary';
+  document.getElementById('tvBadge').textContent = tvLearned.length + " o'rganilgan";
+
+  var html = '<div class="tv-section-label">Daraja tanlang</div>';
+
+  LEVEL_ORDER.forEach(function(lvl){
+    var cfg = LEVEL_CFG[lvl];
+    var lvlWords = TV_WORDS.filter(function(w){ return (w.level||'').toUpperCase()===lvl; });
+    var count = lvlWords.length;
+    if(count === 0) return;
+
+    var topics = [];
+    lvlWords.forEach(function(w){
+      if(w.topic && topics.indexOf(w.topic)===-1) topics.push(w.topic);
+    });
+
+    var learned = lvlWords.filter(function(w){ return tvLearned.includes(w.id); }).length;
+    var pct = count > 0 ? Math.round(learned/count*100) : 0;
+    var isDone = pct === 100;
+
+    html += '<div class="tv-level-card" onclick="openLevel(\''+lvl+'\')" style="border-color:' + (isDone ? '#22C55E' : 'transparent') + '">' +
+      '<div class="tv-level-icon" style="background:'+cfg.color+'">'+cfg.emoji+'</div>' +
+      '<div class="tv-level-info">' +
+        '<div class="tv-level-name" style="color:'+cfg.text+'">'+lvl+' <span style="font-size:.78rem;font-weight:600;color:#9AA0AD">— '+cfg.label+'</span></div>' +
+        '<div class="tv-level-sub">'+topics.length+' ta mavzu · '+count+" ta so'z</div>" +
+      '</div>' +
+      '<div class="tv-level-badge" style="background:'+cfg.color+';color:'+cfg.text+'">'+learned+'/'+count+'</div>' +
+      '<div class="tv-level-bar" style="width:'+pct+'%;background:'+cfg.text+'"></div>' +
+    '</div>';
+  });
+
+  if(html === '<div class="tv-section-label">Daraja tanlang</div>'){
+    html += '<div class="tv-empty">Hali so\'zlar qo\'shilmagan</div>';
+  }
+
+  document.getElementById('tvBody').innerHTML = html;
+}
+
+function openLevel(lvl){
+  TV_LEVEL = lvl;
+  renderTopics();
+}
+
+// ══════════════════════════════════════════════
+//  VIEW 2: MAVZULAR
+// ══════════════════════════════════════════════
+function renderTopics(){
+  tvView = 'topics';
+  TV_TOPIC = null;
+
+  var cfg = LEVEL_CFG[TV_LEVEL] || { emoji:'📚', label:TV_LEVEL, color:'#E3F2FD', text:'#1565C0' };
+  document.getElementById('tvTitle').textContent = TV_LEVEL + ' — Mavzular';
+  document.getElementById('tvBadge').textContent = TV_LEVEL;
+
+  var lvlWords = TV_WORDS.filter(function(w){ return (w.level||'').toUpperCase()===TV_LEVEL; });
+  var topics = [];
+  lvlWords.forEach(function(w){
+    if(w.topic && topics.indexOf(w.topic)===-1) topics.push(w.topic);
+  });
+
+  var html = '<div class="tv-section-label">Mavzu tanlang</div>';
+
+  topics.forEach(function(topic){
+    var words   = lvlWords.filter(function(w){ return w.topic===topic; });
+    var learned = words.filter(function(w){ return tvLearned.includes(w.id); }).length;
+    var total   = words.length;
+    var pct     = total > 0 ? Math.round(learned/total*100) : 0;
+    var full    = learned===total && total>0;
+    var passed  = tvPassed.indexOf(topic+'_'+TV_LEVEL) !== -1;
+
+    var badgeHtml = full
+      ? '<span class="tv-topic-badge done">✓ Tugallandi</span>'
+      : '<span class="tv-topic-badge">'+learned+'/'+total+'</span>';
+
+    var rightHtml = full
+      ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
+      : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9AA0AD" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>';
+
+    var safeT = topic.replace(/'/g,"\\'");
+    html += '<div class="tv-topic-card' + (full?' completed':'') + '" onclick="openTopic(\''+safeT+'\')">' +
+      '<div style="flex:1;min-width:0">' +
+        '<div class="tv-topic-name">'+topic+'</div>' +
+        '<div class="tv-topic-meta">'+total+" ta so'z &bull; "+pct+'% '+badgeHtml+'</div>' +
+      '</div>' +
+      rightHtml +
+      '<div class="tv-topic-bar" style="width:'+pct+'%"></div>' +
+    '</div>';
+  });
+
+  if(!topics.length){
+    html += '<div class="tv-empty">Bu darajada mavzular mavjud emas</div>';
+  }
+
+  document.getElementById('tvBody').innerHTML = html +
+    '<div style="height:30px"></div>';
+}
+
+function openTopic(topic){
+  TV_TOPIC = topic;
+  tvView = 'words';
+  document.getElementById('tvTitle').textContent = topic;
+  renderWords();
+}
+
+// ══════════════════════════════════════════════
+//  VIEW 3: SO'ZLAR
+// ══════════════════════════════════════════════
+function topicWords(topic){
+  return TV_WORDS.filter(function(w){
+    return w.topic===topic && (w.level||'').toUpperCase()===TV_LEVEL;
+  });
+}
+
+function renderWords(){
+  var topic   = TV_TOPIC;
+  var words   = topicWords(topic);
+  var learned = words.filter(function(w){ return tvLearned.includes(w.id); }).length;
+  var total   = words.length;
+  var pct     = total > 0 ? Math.round(learned/total*100) : 0;
+  var full    = learned===total && total>0;
+  var passKey = topic+'_'+TV_LEVEL;
+  var passed  = tvPassed.indexOf(passKey) !== -1;
+
+  document.getElementById('tvBadge').textContent = learned+'/'+total;
+
+  // Progress / status banner
+  var bannerHtml = '';
+  if(passed){
+    bannerHtml = '<div class="tv-passed-box">' +
+      '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="20 6 9 17 4 12"/></svg>' +
+      '<div><div style="font-size:.88rem;font-weight:800;color:#16A34A">Mavzu o\'tildi! 🎉</div>' +
+      '<div style="font-size:.75rem;color:#16A34A;opacity:.8">Barcha so\'zlarni yaxshi bilasiz</div></div>' +
+    '</div>';
+  } else if(full){
+    bannerHtml = '<div class="tv-test-ready" onclick="tvStartTest()">' +
+      '<div><div class="tv-test-ready-title">✨ Testga tayyor!</div>' +
+      '<div class="tv-test-ready-sub">Barcha '+total+" ta so'zni o'rgandingiz</div></div>" +
+      '<button class="tv-test-ready-btn">Testni boshlash</button>' +
+    '</div>';
+  } else {
+    bannerHtml = '<div class="tv-progress-box">' +
+      '<div class="tv-progress-row"><span class="tv-progress-label">O\'rganish jarayoni</span><span class="tv-progress-pct">'+pct+'%</span></div>' +
+      '<div class="tv-progress-track"><div class="tv-progress-fill" style="width:'+pct+'%"></div></div>' +
+    '</div>';
+  }
+
+  var wordsHtml = words.map(function(w,i){
+    var isLearned  = tvLearned.includes(w.id);
+    var isBookmark = tvBookmarks.includes(w.id);
+    var isLiked    = tvLikes.includes(w.id);
+    return '<div class="tv-word-card' + (isLearned?' learned':'') + '" id="tvcard-'+w.id+'">' +
+      '<div class="tv-word-head">' +
+        '<span class="tv-word-num">'+(i+1)+'.</span>' +
+        '<span class="tv-word-en">'+esc(w.word||'')+'</span>' +
+        '<span class="tv-word-dash"> – </span>' +
+        '<span class="tv-word-uz">'+esc(w.uz||'')+'</span>' +
+        '<span class="tv-level-pill">'+esc(w.level||'')+'</span>' +
+      '</div>' +
+      (w.example ? '<div class="tv-word-example">'+esc(w.example)+'</div>' : '') +
+      '<div class="tv-word-actions">' +
+        '<button class="tv-btn-learned'+(isLearned?' done':'') +'" id="tvlrn-'+w.id+'" onclick="tvMarkLearned('+w.id+')">' +
+          (isLearned
+            ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> O\'rgandim'
+            : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> O\'rgandim') +
+        '</button>' +
+        '<button class="tv-btn-icon'+(isBookmark?' bookmarked':'')+'" id="tvbm-'+w.id+'" onclick="tvToggleBookmark('+w.id+')" title="Yodlash">' +
+          '<svg width="15" height="15" viewBox="0 0 24 24" fill="'+(isBookmark?'currentColor':'none')+'" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>' +
+        '</button>' +
+        '<button class="tv-btn-icon'+(isLiked?' liked':'')+'" id="tvlk-'+w.id+'" onclick="tvToggleLike('+w.id+')" title="Yoqtirish">' +
+          '<svg width="15" height="15" viewBox="0 0 24 24" fill="'+(isLiked?'currentColor':'none')+'" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>' +
+        '</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  document.getElementById('tvBody').innerHTML =
+    bannerHtml + wordsHtml + '<div style="height:30px"></div>';
+  document.getElementById('tvBody').scrollTop = 0;
+}
+
+function esc(s){
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+// ── Actions ──
+function tvMarkLearned(id){
+  if(!currentUser) return;
+  var numId = Number(id);
+  var idx = tvLearned.indexOf(numId);
+  if(idx===-1){ tvLearned.push(numId); tvShowToast("O'rgandim! So'z saqlandi!"); }
+  else         { tvLearned.splice(idx,1); tvShowToast("O'rganilganlardan olib tashlandi"); }
+  saveLocalState();
+  saveToFirestore();
+  renderWords();
+}
+
+function tvToggleBookmark(id){
+  var numId = Number(id);
+  var idx = tvBookmarks.indexOf(numId);
+  if(idx===-1){ tvBookmarks.push(numId); tvShowToast("Yodlash ro'yxatiga qo'shildi!"); }
+  else         { tvBookmarks.splice(idx,1); tvShowToast('Yodlashdan olib tashlandi'); }
+  saveLocalState();
+  saveToFirestore();
+  var btn = document.getElementById('tvbm-'+numId);
+  if(btn){
+    var a = tvBookmarks.includes(numId);
+    btn.className = 'tv-btn-icon'+(a?' bookmarked':'');
+    btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="'+(a?'currentColor':'none')+'" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
+  }
+}
+
+function tvToggleLike(id){
+  var numId = Number(id);
+  var idx = tvLikes.indexOf(numId);
+  if(idx===-1){ tvLikes.push(numId); tvShowToast("Yoqtirganlarga qo'shildi!"); }
+  else         { tvLikes.splice(idx,1); tvShowToast('Yoqtirganlardan olib tashlandi'); }
+  saveLocalState();
+  saveToFirestore();
+  var btn = document.getElementById('tvlk-'+numId);
+  if(btn){
+    var a = tvLikes.includes(numId);
+    btn.className = 'tv-btn-icon'+(a?' liked':'');
+    btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="'+(a?'currentColor':'none')+'" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+  }
+}
+
+// ── Toast ──
+var tvToastTimer;
+function tvShowToast(msg){
+  var el = document.getElementById('tvToast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(tvToastTimer);
+  tvToastTimer = setTimeout(function(){ el.classList.remove('show'); }, 2000);
+}
+
+// ══════════════════════════════════════════════
+//  TEST
+// ══════════════════════════════════════════════
+function tvStartTest(){
+  var words = topicWords(TV_TOPIC).slice();
+  var shuffled = words.sort(function(){ return Math.random()-.5; }).slice(0, Math.min(10,words.length));
+  tvTestWords   = shuffled;
+  tvTestIdx     = 0;
+  tvTestErrors  = 0;
+  tvTestCorrect = 0;
+  tvTestAnswered= false;
+
+  document.getElementById('tvTestTitle').textContent = TV_TOPIC + ' testi';
+  document.getElementById('tvTest').classList.add('open');
+  tvRenderQuestion();
+}
+
+function tvCloseTest(){
+  document.getElementById('tvTest').classList.remove('open');
+}
+
+function tvRenderQuestion(){
+  if(tvTestIdx >= tvTestWords.length){ tvRenderResult(); return; }
+
+  var w    = tvTestWords[tvTestIdx];
+  var total= tvTestWords.length;
+  var cur  = tvTestIdx + 1;
+  tvTestAnswered = false;
+
+  document.getElementById('tvTestCounter').textContent = cur+'/'+total;
+  document.getElementById('tvTestFill').style.width = (cur/total*100)+'%';
+
+  var pool   = TV_WORDS.filter(function(x){ return x.id !== w.id; });
+  var wrong3 = pool.sort(function(){ return Math.random()-.5; }).slice(0,3);
+  var opts   = [w].concat(wrong3).sort(function(){ return Math.random()-.5; });
+
+  var dots = '';
+  for(var i=0;i<2;i++){
+    dots += '<div class="tv-err-dot'+(i<tvTestErrors?' ':' empty')+'"></div>';
+  }
+
+  var optsHtml = opts.map(function(opt){
+    return '<button class="tv-test-opt" onclick="tvCheckAnswer('+opt.id+','+w.id+',this)">'+esc(opt.uz||'')+'</button>';
+  }).join('');
+
+  document.getElementById('tvTestBody').innerHTML =
+    '<div class="tv-test-question">' +
+      '<div class="tv-test-qlabel">Tarjimasini tanlang</div>' +
+      '<div class="tv-test-qword">'+esc(w.word||'')+'</div>' +
+      '<div class="tv-test-qtopic">'+esc(w.topic||'')+' · '+esc(w.level||'')+'</div>' +
+    '</div>' +
+    '<div class="tv-test-errs">' +
+      'Xato: '+dots+
+      '<span style="margin-left:4px;color:#9AA0AD;font-size:.75rem">(2 ta xatoda test o\'tkazib yuboriladi)</span>' +
+    '</div>' +
+    '<div class="tv-test-opts">'+optsHtml+'</div>' +
+    '<button class="tv-test-next" id="tvNextBtn" onclick="tvNextQ()">' +
+      (tvTestIdx+1 < tvTestWords.length ? 'Keyingi savol' : 'Natijani ko\'rish') +
+    '</button>';
+}
+
+function tvCheckAnswer(selId, corrId, btn){
+  if(tvTestAnswered) return;
+  tvTestAnswered = true;
+  var ok = selId === corrId;
+
+  document.querySelectorAll('.tv-test-opt').forEach(function(b){ b.disabled=true; });
+
+  if(ok){
+    btn.classList.add('correct');
+    tvTestCorrect++;
+  } else {
+    btn.classList.add('wrong');
+    tvTestErrors++;
+    document.querySelectorAll('.tv-test-opt').forEach(function(b){
+      var m = b.getAttribute('onclick').match(/tvCheckAnswer\((\d+)/);
+      if(m && parseInt(m[1])===corrId) b.classList.add('show-correct');
+    });
+  }
+
+  if(tvTestErrors >= 2){
+    setTimeout(function(){ tvRenderFail(); }, 700);
+    return;
+  }
+
+  // Update dots
+  var errsEl = document.querySelector('.tv-test-errs');
+  if(errsEl){
+    var d='';
+    for(var i=0;i<2;i++) d+='<div class="tv-err-dot'+(i<tvTestErrors?'':' empty')+'"></div>';
+    errsEl.innerHTML = 'Xato: '+d+'<span style="margin-left:4px;color:#9AA0AD;font-size:.75rem">(2 ta xatoda test o\'tkazib yuboriladi)</span>';
+  }
+
+  document.getElementById('tvNextBtn').style.display='block';
+}
+
+function tvNextQ(){
+  tvTestIdx++;
+  if(tvTestIdx >= tvTestWords.length) tvRenderResult();
+  else tvRenderQuestion();
+}
+
+function tvRenderFail(){
+  document.getElementById('tvTestBody').innerHTML =
+    '<div class="tv-result">' +
+      '<div style="font-size:3.5rem">😅</div>' +
+      '<div class="tv-result-title">Test o\'tmadi</div>' +
+      '<div class="tv-result-sub">2 ta xato qildingiz. Yana bir bor so\'zlarni o\'rganib, qayta urining!</div>' +
+      '<div class="tv-result-stats">' +
+        '<div class="tv-rs"><div class="tv-rs-val" style="color:#22C55E">'+tvTestCorrect+'</div><div class="tv-rs-lbl">To\'g\'ri</div></div>' +
+        '<div class="tv-rs"><div class="tv-rs-val" style="color:#EF4444">'+tvTestErrors+'</div><div class="tv-rs-lbl">Xato</div></div>' +
+        '<div class="tv-rs"><div class="tv-rs-val" style="color:#9AA0AD">'+(tvTestIdx+1)+'</div><div class="tv-rs-lbl">Savol</div></div>' +
+      '</div>' +
+      '<div class="tv-result-btns">' +
+        '<button class="tv-rb primary" onclick="tvStartTest()">Qaytadan boshlash</button>' +
+        '<button class="tv-rb secondary" onclick="tvCloseTest()">So\'zlarni takrorlash</button>' +
+      '</div>' +
+    '</div>';
+}
+
+function tvRenderResult(){
+  var total  = tvTestWords.length;
+  var passed = tvTestErrors <= TV_MAX_ERR;
+  var passKey= TV_TOPIC+'_'+TV_LEVEL;
+
+  if(passed && tvPassed.indexOf(passKey)===-1){
+    tvPassed.push(passKey);
+    saveLocalState();
+    saveToFirestore();
+  }
+
+  if(passed){
+    document.getElementById('tvTestBody').innerHTML =
+      '<div class="tv-result">' +
+        '<div style="font-size:3.5rem">🎉</div>' +
+        '<div class="tv-result-title">Tabriklaymiz!</div>' +
+        '<div class="tv-result-sub">'+esc(TV_TOPIC)+' mavzusidan testni muvaffaqiyatli o\'tdingiz!</div>' +
+        '<div class="tv-result-stats">' +
+          '<div class="tv-rs"><div class="tv-rs-val" style="color:#22C55E">'+tvTestCorrect+'</div><div class="tv-rs-lbl">To\'g\'ri</div></div>' +
+          '<div class="tv-rs"><div class="tv-rs-val" style="color:#EF4444">'+tvTestErrors+'</div><div class="tv-rs-lbl">Xato</div></div>' +
+          '<div class="tv-rs"><div class="tv-rs-val" style="color:#2196F3">'+Math.round(tvTestCorrect/total*100)+'%</div><div class="tv-rs-lbl">Natija</div></div>' +
+        '</div>' +
+        '<div class="tv-result-btns">' +
+          '<button class="tv-rb green" onclick="tvCloseTest();renderWords()">So\'zlar ro\'yxatiga</button>' +
+          '<button class="tv-rb secondary" onclick="tvCloseTest();renderTopics()">Mavzular ro\'yxatiga</button>' +
+        '</div>' +
+      '</div>';
+  } else {
+    tvRenderFail();
+  }
 }
 </script>
 </body>
