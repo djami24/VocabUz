@@ -469,12 +469,14 @@ textarea.form-input {
 }
 .wstep.active { color: var(--blue); }
 .wstep.done { color: var(--green); }
+.wstep.done:hover { color: #16a34a; opacity: .85; }
+.wstep.active:hover { opacity: .85; }
 .wstep-num {
   width: 24px; height: 24px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   font-size: .72rem; font-weight: 800;
   background: var(--line); color: var(--ink-soft);
-  flex-shrink: 0;
+  flex-shrink: 0; transition: background .15s;
 }
 .wstep.active .wstep-num { background: var(--blue); color: #fff; }
 .wstep.done .wstep-num { background: var(--green); color: #fff; }
@@ -842,11 +844,11 @@ textarea.form-input {
 
       <!-- Wizard steps indicator -->
       <div class="wizard-steps" id="wizardSteps">
-        <div class="wstep active" id="wstep1"><div class="wstep-num">1</div>Lug'at turi</div>
+        <div class="wstep active" id="wstep1" onclick="wizardStepClick(1)" style="cursor:pointer"><div class="wstep-num">1</div>Lug'at turi</div>
         <span class="wstep-sep">›</span>
-        <div class="wstep" id="wstep2"><div class="wstep-num">2</div>Mavzu</div>
+        <div class="wstep" id="wstep2" onclick="wizardStepClick(2)" style="cursor:pointer"><div class="wstep-num">2</div>Mavzu</div>
         <span class="wstep-sep">›</span>
-        <div class="wstep" id="wstep3"><div class="wstep-num">3</div>So'z qo'shish</div>
+        <div class="wstep" id="wstep3" onclick="wizardStepClick(3)" style="cursor:pointer"><div class="wstep-num">3</div>So'z qo'shish</div>
       </div>
 
       <!-- STEP 1: Vocabulary Type -->
@@ -1771,6 +1773,20 @@ function goToStep(n) {
   if(n === 1) { wzVocabType=''; wzTopic=''; wzTopicIsNew=false; clearTypeCards(); }
   if(n === 2) { loadTopicsForPicker(); }
   if(n === 3) { setupStep3(); }
+}
+
+// ── Wizard step click (breadcrumb navigation) ──
+function wizardStepClick(n) {
+  // Faqat "done" (o'tilgan) bosqichlarga qaytish mumkin
+  const el = document.getElementById('wstep' + n);
+  if (el.classList.contains('done') || el.classList.contains('active')) {
+    // 1-bosqichga har doim qaytish mumkin
+    if (n === 1) { goToStep(1); return; }
+    // 2-bosqichga faqat vocabType tanlangan bo'lsa o'tish mumkin
+    if (n === 2 && wzVocabType) { goToStep(2); return; }
+    // 3-bosqichga faqat mavzu ham tanlangan bo'lsa o'tish mumkin
+    if (n === 3 && wzVocabType && wzTopic) { goToStep(3); return; }
+  }
 }
 
 function clearTypeCards(){
