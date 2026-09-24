@@ -57,7 +57,8 @@ body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:v
   box-shadow:var(--shadow-sm);
   text-align:center;
 }
-.locked-icon{font-size:3.5rem;margin-bottom:12px;display:block;}
+.locked-icon{width:64px;height:64px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;background:var(--blue-light);border-radius:20px;}
+.locked-icon svg{width:36px;height:36px;color:var(--blue-deep);}
 .locked-title{font-size:1.15rem;font-weight:800;margin-bottom:6px;}
 .locked-sub{font-size:.85rem;color:var(--ink-mid);line-height:1.6;margin-bottom:18px;}
 .locked-prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
@@ -82,7 +83,8 @@ body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:v
   display:flex;align-items:center;gap:14px;
   box-shadow:0 4px 20px rgba(33,150,243,.35);
 }
-.unlocked-icon{font-size:2.4rem;flex-shrink:0;}
+.unlocked-icon{width:52px;height:52px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.2);border-radius:16px;}
+.unlocked-icon svg{width:30px;height:30px;color:#fff;}
 .unlocked-title{font-size:1.1rem;font-weight:800;margin-bottom:2px;}
 .unlocked-sub{font-size:.82rem;opacity:.85;}
 
@@ -106,8 +108,9 @@ body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:v
 .game-card-icon{
   width:44px;height:44px;border-radius:14px;
   display:flex;align-items:center;justify-content:center;
-  font-size:1.45rem;flex-shrink:0;
+  flex-shrink:0;
 }
+.game-card-icon svg{width:24px;height:24px;}
 .game-card-name{font-size:.88rem;font-weight:800;color:var(--ink);line-height:1.3;}
 .game-card-desc{font-size:.75rem;color:var(--ink-soft);line-height:1.4;flex:1;}
 .game-card-start{
@@ -210,7 +213,8 @@ body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:v
   align-items:center;justify-content:center;
   padding:32px 24px;text-align:center;gap:14px;
 }
-.g-result-emoji{font-size:4rem;}
+.g-result-icon{width:64px;height:64px;display:flex;align-items:center;justify-content:center;}
+.g-result-icon svg{width:64px;height:64px;}
 .g-result-title{font-size:1.3rem;font-weight:900;}
 .g-result-sub{font-size:.88rem;color:var(--ink-mid);line-height:1.6;max-width:280px;}
 .g-result-stats{display:flex;gap:10px;width:100%;max-width:340px;margin:4px 0;}
@@ -249,7 +253,8 @@ body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:v
 .hm-key[disabled]{opacity:.4;cursor:default;}
 .hm-body-svg{width:120px;height:120px;}
 .hm-lives{display:flex;gap:6px;align-items:center;font-size:.82rem;font-weight:700;color:var(--ink-mid);}
-.hm-heart{color:var(--red);}
+.hm-heart{color:var(--red);display:inline-flex;align-items:center;}
+.hm-heart svg{width:20px;height:20px;}
 .hm-heart.lost{color:#ddd;}
 
 /* ─────────────────────────
@@ -343,13 +348,33 @@ body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:v
 .tf-btn.correct{background:var(--green)!important;color:#fff!important;}
 .tf-btn.wrong{background:var(--red)!important;color:#fff!important;}
 .tf-btn[disabled]{cursor:default;}
+/* ── ICON HELPERS ── */
+.tf-btn-inner{display:flex;align-items:center;justify-content:center;gap:8px;}
+.tf-btn-inner svg{width:22px;height:22px;flex-shrink:0;}
+.g-feedback-inner{display:flex;align-items:center;justify-content:center;gap:8px;}
+.g-feedback-inner svg{width:18px;height:18px;flex-shrink:0;}
+.grb-inner{display:flex;align-items:center;justify-content:center;gap:8px;}
+.grb-inner svg{width:18px;height:18px;flex-shrink:0;}
+.match-item-inner{display:flex;align-items:center;justify-content:center;gap:6px;}
+.match-item-inner svg{width:16px;height:16px;flex-shrink:0;}
+.g-title-inner{display:flex;align-items:center;gap:8px;}
+.g-title-inner svg{width:18px;height:18px;flex-shrink:0;}
+.topbar-title-inner{display:flex;align-items:center;gap:8px;}
+.topbar-title-inner svg{width:20px;height:20px;flex-shrink:0;}
+.btn-go-learn-inner{display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-go-learn-inner svg{width:18px;height:18px;flex-shrink:0;}
 </style>
 </head>
 <body>
 
 <!-- TOP BAR -->
 <div class="topbar">
-  <div class="topbar-title">🎮 O'yinlar</div>
+  <div class="topbar-title">
+    <span class="topbar-title-inner">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/><line x1="12" y1="12" x2="12" y2="17"/><line x1="9.5" y1="14.5" x2="14.5" y2="14.5"/></svg>
+      O'yinlar
+    </span>
+  </div>
   <div class="topbar-badge" id="topbarBadge">Yuklanmoqda…</div>
 </div>
 
@@ -392,7 +417,12 @@ body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:v
     <button class="g-back" onclick="closeGame('gameHangman')">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
     </button>
-    <div class="g-title">🪢 Hangman</div>
+    <div class="g-title">
+      <span class="g-title-inner">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"/><line x1="12" y1="7" x2="12" y2="13"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="12" y1="13" x2="9" y2="18"/><line x1="12" y1="13" x2="15" y2="18"/></svg>
+        Hangman
+      </span>
+    </div>
     <div class="g-score-pill" id="hmScore">0</div>
   </div>
   <div class="g-body" id="hmBody"></div>
@@ -406,7 +436,12 @@ body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:v
     <button class="g-back" onclick="closeGame('gameTranslation')">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
     </button>
-    <div class="g-title">🌐 Tarjima tanlash</div>
+    <div class="g-title">
+      <span class="g-title-inner">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        Tarjima tanlash
+      </span>
+    </div>
     <div class="g-score-pill" id="trScore">0/0</div>
   </div>
   <div class="g-prog-track"><div class="g-prog-fill" id="trProg" style="width:0%"></div></div>
@@ -421,7 +456,12 @@ body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:v
     <button class="g-back" onclick="closeGame('gameSentence')">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
     </button>
-    <div class="g-title">📝 Gap tuzish</div>
+    <div class="g-title">
+      <span class="g-title-inner">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Gap tuzish
+      </span>
+    </div>
     <div class="g-score-pill" id="snScore">0/0</div>
   </div>
   <div class="g-prog-track"><div class="g-prog-fill" id="snProg" style="width:0%"></div></div>
@@ -436,7 +476,12 @@ body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:v
     <button class="g-back" onclick="closeGame('gameScramble')">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
     </button>
-    <div class="g-title">🔀 So'z aralashtirish</div>
+    <div class="g-title">
+      <span class="g-title-inner">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+        So'z aralashtirish
+      </span>
+    </div>
     <div class="g-score-pill" id="scScore">0/0</div>
   </div>
   <div class="g-prog-track"><div class="g-prog-fill" id="scProg" style="width:0%"></div></div>
@@ -451,7 +496,12 @@ body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:v
     <button class="g-back" onclick="closeGame('gameMatch')">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
     </button>
-    <div class="g-title">🔗 So'z jufti</div>
+    <div class="g-title">
+      <span class="g-title-inner">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        So'z jufti
+      </span>
+    </div>
     <div class="g-score-pill" id="mtScore">0</div>
   </div>
   <div class="g-body" id="mtBody"></div>
@@ -466,7 +516,12 @@ body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:v
     <button class="g-back" onclick="closeGame('gameChoose')">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
     </button>
-    <div class="g-title" id="chTitle">✅ To'g'ri tarjima</div>
+    <div class="g-title" id="chTitle">
+      <span class="g-title-inner">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        To'g'ri tarjima
+      </span>
+    </div>
     <div class="g-score-pill" id="chScore">0/0</div>
   </div>
   <div class="g-prog-track"><div class="g-prog-fill" id="chProg" style="width:0%"></div></div>
@@ -481,7 +536,12 @@ body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:v
     <button class="g-back" onclick="closeGame('gameMissing')">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
     </button>
-    <div class="g-title">🔠 Harfni top</div>
+    <div class="g-title">
+      <span class="g-title-inner">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+        Harfni top
+      </span>
+    </div>
     <div class="g-score-pill" id="mlScore">0/0</div>
   </div>
   <div class="g-prog-track"><div class="g-prog-fill" id="mlProg" style="width:0%"></div></div>
@@ -496,7 +556,12 @@ body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:v
     <button class="g-back" onclick="closeGame('gameSpeed')">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
     </button>
-    <div class="g-title">⚡ Tez yozish</div>
+    <div class="g-title">
+      <span class="g-title-inner">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Tez yozish
+      </span>
+    </div>
     <div class="g-score-pill" id="spScore">0/0</div>
   </div>
   <div class="g-prog-track"><div class="g-prog-fill" id="spProg" style="width:0%"></div></div>
@@ -511,7 +576,12 @@ body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:v
     <button class="g-back" onclick="closeGame('gameTF')">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
     </button>
-    <div class="g-title">✔️ To'g'ri yoki Noto'g'ri</div>
+    <div class="g-title">
+      <span class="g-title-inner">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>
+        To'g'ri yoki Noto'g'ri
+      </span>
+    </div>
     <div class="g-score-pill" id="tfScore">0/0</div>
   </div>
   <div class="g-prog-track"><div class="g-prog-fill" id="tfProg" style="width:0%"></div></div>
@@ -809,17 +879,30 @@ window.addEventListener('storage', function(e) {
 /* ════════════════════════════════
    DASHBOARD RENDER
 ════════════════════════════════ */
+const GAME_ICONS = {
+  gameHangman:     `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"/><line x1="12" y1="7" x2="12" y2="13"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="12" y1="13" x2="9" y2="18"/><line x1="12" y1="13" x2="15" y2="18"/></svg>`,
+  gameTranslation: `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
+  gameSentence:    `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
+  gameScramble:    `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>`,
+  gameMatch:       `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`,
+  gameChooseCheck: `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
+  gameMissing:     `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>`,
+  gameSpeed:       `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+  gameQuiz:        `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+  gameTF:          `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>`,
+};
+
 const GAMES = [
-  { id:'gameHangman',     icon:'🪢', color:'#E3F2FD', name:'Hangman',               desc:'So\'zni harfma-harf toping',        fn:'startHangman' },
-  { id:'gameTranslation', icon:'🌐', color:'#FCE4EC', name:'Tarjima tanlash',        desc:'To\'g\'ri tarjimani tanlang',       fn:'startTranslation' },
-  { id:'gameSentence',    icon:'📝', color:'#E8F5E9', name:'Gap tuzish',             desc:'So\'zlarni tartibga soling',        fn:'startSentence' },
-  { id:'gameScramble',    icon:'🔀', color:'#FFF8E1', name:'So\'z aralashtirish',    desc:'Aralashtirilgan so\'zni toping',    fn:'startScramble' },
-  { id:'gameMatch',       icon:'🔗', color:'#F3E5F5', name:'So\'z jufti',            desc:'Ingliz-o\'zbek juftlarni toping',   fn:'startMatch' },
-  { id:'gameChoose',      icon:'✅', color:'#E0F7FA', name:'To\'g\'ri tarjima',      desc:'4 ta variantdan birini tanlang',    fn:'startChoose' },
-  { id:'gameMissing',     icon:'🔠', color:'#FBE9E7', name:'Harfni top',             desc:'Tushirib qoldirilgan harfni toping',fn:'startMissing' },
-  { id:'gameSpeed',       icon:'⚡', color:'#F1F8E9', name:'Tez yozish',             desc:'Vaqt tugashidan oldin yozing',      fn:'startSpeed' },
-  { id:'gameChoose',      icon:'❓', color:'#EDE9FE', name:'So\'z Kviz',             desc:'Savollarga to\'g\'ri javob bering', fn:'startQuiz' },
-  { id:'gameTF',          icon:'✔️', color:'#FEF3C7', name:'To\'g\'ri yoki Noto\'g\'ri', desc:'Tarjimani tekshiring',          fn:'startTF' },
+  { id:'gameHangman',     iconKey:'gameHangman',     color:'#E3F2FD', iconColor:'#1565C0', name:'Hangman',               desc:'So\'zni harfma-harf toping',        fn:'startHangman' },
+  { id:'gameTranslation', iconKey:'gameTranslation', color:'#FCE4EC', iconColor:'#C62828', name:'Tarjima tanlash',        desc:'To\'g\'ri tarjimani tanlang',       fn:'startTranslation' },
+  { id:'gameSentence',    iconKey:'gameSentence',    color:'#E8F5E9', iconColor:'#2E7D32', name:'Gap tuzish',             desc:'So\'zlarni tartibga soling',        fn:'startSentence' },
+  { id:'gameScramble',    iconKey:'gameScramble',    color:'#FFF8E1', iconColor:'#E65100', name:'So\'z aralashtirish',    desc:'Aralashtirilgan so\'zni toping',    fn:'startScramble' },
+  { id:'gameMatch',       iconKey:'gameMatch',       color:'#F3E5F5', iconColor:'#6A1B9A', name:'So\'z jufti',            desc:'Ingliz-o\'zbek juftlarni toping',   fn:'startMatch' },
+  { id:'gameChoose',      iconKey:'gameChooseCheck', color:'#E0F7FA', iconColor:'#00838F', name:'To\'g\'ri tarjima',      desc:'4 ta variantdan birini tanlang',    fn:'startChoose' },
+  { id:'gameMissing',     iconKey:'gameMissing',     color:'#FBE9E7', iconColor:'#BF360C', name:'Harfni top',             desc:'Tushirib qoldirilgan harfni toping',fn:'startMissing' },
+  { id:'gameSpeed',       iconKey:'gameSpeed',       color:'#F1F8E9', iconColor:'#33691E', name:'Tez yozish',             desc:'Vaqt tugashidan oldin yozing',      fn:'startSpeed' },
+  { id:'gameChoose',      iconKey:'gameQuiz',        color:'#EDE9FE', iconColor:'#4527A0', name:'So\'z Kviz',             desc:'Savollarga to\'g\'ri javob bering', fn:'startQuiz' },
+  { id:'gameTF',          iconKey:'gameTF',          color:'#FEF3C7', iconColor:'#E65100', name:'To\'g\'ri yoki Noto\'g\'ri', desc:'Tarjimani tekshiring',          fn:'startTF' },
 ];
 
 function renderDashboard() {
@@ -837,7 +920,9 @@ function renderDashboard() {
     const pct = Math.round((count / MIN_WORDS) * 100);
     html = `
       <div class="locked-hero">
-        <span class="locked-icon">🔒</span>
+        <span class="locked-icon">
+          <svg aria-label="Qulflangan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </span>
         <div class="locked-title">O'yinlar qulflangan</div>
         <div class="locked-sub">O'yinlarni ochish uchun kamida <strong>${MIN_WORDS} ta so'z</strong> o'rganishingiz kerak.</div>
         <div class="locked-prog-row">
@@ -848,13 +933,18 @@ function renderDashboard() {
           <div class="locked-fill" style="width:${pct}%"></div>
         </div>
         <button class="btn-go-learn" onclick="location.href='topic.html'">
-          📚 So'z o'rganishga borish
+          <span class="btn-go-learn-inner">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            So'z o'rganishga borish
+          </span>
         </button>
       </div>`;
   } else {
     html = `
       <div class="unlocked-hero">
-        <div class="unlocked-icon">🎮</div>
+        <div class="unlocked-icon">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/><line x1="12" y1="12" x2="12" y2="17"/><line x1="9.5" y1="14.5" x2="14.5" y2="14.5"/></svg>
+        </div>
         <div>
           <div class="unlocked-title">O'yinlar ochiq!</div>
           <div class="unlocked-sub">${count} ta so'z o'rganildi · Barcha o'yinlar mavjud</div>
@@ -864,10 +954,10 @@ function renderDashboard() {
       <div class="games-grid">
         ${GAMES.map((g, i) => `
           <div class="game-card" onclick="${g.fn}()" style="--gc:${g.color}">
-            <div class="game-card-icon" style="background:${g.color}">${g.icon}</div>
+            <div class="game-card-icon" style="background:${g.color};color:${g.iconColor}">${GAME_ICONS[g.iconKey]}</div>
             <div class="game-card-name">${g.name}</div>
             <div class="game-card-desc">${g.desc}</div>
-            <button class="game-card-start" onclick="event.stopPropagation();${g.fn}()">Boshlash →</button>
+            <button class="game-card-start" onclick="event.stopPropagation();${g.fn}()">Boshlash</button>
           </div>`).join('')}
       </div>`;
   }
@@ -898,8 +988,12 @@ function closeGame(id) {
 /* ─────────────────────────────────
    RESULT SCREEN helper
 ────────────────────────────────── */
+const SVG_TROPHY = `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#F59E0B"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>`;
+const SVG_MUSCLE = `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#2196F3"><path d="M9 15s-1-1 0-2 2-1 2-3-1-2-1-2"/><path d="M4 19l2-2"/><path d="M2 21l2-2"/><path d="M7.5 13.5l-2.121 2.121a3 3 0 1 0 4.243 4.243l7.778-7.778a3 3 0 1 0-4.243-4.243L11.5 10.5"/></svg>`;
+
 function showResult(bodyEl, { emoji, title, sub, correct, wrong, total, time }) {
   const acc = total > 0 ? Math.round((correct / total) * 100) : 0;
+  const resultIcon = acc >= 70 ? SVG_TROPHY : SVG_MUSCLE;
   let statsHtml = `
     <div class="grs"><div class="grs-val green">${correct}</div><div class="grs-lbl">To'g'ri</div></div>
     <div class="grs"><div class="grs-val red">${wrong}</div><div class="grs-lbl">Xato</div></div>
@@ -909,13 +1003,23 @@ function showResult(bodyEl, { emoji, title, sub, correct, wrong, total, time }) 
   }
   bodyEl.innerHTML = `
     <div class="g-result">
-      <div class="g-result-emoji">${emoji || (acc >= 70 ? '🎉' : '💪')}</div>
+      <div class="g-result-icon">${resultIcon}</div>
       <div class="g-result-title">${title || "O'yin tugadi!"}</div>
       <div class="g-result-sub">${sub || ''}</div>
       <div class="g-result-stats">${statsHtml}</div>
       <div class="g-result-btns">
-        <button class="grb primary" onclick="${bodyEl.dataset.restart}()">🔄 Qayta o'ynash</button>
-        <button class="grb secondary" onclick="closeGame('${bodyEl.dataset.game}')">⬅ O'yinlarni tanlash</button>
+        <button class="grb primary" onclick="${bodyEl.dataset.restart}()">
+          <span class="grb-inner">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.49"/></svg>
+            Qayta o'ynash
+          </span>
+        </button>
+        <button class="grb secondary" onclick="closeGame('${bodyEl.dataset.game}')">
+          <span class="grb-inner">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            O'yinlarni tanlash
+          </span>
+        </button>
       </div>
     </div>`;
 }
@@ -955,7 +1059,7 @@ function hmNextWord() {
 function hmRender() {
   const body   = document.getElementById('hmBody');
   const hearts = Array.from({length: HM_MAX}, (_, i) =>
-    `<span class="hm-heart${i >= (HM_MAX - hmWrong.length) ? '' : ' lost'}">❤️</span>`
+    `<span class="hm-heart${i >= (HM_MAX - hmWrong.length) ? '' : ' lost'}"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></span>`
   ).join('');
 
   // slots
@@ -980,10 +1084,10 @@ function hmRender() {
   if (isComplete) {
     hmScore++;
     document.getElementById('hmScore').textContent = hmScore + '/' + hmWords.length;
-    feedback = `<div class="g-feedback correct">🎉 To'g'ri! "${hmWord}"</div>`;
+    feedback = `<div class="g-feedback correct"><span class="g-feedback-inner"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>To'g'ri! "${hmWord}"</span></div>`;
     setTimeout(() => { hmIdx++; hmNextWord(); }, 1200);
   } else if (isDead) {
-    feedback = `<div class="g-feedback wrong">❌ So'z: "${hmWord}"</div>`;
+    feedback = `<div class="g-feedback wrong"><span class="g-feedback-inner"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>So'z: "${hmWord}"</span></div>`;
     setTimeout(() => { hmIdx++; hmNextWord(); }, 1800);
   }
 
@@ -1154,7 +1258,9 @@ function snCheckAnswer(correct) {
   const fb = document.getElementById('snFeedback');
   const ok = attempt.toLowerCase() === correct.toLowerCase();
   fb.className = 'g-feedback ' + (ok ? 'correct' : 'wrong');
-  fb.textContent = ok ? '✅ To\'g\'ri!' : '❌ To\'g\'ri gap: ' + correct;
+  fb.innerHTML = ok
+    ? '<span class="g-feedback-inner"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>To\'g\'ri!</span>'
+    : '<span class="g-feedback-inner"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>To\'g\'ri gap: ' + correct + '</span>';
   if (ok) snCorrect++; else snWrong++;
   document.getElementById('snCheck').disabled = true;
   document.getElementById('snScore').textContent = snCorrect + '/' + snWords.length;
@@ -1205,7 +1311,7 @@ function scRender() {
              onkeydown="if(event.key==='Enter') scCheck('${w.word.replace(/'/g,"\\'")}')">
     </div>
     <div class="g-feedback" id="scFeedback"></div>
-    <button class="g-next-btn visible" onclick="scCheck('${w.word.replace(/'/g,"\\'")}')">Tekshirish →</button>`;
+    <button class="g-next-btn visible" onclick="scCheck('${w.word.replace(/'/g,"\\'")}')">Tekshirish</button>`;
   setTimeout(() => document.getElementById('scInput') && document.getElementById('scInput').focus(), 100);
 }
 
@@ -1215,7 +1321,9 @@ function scCheck(correct) {
   const ok = attempt === correct.toLowerCase();
   const fb = document.getElementById('scFeedback');
   fb.className = 'g-feedback ' + (ok ? 'correct' : 'wrong');
-  fb.textContent = ok ? '✅ To\'g\'ri!' : '❌ To\'g\'ri so\'z: ' + correct;
+  fb.innerHTML = ok
+    ? '<span class="g-feedback-inner"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>To\'g\'ri!</span>'
+    : '<span class="g-feedback-inner"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>To\'g\'ri so\'z: ' + correct + '</span>';
   input.className = 'g-input ' + (ok ? 'correct-input' : 'wrong-input');
   input.disabled  = true;
   if (ok) scCorrect++; else scWrong++;
@@ -1246,7 +1354,7 @@ function mtRender() {
   if (done) {
     body.dataset.restart = 'startMatch';
     body.dataset.game    = 'gameMatch';
-    showResult(body, { emoji:'🎉', title:'Barcha juftlar topildi!', correct: mtScore, wrong: 0, total: mtWords.length });
+    showResult(body, { title:'Barcha juftlar topildi!', correct: mtScore, wrong: 0, total: mtWords.length });
     return;
   }
 
@@ -1264,16 +1372,18 @@ function mtRender() {
       <div class="match-col" id="mtLeft">
         ${leftWords.map(w => {
           const isMatched = mtMatched.includes(w.id);
+          const checkSvg = '<svg aria-hidden="true" style="width:14px;height:14px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
           return `<div class="match-item${isMatched?' matched':''}" id="ml-${w.id}" onclick="mtClick('en','${w.id}')">
-            ${isMatched ? '✅ ' : ''}${w.word}
+            <span class="match-item-inner">${isMatched ? checkSvg : ''}${w.word}</span>
           </div>`;
         }).join('')}
       </div>
       <div class="match-col" id="mtRight">
         ${rightWords.map(w => {
           const isMatched = mtMatched.includes(w.id);
+          const checkSvg2 = '<svg aria-hidden="true" style="width:14px;height:14px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
           return `<div class="match-item${isMatched?' matched':''}" id="mr-${w.id}" onclick="mtClick('uz','${w.id}')">
-            ${isMatched ? '✅ ' : ''}${w.uz.split(',')[0].trim()}
+            <span class="match-item-inner">${isMatched ? checkSvg2 : ''}${w.uz.split(',')[0].trim()}</span>
           </div>`;
         }).join('')}
       </div>
@@ -1310,8 +1420,17 @@ function mtClick(side, id) {
     mtMatched.push(enId); mtScore++;
     const ml = document.getElementById('ml-' + enId);
     const mr = document.getElementById('mr-' + enId);
-    if (ml) { ml.classList.remove('selected'); ml.classList.add('matched'); ml.textContent = '✅ ' + ml.textContent; }
-    if (mr) { mr.classList.remove('selected'); mr.classList.add('matched'); mr.textContent = '✅ ' + mr.textContent; }
+    const checkSvgStr = '<svg aria-hidden="true" style="width:14px;height:14px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+    if (ml) {
+      ml.classList.remove('selected'); ml.classList.add('matched');
+      const inner = ml.querySelector('.match-item-inner');
+      if (inner && !inner.querySelector('svg')) inner.insertAdjacentHTML('afterbegin', checkSvgStr);
+    }
+    if (mr) {
+      mr.classList.remove('selected'); mr.classList.add('matched');
+      const inner = mr.querySelector('.match-item-inner');
+      if (inner && !inner.querySelector('svg')) inner.insertAdjacentHTML('afterbegin', checkSvgStr);
+    }
     document.getElementById('mtScore').textContent = mtMatched.length + '/' + mtWords.length;
     if (mtMatched.length === mtWords.length) {
       setTimeout(() => mtRender(), 600);
@@ -1341,12 +1460,12 @@ let chWords, chIdx, chCorrect, chWrong, chMode;
 
 function startChoose() {
   chMode = 'choose';
-  document.getElementById('chTitle').textContent = '✅ To\'g\'ri tarjima';
+  document.getElementById('chTitle').innerHTML = '<span class="g-title-inner"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>To\'g\'ri tarjima</span>';
   _startChooseEngine();
 }
 function startQuiz() {
   chMode = 'quiz';
-  document.getElementById('chTitle').textContent = '❓ So\'z Kviz';
+  document.getElementById('chTitle').innerHTML = '<span class="g-title-inner"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>So\'z Kviz</span>';
   _startChooseEngine();
 }
 
@@ -1512,7 +1631,9 @@ function mlGuess(ch) {
     const correct = mlWordState.join('') === mlWords[mlIdx].word.toLowerCase();
     const fb = document.getElementById('mlFeedback');
     fb.className = 'g-feedback ' + (correct ? 'correct' : 'wrong');
-    fb.textContent = correct ? '✅ To\'g\'ri!' : '❌ To\'g\'ri so\'z: ' + mlWords[mlIdx].word;
+    fb.innerHTML = correct
+      ? '<span class="g-feedback-inner"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>To\'g\'ri!</span>'
+      : '<span class="g-feedback-inner"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>To\'g\'ri so\'z: ' + mlWords[mlIdx].word + '</span>';
     if (correct) mlCorrect++; else mlWrong++;
     document.getElementById('mlScore').textContent = mlCorrect + '/' + mlWords.length;
     document.querySelectorAll('.ml-key').forEach(b => b.disabled = true);
@@ -1563,7 +1684,7 @@ function spRender() {
              onkeydown="if(event.key==='Enter') spCheck('${w.word.replace(/'/g,"\\'")}')">
     </div>
     <div class="g-feedback" id="spFeedback"></div>
-    <button class="g-next-btn visible" onclick="spCheck('${w.word.replace(/'/g,"\\'")}')">Tekshirish →</button>`;
+    <button class="g-next-btn visible" onclick="spCheck('${w.word.replace(/'/g,"\\'")}')">Tekshirish</button>`;
 
   setTimeout(() => document.getElementById('spInput') && document.getElementById('spInput').focus(), 50);
 
@@ -1589,7 +1710,9 @@ function spCheck(correct) {
   const ok      = attempt === correct.toLowerCase();
   const fb      = document.getElementById('spFeedback');
   fb.className  = 'g-feedback ' + (ok ? 'correct' : 'wrong');
-  fb.textContent = ok ? '✅ To\'g\'ri! +1' : '❌ To\'g\'ri so\'z: ' + correct;
+  fb.innerHTML = ok
+    ? '<span class="g-feedback-inner"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>To\'g\'ri! +1</span>'
+    : '<span class="g-feedback-inner"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>To\'g\'ri so\'z: ' + correct + '</span>';
   input.disabled = true;
   if (ok) spCorrect++; else spWrong++;
   document.getElementById('spScore').textContent = spCorrect + '/' + spWords.length;
@@ -1600,7 +1723,7 @@ function spTimeExpired(correct) {
   const input = document.getElementById('spInput');
   if (input) input.disabled = true;
   const fb = document.getElementById('spFeedback');
-  if (fb) { fb.className = 'g-feedback wrong'; fb.textContent = '⏰ Vaqt tugadi! To\'g\'ri: ' + correct; }
+  if (fb) { fb.className = 'g-feedback wrong'; fb.innerHTML = '<span class="g-feedback-inner"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Vaqt tugadi! To\'g\'ri: ' + correct + '</span>'; }
   spWrong++;
   document.getElementById('spScore').textContent = spCorrect + '/' + spWords.length;
   setTimeout(() => { spIdx++; spRender(); }, 1600);
@@ -1652,8 +1775,18 @@ function tfRender() {
     </div>
     <div class="g-feedback" id="tfFeedback"></div>
     <div class="tf-btns">
-      <button class="tf-btn true" onclick="tfAnswer(this, true, ${isTrue})">✅ To'g'ri</button>
-      <button class="tf-btn false" onclick="tfAnswer(this, false, ${!isTrue})">❌ Noto'g'ri</button>
+      <button class="tf-btn true" onclick="tfAnswer(this, true, ${isTrue})">
+        <span class="tf-btn-inner">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          To'g'ri
+        </span>
+      </button>
+      <button class="tf-btn false" onclick="tfAnswer(this, false, ${!isTrue})">
+        <span class="tf-btn-inner">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Noto'g'ri
+        </span>
+      </button>
     </div>`;
 }
 
@@ -1662,11 +1795,11 @@ function tfAnswer(btn, userChoice, isCorrect) {
   const fb = document.getElementById('tfFeedback');
   if (isCorrect) {
     btn.classList.add('correct');
-    fb.className = 'g-feedback correct'; fb.textContent = '✅ To\'g\'ri!';
+    fb.className = 'g-feedback correct'; fb.innerHTML = '<span class="g-feedback-inner"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>To\'g\'ri!</span>';
     tfCorrect++;
   } else {
     btn.classList.add('wrong');
-    fb.className = 'g-feedback wrong'; fb.textContent = '❌ Noto\'g\'ri!';
+    fb.className = 'g-feedback wrong'; fb.innerHTML = '<span class="g-feedback-inner"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Noto\'g\'ri!</span>';
     tfWrong++;
   }
   document.getElementById('tfScore').textContent = tfCorrect + '/' + tfWords.length;
