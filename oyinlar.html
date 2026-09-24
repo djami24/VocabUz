@@ -1003,7 +1003,6 @@ function showResult(bodyEl, { emoji, title, sub, correct, wrong, total, time }) 
   }
   bodyEl.innerHTML = `
     <div class="g-result">
-      <div class="g-result-icon">${resultIcon}</div>
       <div class="g-result-title">${title || "O'yin tugadi!"}</div>
       <div class="g-result-sub">${sub || ''}</div>
       <div class="g-result-stats">${statsHtml}</div>
@@ -1014,7 +1013,7 @@ function showResult(bodyEl, { emoji, title, sub, correct, wrong, total, time }) 
             Qayta o'ynash
           </span>
         </button>
-        <button class="grb secondary" onclick="closeGame('${bodyEl.dataset.game}')">
+        <button class="grb primary" onclick="closeGame('${bodyEl.dataset.game}')">
           <span class="grb-inner">
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
             O'yinlarni tanlash
