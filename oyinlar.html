@@ -363,6 +363,162 @@ body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:v
 .topbar-title-inner svg{width:20px;height:20px;flex-shrink:0;}
 .btn-go-learn-inner{display:flex;align-items:center;justify-content:center;gap:8px;}
 .btn-go-learn-inner svg{width:18px;height:18px;flex-shrink:0;}
+
+/* ════════════════════════════════════════════════
+   MOBILE RESPONSIVE — O'yinlar compact layout
+   Applies at ≤ 480px (phones). Desktop unchanged.
+════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+
+  /* TOP BAR */
+  .topbar {
+    padding: 10px 12px 8px;
+  }
+  .topbar-title {
+    font-size: .95rem;
+  }
+  .topbar-title-inner svg {
+    width: 17px; height: 17px;
+  }
+  .topbar-badge {
+    font-size: .68rem;
+    padding: 3px 8px;
+  }
+
+  /* SECTION HEADER */
+  .section-hdr {
+    padding: 10px 12px 6px;
+    font-size: .7rem;
+  }
+
+  /* LOCKED HERO */
+  .locked-hero {
+    margin: 10px 12px 14px;
+    padding: 16px 14px 14px;
+    border-radius: 14px;
+  }
+  .locked-icon {
+    width: 44px; height: 44px;
+    border-radius: 14px;
+    margin-bottom: 8px;
+  }
+  .locked-icon svg {
+    width: 24px; height: 24px;
+  }
+  .locked-title {
+    font-size: .95rem;
+    margin-bottom: 4px;
+  }
+  .locked-sub {
+    font-size: .78rem;
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+  .locked-prog-row {
+    margin-bottom: 6px;
+  }
+  .locked-prog-label,
+  .locked-prog-count {
+    font-size: .73rem;
+  }
+  .locked-track {
+    height: 7px;
+    margin-bottom: 12px;
+  }
+  .btn-go-learn {
+    height: 40px;
+    font-size: .82rem;
+    border-radius: 10px;
+  }
+  .btn-go-learn-inner svg {
+    width: 15px; height: 15px;
+  }
+
+  /* UNLOCKED HERO */
+  .unlocked-hero {
+    margin: 10px 12px 2px;
+    padding: 14px 14px;
+    border-radius: 14px;
+    gap: 10px;
+  }
+  .unlocked-icon {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+  }
+  .unlocked-icon svg {
+    width: 22px; height: 22px;
+  }
+  .unlocked-title {
+    font-size: .9rem;
+    margin-bottom: 1px;
+  }
+  .unlocked-sub {
+    font-size: .75rem;
+  }
+
+  /* GAME CARDS GRID — keep 2 cols but make cards compact */
+  .games-grid {
+    gap: 8px;
+    padding: 0 12px;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .game-card {
+    padding: 11px 10px 10px;
+    gap: 7px;
+    border-radius: 14px;
+  }
+  .game-card-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+  }
+  .game-card-icon svg {
+    width: 19px; height: 19px;
+  }
+  .game-card-name {
+    font-size: .78rem;
+    line-height: 1.25;
+  }
+  .game-card-desc {
+    font-size: .68rem;
+    line-height: 1.35;
+  }
+  .game-card-start {
+    height: 28px;
+    font-size: .68rem;
+    border-radius: 8px;
+  }
+
+  /* BOTTOM PADDING for dashboard */
+  #viewDashboard {
+    padding-bottom: calc(var(--bottom-nav-h) + 12px);
+  }
+
+  /* SPINNER */
+  .spinner-wrap { padding: 32px 0; }
+}
+
+/* Very small phones — 1 column if cards would be too narrow */
+@media (max-width: 320px) {
+  .games-grid {
+    grid-template-columns: 1fr;
+    gap: 7px;
+    padding: 0 10px;
+  }
+  .game-card {
+    padding: 12px 12px 10px;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+  }
+  .game-card-icon {
+    flex-shrink: 0;
+  }
+  .game-card-content {
+    flex: 1;
+    min-width: 0;
+  }
+}
 </style>
 </head>
 <body>
