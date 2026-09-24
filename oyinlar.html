@@ -1,0 +1,1677 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>O'yinlar — VocabUZ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#2196F3; --blue-deep:#1565C0; --blue-light:#E3F2FD; --blue-mid:#BBDEFB;
+  --green:#22C55E; --green-light:#DCFCE7; --green-deep:#16A34A;
+  --red:#EF4444; --red-light:#FEE2E2;
+  --amber:#F59E0B; --amber-light:#FEF3C7;
+  --purple:#8B5CF6; --purple-light:#EDE9FE;
+  --ink:#1A1A2E; --ink-mid:#5A6070; --ink-soft:#9AA0AD;
+  --white:#FFFFFF; --bg:#F0F6FF;
+  --shadow-sm:0 1px 4px rgba(33,150,243,.10);
+  --shadow-md:0 4px 16px rgba(33,150,243,.15);
+  --radius:16px; --radius-sm:12px; --bottom-nav-h:66px;
+}
+html{min-height:100%;}
+body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:var(--ink);overflow-y:auto;}
+
+/* ── TOP BAR ── */
+.topbar{position:sticky;top:0;z-index:100;background:var(--bg);padding:14px 16px 10px;display:flex;align-items:center;gap:10px;}
+.topbar-title{font-size:1.1rem;font-weight:800;flex:1;}
+.topbar-badge{font-size:.75rem;font-weight:700;background:var(--blue-light);color:var(--blue);padding:4px 10px;border-radius:20px;}
+.topbar-badge.green{background:var(--green-light);color:var(--green-deep);}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--bottom-nav-h);background:var(--white);display:flex;box-shadow:0 -1px 0 #e8eff8,0 -4px 16px rgba(33,150,243,.07);z-index:200;}
+.bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink-soft);font-size:.65rem;font-weight:600;text-decoration:none;-webkit-tap-highlight-color:transparent;}
+.bottom-nav-item.is-active{color:var(--blue);}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:calc(var(--bottom-nav-h)+16px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 20px;border-radius:24px;font-size:.83rem;font-weight:600;pointer-events:none;opacity:0;transition:opacity .25s,transform .25s;white-space:nowrap;z-index:500;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ── SPINNER ── */
+.spinner-wrap{display:flex;align-items:center;justify-content:center;padding:48px 0;}
+.spinner{width:36px;height:36px;border:3px solid var(--blue-mid);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ════════════════════
+   DASHBOARD
+════════════════════ */
+#viewDashboard{padding-bottom:calc(var(--bottom-nav-h)+20px);}
+
+/* locked state */
+.locked-hero{
+  margin:16px 16px 20px;
+  background:var(--white);
+  border-radius:var(--radius);
+  padding:28px 20px 24px;
+  box-shadow:var(--shadow-sm);
+  text-align:center;
+}
+.locked-icon{font-size:3.5rem;margin-bottom:12px;display:block;}
+.locked-title{font-size:1.15rem;font-weight:800;margin-bottom:6px;}
+.locked-sub{font-size:.85rem;color:var(--ink-mid);line-height:1.6;margin-bottom:18px;}
+.locked-prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.locked-prog-label{font-size:.8rem;font-weight:600;color:var(--ink-mid);}
+.locked-prog-count{font-size:.8rem;font-weight:800;color:var(--blue);}
+.locked-track{height:10px;background:var(--blue-light);border-radius:10px;overflow:hidden;margin-bottom:20px;}
+.locked-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--blue-deep));border-radius:10px;transition:width .5s ease;}
+.btn-go-learn{
+  width:100%;height:48px;border-radius:var(--radius-sm);border:none;cursor:pointer;
+  font-family:inherit;font-size:.9rem;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--blue-deep),var(--blue));
+  box-shadow:0 4px 14px rgba(33,150,243,.3);
+}
+
+/* unlocked hero */
+.unlocked-hero{
+  margin:16px 16px 4px;
+  background:linear-gradient(135deg,#1565C0,#42A5F5);
+  border-radius:var(--radius);
+  padding:22px 20px;
+  color:#fff;
+  display:flex;align-items:center;gap:14px;
+  box-shadow:0 4px 20px rgba(33,150,243,.35);
+}
+.unlocked-icon{font-size:2.4rem;flex-shrink:0;}
+.unlocked-title{font-size:1.1rem;font-weight:800;margin-bottom:2px;}
+.unlocked-sub{font-size:.82rem;opacity:.85;}
+
+/* section header */
+.section-hdr{padding:16px 16px 8px;font-size:.78rem;font-weight:700;color:var(--ink-soft);letter-spacing:.3px;text-transform:uppercase;}
+
+/* game cards grid */
+.games-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px;}
+@media(min-width:480px){.games-grid{grid-template-columns:1fr 1fr 1fr;}}
+@media(min-width:720px){.games-grid{grid-template-columns:repeat(4,1fr);}}
+
+.game-card{
+  background:var(--white);border-radius:var(--radius);
+  padding:16px 14px 14px;box-shadow:var(--shadow-sm);
+  cursor:pointer;transition:box-shadow .15s,transform .12s;
+  -webkit-tap-highlight-color:transparent;
+  display:flex;flex-direction:column;gap:10px;
+  position:relative;overflow:hidden;
+}
+.game-card:active{transform:scale(.97);box-shadow:var(--shadow-md);}
+.game-card-icon{
+  width:44px;height:44px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.45rem;flex-shrink:0;
+}
+.game-card-name{font-size:.88rem;font-weight:800;color:var(--ink);line-height:1.3;}
+.game-card-desc{font-size:.75rem;color:var(--ink-soft);line-height:1.4;flex:1;}
+.game-card-start{
+  height:32px;border-radius:10px;border:none;cursor:pointer;
+  font-family:inherit;font-size:.75rem;font-weight:700;color:var(--blue);
+  background:var(--blue-light);
+  -webkit-tap-highlight-color:transparent;
+  width:100%;
+}
+.game-card-start:active{background:var(--blue-mid);}
+
+/* ════════════════════
+   GAME SCREEN (shared)
+════════════════════ */
+.game-screen{
+  display:none;
+  position:fixed;inset:0;z-index:300;
+  background:var(--bg);flex-direction:column;
+  overflow:hidden;
+}
+.game-screen.open{display:flex;}
+
+.g-topbar{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 16px;background:var(--white);
+  box-shadow:var(--shadow-sm);flex-shrink:0;
+}
+.g-back{width:36px;height:36px;border-radius:50%;background:var(--bg);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink-mid);}
+.g-title{font-size:.95rem;font-weight:700;flex:1;}
+.g-score-pill{font-size:.8rem;font-weight:700;background:var(--blue-light);color:var(--blue);padding:4px 10px;border-radius:16px;}
+
+.g-prog-track{height:4px;background:var(--blue-mid);flex-shrink:0;}
+.g-prog-fill{height:100%;background:var(--blue);transition:width .3s;}
+
+.g-body{flex:1;overflow-y:auto;padding:20px 16px calc(var(--bottom-nav-h)+20px);display:flex;flex-direction:column;align-items:center;gap:16px;}
+
+/* word display card */
+.g-word-card{
+  width:100%;max-width:420px;
+  background:linear-gradient(135deg,var(--blue-deep),var(--blue));
+  border-radius:20px;padding:28px 22px;
+  text-align:center;color:#fff;
+}
+.g-word-label{font-size:.72rem;font-weight:700;opacity:.7;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;}
+.g-word-main{font-size:2rem;font-weight:900;letter-spacing:-.5px;margin-bottom:4px;}
+.g-word-sub{font-size:.82rem;opacity:.75;}
+
+/* options */
+.g-options{width:100%;max-width:420px;display:flex;flex-direction:column;gap:10px;}
+.g-opt{
+  width:100%;padding:14px 18px;border-radius:var(--radius-sm);
+  border:2px solid var(--blue-light);background:var(--white);
+  font-family:inherit;font-size:.9rem;font-weight:600;color:var(--ink);
+  cursor:pointer;text-align:left;transition:all .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.g-opt:active:not([disabled]){background:var(--blue-light);}
+.g-opt.correct{background:var(--green-light)!important;border-color:var(--green)!important;color:var(--green-deep)!important;}
+.g-opt.wrong{background:var(--red-light)!important;border-color:var(--red)!important;color:var(--red)!important;}
+.g-opt.show-correct{background:var(--green-light)!important;border-color:var(--green)!important;}
+.g-opt[disabled]{cursor:default;}
+
+/* next / submit buttons */
+.g-next-btn{
+  width:100%;max-width:420px;height:50px;
+  border-radius:var(--radius);border:none;cursor:pointer;
+  font-family:inherit;font-size:.95rem;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--blue-deep),var(--blue));
+  box-shadow:0 4px 14px rgba(33,150,243,.3);
+  display:none;
+}
+.g-next-btn.visible{display:block;}
+
+/* text input */
+.g-input-wrap{width:100%;max-width:420px;}
+.g-input{
+  width:100%;height:52px;padding:0 16px;
+  border-radius:var(--radius-sm);border:2px solid var(--blue-mid);
+  font-family:inherit;font-size:1rem;font-weight:600;color:var(--ink);
+  background:var(--white);outline:none;
+  transition:border-color .15s;
+}
+.g-input:focus{border-color:var(--blue);}
+.g-input.correct-input{border-color:var(--green);background:var(--green-light);}
+.g-input.wrong-input{border-color:var(--red);background:var(--red-light);}
+
+/* feedback */
+.g-feedback{
+  width:100%;max-width:420px;
+  padding:14px 16px;border-radius:var(--radius-sm);
+  font-size:.88rem;font-weight:600;text-align:center;
+  display:none;
+}
+.g-feedback.correct{background:var(--green-light);color:var(--green-deep);display:block;}
+.g-feedback.wrong{background:var(--red-light);color:var(--red);display:block;}
+
+/* ── RESULT SCREEN ── */
+.g-result{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:32px 24px;text-align:center;gap:14px;
+}
+.g-result-emoji{font-size:4rem;}
+.g-result-title{font-size:1.3rem;font-weight:900;}
+.g-result-sub{font-size:.88rem;color:var(--ink-mid);line-height:1.6;max-width:280px;}
+.g-result-stats{display:flex;gap:10px;width:100%;max-width:340px;margin:4px 0;}
+.grs{flex:1;background:var(--white);border-radius:14px;padding:14px 8px;box-shadow:var(--shadow-sm);text-align:center;}
+.grs-val{font-size:1.5rem;font-weight:900;}
+.grs-val.green{color:var(--green);}
+.grs-val.red{color:var(--red);}
+.grs-val.blue{color:var(--blue);}
+.grs-lbl{font-size:.7rem;color:var(--ink-soft);margin-top:3px;}
+.g-result-btns{display:flex;flex-direction:column;gap:10px;width:100%;max-width:340px;margin-top:4px;}
+.grb{width:100%;height:50px;border-radius:var(--radius);border:none;cursor:pointer;font-family:inherit;font-size:.95rem;font-weight:700;-webkit-tap-highlight-color:transparent;}
+.grb.primary{color:#fff;background:linear-gradient(135deg,var(--blue-deep),var(--blue));box-shadow:0 4px 14px rgba(33,150,243,.3);}
+.grb.secondary{background:#F1F5F9;color:var(--ink-mid);}
+
+/* ─────────────────────────
+   HANGMAN
+───────────────────────── */
+.hm-letters-wrap{width:100%;max-width:420px;display:flex;flex-wrap:wrap;justify-content:center;gap:8px;}
+.hm-slot{
+  width:36px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+  font-size:1.3rem;font-weight:800;color:var(--ink);
+  border-bottom:3px solid var(--ink);padding-bottom:2px;
+}
+.hm-slot.space{border-bottom:none;width:16px;}
+.hm-keyboard{width:100%;max-width:420px;display:flex;flex-wrap:wrap;justify-content:center;gap:6px;}
+.hm-key{
+  width:34px;height:34px;border-radius:10px;border:none;cursor:pointer;
+  font-family:inherit;font-size:.82rem;font-weight:700;
+  background:var(--white);color:var(--ink);
+  box-shadow:var(--shadow-sm);
+  -webkit-tap-highlight-color:transparent;
+  transition:background .1s,color .1s;
+}
+.hm-key.used-correct{background:var(--green);color:#fff;}
+.hm-key.used-wrong{background:var(--red-light);color:var(--red);}
+.hm-key[disabled]{opacity:.4;cursor:default;}
+.hm-body-svg{width:120px;height:120px;}
+.hm-lives{display:flex;gap:6px;align-items:center;font-size:.82rem;font-weight:700;color:var(--ink-mid);}
+.hm-heart{color:var(--red);}
+.hm-heart.lost{color:#ddd;}
+
+/* ─────────────────────────
+   WORD MATCH
+───────────────────────── */
+.match-grid{width:100%;max-width:420px;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.match-col{display:flex;flex-direction:column;gap:8px;}
+.match-item{
+  padding:12px 14px;border-radius:var(--radius-sm);
+  border:2px solid var(--blue-light);background:var(--white);
+  font-size:.85rem;font-weight:700;cursor:pointer;text-align:center;
+  transition:all .15s;-webkit-tap-highlight-color:transparent;
+  min-height:46px;display:flex;align-items:center;justify-content:center;
+}
+.match-item.selected{border-color:var(--blue);background:var(--blue-light);color:var(--blue);}
+.match-item.matched{border-color:var(--green);background:var(--green-light);color:var(--green-deep);cursor:default;}
+.match-item.wrong-match{border-color:var(--red);background:var(--red-light);color:var(--red);}
+
+/* ─────────────────────────
+   WORD SCRAMBLE / SENTENCE
+───────────────────────── */
+.scramble-display{
+  font-size:2rem;font-weight:900;color:var(--blue-deep);
+  letter-spacing:.1em;text-align:center;
+  padding:20px;background:var(--white);border-radius:var(--radius);
+  width:100%;max-width:420px;box-shadow:var(--shadow-sm);
+}
+.sentence-words{width:100%;max-width:420px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
+.sentence-slot-area{width:100%;max-width:420px;min-height:56px;background:var(--white);border-radius:var(--radius-sm);border:2px dashed var(--blue-mid);display:flex;flex-wrap:wrap;gap:8px;padding:10px;align-items:center;}
+.sentence-word{
+  padding:8px 14px;border-radius:10px;border:none;cursor:pointer;
+  font-family:inherit;font-size:.88rem;font-weight:700;
+  background:var(--blue-light);color:var(--blue-deep);
+  -webkit-tap-highlight-color:transparent;
+  transition:opacity .15s;
+}
+.sentence-word.placed{opacity:.35;cursor:default;}
+.sentence-placed{
+  padding:7px 13px;border-radius:10px;border:none;cursor:pointer;
+  font-family:inherit;font-size:.88rem;font-weight:700;
+  background:var(--blue);color:#fff;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* ─────────────────────────
+   SPEED TYPING
+───────────────────────── */
+.timer-display{
+  font-size:2.4rem;font-weight:900;color:var(--blue);
+  text-align:center;
+}
+.timer-display.warning{color:var(--red);}
+
+/* ─────────────────────────
+   MISSING LETTERS
+───────────────────────── */
+.missing-slots{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;width:100%;max-width:420px;}
+.ml-slot{
+  width:40px;height:48px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;font-weight:800;
+  background:var(--white);border:2px solid var(--blue-mid);
+}
+.ml-slot.given{border-color:var(--blue-light);color:var(--ink);}
+.ml-slot.blank{border-color:var(--blue);color:var(--blue);border-style:dashed;}
+.ml-slot.filled{border-color:var(--green);background:var(--green-light);color:var(--green-deep);}
+.ml-keyboard{width:100%;max-width:420px;display:flex;flex-wrap:wrap;justify-content:center;gap:6px;}
+.ml-key{
+  min-width:34px;height:34px;padding:0 8px;
+  border-radius:10px;border:none;cursor:pointer;
+  font-family:inherit;font-size:.82rem;font-weight:700;
+  background:var(--white);color:var(--ink);
+  box-shadow:var(--shadow-sm);
+  -webkit-tap-highlight-color:transparent;
+}
+.ml-key[disabled]{opacity:.4;cursor:default;}
+
+/* ─────────────────────────
+   TRUE / FALSE
+───────────────────────── */
+.tf-btns{width:100%;max-width:420px;display:flex;gap:12px;}
+.tf-btn{
+  flex:1;height:60px;border-radius:var(--radius-sm);border:none;cursor:pointer;
+  font-family:inherit;font-size:1.1rem;font-weight:800;
+  -webkit-tap-highlight-color:transparent;
+  transition:all .15s;
+}
+.tf-btn.true{background:var(--green-light);color:var(--green-deep);}
+.tf-btn.false{background:var(--red-light);color:var(--red);}
+.tf-btn:active{transform:scale(.96);}
+.tf-btn.correct{background:var(--green)!important;color:#fff!important;}
+.tf-btn.wrong{background:var(--red)!important;color:#fff!important;}
+.tf-btn[disabled]{cursor:default;}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-title">🎮 O'yinlar</div>
+  <div class="topbar-badge" id="topbarBadge">Yuklanmoqda…</div>
+</div>
+
+<!-- DASHBOARD VIEW -->
+<div id="viewDashboard">
+  <div id="dashContent">
+    <div class="spinner-wrap"><div class="spinner"></div></div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <a class="bottom-nav-item" href="index.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    Asosiy
+  </a>
+  <a class="bottom-nav-item" href="mywords.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    So'zlarim
+  </a>
+  <a class="bottom-nav-item" href="topic.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="7" x2="16" y2="7"/><line x1="10" y1="11" x2="16" y2="11"/></svg>
+    Mavzular
+  </a>
+  <a class="bottom-nav-item" href="search.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    Qidirish
+  </a>
+  <a class="bottom-nav-item is-active" href="oyinlar.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/><line x1="12" y1="12" x2="12" y2="17"/><line x1="9.5" y1="14.5" x2="14.5" y2="14.5"/></svg>
+    O'yinlar
+  </a>
+</nav>
+
+<!-- ═══════════════════════════════════════
+     GAME 1: HANGMAN
+════════════════════════════════════════ -->
+<div class="game-screen" id="gameHangman">
+  <div class="g-topbar">
+    <button class="g-back" onclick="closeGame('gameHangman')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="g-title">🪢 Hangman</div>
+    <div class="g-score-pill" id="hmScore">0</div>
+  </div>
+  <div class="g-body" id="hmBody"></div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     GAME 2: TRANSLATION CHALLENGE
+════════════════════════════════════════ -->
+<div class="game-screen" id="gameTranslation">
+  <div class="g-topbar">
+    <button class="g-back" onclick="closeGame('gameTranslation')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="g-title">🌐 Tarjima tanlash</div>
+    <div class="g-score-pill" id="trScore">0/0</div>
+  </div>
+  <div class="g-prog-track"><div class="g-prog-fill" id="trProg" style="width:0%"></div></div>
+  <div class="g-body" id="trBody"></div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     GAME 3: MAKE A SENTENCE
+════════════════════════════════════════ -->
+<div class="game-screen" id="gameSentence">
+  <div class="g-topbar">
+    <button class="g-back" onclick="closeGame('gameSentence')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="g-title">📝 Gap tuzish</div>
+    <div class="g-score-pill" id="snScore">0/0</div>
+  </div>
+  <div class="g-prog-track"><div class="g-prog-fill" id="snProg" style="width:0%"></div></div>
+  <div class="g-body" id="snBody"></div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     GAME 4: WORD SCRAMBLE
+════════════════════════════════════════ -->
+<div class="game-screen" id="gameScramble">
+  <div class="g-topbar">
+    <button class="g-back" onclick="closeGame('gameScramble')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="g-title">🔀 So'z aralashtirish</div>
+    <div class="g-score-pill" id="scScore">0/0</div>
+  </div>
+  <div class="g-prog-track"><div class="g-prog-fill" id="scProg" style="width:0%"></div></div>
+  <div class="g-body" id="scBody"></div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     GAME 5: WORD MATCH
+════════════════════════════════════════ -->
+<div class="game-screen" id="gameMatch">
+  <div class="g-topbar">
+    <button class="g-back" onclick="closeGame('gameMatch')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="g-title">🔗 So'z jufti</div>
+    <div class="g-score-pill" id="mtScore">0</div>
+  </div>
+  <div class="g-body" id="mtBody"></div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     GAME 6: CHOOSE CORRECT TRANSLATION (= Translation variant)
+     GAME 9: WORD QUIZ  — reuse same engine, different label
+════════════════════════════════════════ -->
+<div class="game-screen" id="gameChoose">
+  <div class="g-topbar">
+    <button class="g-back" onclick="closeGame('gameChoose')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="g-title" id="chTitle">✅ To'g'ri tarjima</div>
+    <div class="g-score-pill" id="chScore">0/0</div>
+  </div>
+  <div class="g-prog-track"><div class="g-prog-fill" id="chProg" style="width:0%"></div></div>
+  <div class="g-body" id="chBody"></div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     GAME 7: MISSING LETTERS
+════════════════════════════════════════ -->
+<div class="game-screen" id="gameMissing">
+  <div class="g-topbar">
+    <button class="g-back" onclick="closeGame('gameMissing')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="g-title">🔠 Harfni top</div>
+    <div class="g-score-pill" id="mlScore">0/0</div>
+  </div>
+  <div class="g-prog-track"><div class="g-prog-fill" id="mlProg" style="width:0%"></div></div>
+  <div class="g-body" id="mlBody"></div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     GAME 8: SPEED TYPING
+════════════════════════════════════════ -->
+<div class="game-screen" id="gameSpeed">
+  <div class="g-topbar">
+    <button class="g-back" onclick="closeGame('gameSpeed')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="g-title">⚡ Tez yozish</div>
+    <div class="g-score-pill" id="spScore">0/0</div>
+  </div>
+  <div class="g-prog-track"><div class="g-prog-fill" id="spProg" style="width:0%"></div></div>
+  <div class="g-body" id="spBody"></div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     GAME 10: TRUE OR FALSE
+════════════════════════════════════════ -->
+<div class="game-screen" id="gameTF">
+  <div class="g-topbar">
+    <button class="g-back" onclick="closeGame('gameTF')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="g-title">✔️ To'g'ri yoki Noto'g'ri</div>
+    <div class="g-score-pill" id="tfScore">0/0</div>
+  </div>
+  <div class="g-prog-track"><div class="g-prog-fill" id="tfProg" style="width:0%"></div></div>
+  <div class="g-body" id="tfBody"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="auth-guard.js"></script>
+<script>
+/* ════════════════════════════════════════════════
+   ALL_WORDS — same data as topic.html
+════════════════════════════════════════════════ */
+const ALL_WORDS = [
+  { id:1,  topic:"Ta'lim", word:"curriculum",       uz:"o'quv dasturi, ta'lim dasturi",      level:"B2", example:"A modern curriculum should prepare students for both employment and everyday life." },
+  { id:2,  topic:"Ta'lim", word:"syllabus",          uz:"kurs rejasi, sillabus",               level:"B2", example:"The lecturer shared the syllabus before the first class." },
+  { id:3,  topic:"Ta'lim", word:"assessment",        uz:"baholash, tekshirish",                level:"B2", example:"Regular assessment helps teachers identify learning gaps early." },
+  { id:4,  topic:"Ta'lim", word:"scholarship",       uz:"stipendiya, grant",                   level:"B1", example:"She received a full scholarship to study abroad." },
+  { id:5,  topic:"Ta'lim", word:"graduate",          uz:"bitirmoq, bitiruvchi",                level:"A2", example:"He graduated from university with honors." },
+  { id:6,  topic:"Ta'lim", word:"tuition",           uz:"o'qitish to'lovi, dars",              level:"B2", example:"Tuition fees have increased significantly over the past decade." },
+  { id:7,  topic:"Ta'lim", word:"extracurricular",   uz:"darsdan tashqari",                    level:"C1", example:"Extracurricular activities help develop social skills." },
+  { id:8,  topic:"Ta'lim", word:"dissertation",      uz:"dissertatsiya, ilmiy ish",            level:"C1", example:"She spent two years writing her doctoral dissertation." },
+  { id:9,  topic:"Ta'lim", word:"plagiarism",        uz:"plagiat, o'girma",                    level:"B2", example:"Plagiarism is a serious academic offence." },
+  { id:10, topic:"Ta'lim", word:"lecture",           uz:"ma'ruza, dars",                       level:"A2", example:"The professor delivered an interesting lecture on quantum physics." },
+  { id:11, topic:"Ta'lim", word:"elaborate",         uz:"batafsil tushuntirmoq",               level:"B2", example:"Could you elaborate on your previous point?" },
+  { id:12, topic:"Ta'lim", word:"clarify",           uz:"aniqlashtirmoq, tushuntirmoq",        level:"B1", example:"The teacher clarified the homework instructions for the class." },
+  { id:13, topic:"Ta'lim", word:"summarise",         uz:"qisqacha bayon etmoq",                level:"B1", example:"Can you summarise the main points of the chapter?" },
+  { id:14, topic:"Ta'lim", word:"enrol",             uz:"ro'yxatga olmoq, qabul qilmoq",      level:"B1", example:"She enrolled in an online course to improve her coding skills." },
+  { id:15, topic:"Ta'lim", word:"undergraduate",     uz:"bakalavr talabasi",                   level:"B2", example:"Undergraduate students must complete at least 120 credit hours." },
+  { id:16, topic:"Ta'lim", word:"postgraduate",      uz:"magistratura, aspirantura",           level:"B2", example:"She is doing postgraduate research in molecular biology." },
+  { id:17, topic:"Ta'lim", word:"vocational",        uz:"kasb-hunar, amaliy",                  level:"B2", example:"Vocational training prepares students for specific careers." },
+  { id:18, topic:"Ta'lim", word:"academic",          uz:"akademik, ilmiy",                     level:"B1", example:"His academic performance has improved significantly this year." },
+  { id:19, topic:"Ta'lim", word:"semester",          uz:"semestr, o'quv davri",                level:"A2", example:"The autumn semester begins in September." },
+  { id:20, topic:"Ta'lim", word:"assignment",        uz:"vazifa, topshiriq",                   level:"A2", example:"Please submit your assignment by Friday afternoon." },
+  { id:21, topic:"Ta'lim", word:"thesis",            uz:"dissertatsiya, ilmiy ish",            level:"C1", example:"Her thesis argued that climate change is accelerating biodiversity loss." },
+  { id:22, topic:"Ta'lim", word:"debate",            uz:"munozara, bahs",                      level:"B1", example:"Students held a debate on whether social media is harmful." },
+  { id:23, topic:"Ta'lim", word:"discipline",        uz:"intizom, fan sohasi",                 level:"B2", example:"Mathematics is a discipline that requires logical thinking." },
+  { id:24, topic:"Ta'lim", word:"revision",          uz:"takrorlash, qayta ko'rib chiqish",    level:"B1", example:"She spent the weekend doing revision for her history exam." },
+  { id:25, topic:"Ta'lim", word:"tutor",             uz:"o'qituvchi, repetitor",               level:"A2", example:"He hired a private tutor to help him prepare for the entrance exam." },
+  { id:26, topic:"Ta'lim", word:"seminar",           uz:"seminar, ilmiy mashg'ulot",           level:"B1", example:"The professor leads a weekly seminar on modern literature." },
+  { id:27, topic:"Ta'lim", word:"campus",            uz:"kampus, universitet hududi",          level:"A2", example:"The university campus has excellent sports facilities." },
+  { id:28, topic:"Ta'lim", word:"faculty",           uz:"fakultet, professor-o'qituvchilar",   level:"B2", example:"The faculty of science includes chemistry, physics, and biology." },
+  { id:29, topic:"Ta'lim", word:"curriculum vitae",  uz:"rezyume, CV",                         level:"B2", example:"She updated her curriculum vitae before applying for the job." },
+  { id:30, topic:"Ta'lim", word:"distance learning", uz:"masofaviy ta'lim",                    level:"B1", example:"Distance learning has become very popular since the pandemic." },
+  { id:31, topic:"Ta'lim", word:"literacy",          uz:"savodxonlik, o'qish-yozish",          level:"B2", example:"Improving literacy rates is a key government priority." },
+  { id:32, topic:"Ta'lim", word:"numeracy",          uz:"hisob-kitob ko'nikmalari",            level:"B2", example:"Good numeracy skills are important in everyday life." },
+  { id:33, topic:"Ta'lim", word:"portfolio",         uz:"portfolio, ishlar to'plami",          level:"B1", example:"Artists often present a portfolio of their work to clients." },
+  { id:34, topic:"Ta'lim", word:"internship",        uz:"amaliyot, stajirovka",                level:"B1", example:"She completed a summer internship at a marketing agency." },
+  { id:36, topic:"Sog'liq", word:"symptom",          uz:"belgi, alomat",                      level:"B1", example:"A high temperature is a common symptom of flu." },
+  { id:37, topic:"Sog'liq", word:"diagnose",         uz:"tashxis qo'ymoq",                    level:"B2", example:"The doctor diagnosed her with type 2 diabetes." },
+  { id:38, topic:"Sog'liq", word:"prescription",     uz:"retsept, buyruq",                    level:"B1", example:"The pharmacist asked for a valid prescription." },
+  { id:39, topic:"Sog'liq", word:"immunity",         uz:"immunitet, kasalliklarga chidamlilik", level:"B2", example:"Vaccines help build immunity against serious diseases." },
+  { id:40, topic:"Sog'liq", word:"chronic",          uz:"surunkali, uzoq muddatli",            level:"B2", example:"She has been living with a chronic back condition for years." },
+  { id:41, topic:"Sog'liq", word:"rehabilitation",   uz:"reabilitatsiya, tiklanish",           level:"C1", example:"After the accident, he spent three months in rehabilitation." },
+  { id:42, topic:"Sog'liq", word:"endurance",        uz:"chidamlilik, bardoshlilik",           level:"B2", example:"Long-distance running builds endurance over time." },
+  { id:43, topic:"Sog'liq", word:"flexibility",      uz:"egiluvchanlik, moslashuvchanlik",     level:"B1", example:"Yoga improves both flexibility and mental focus." },
+  { id:44, topic:"Sog'liq", word:"nutrition",        uz:"oziqlanish, ovqatlanish",             level:"B1", example:"Good nutrition is essential for children's development." },
+  { id:45, topic:"Sog'liq", word:"obesity",          uz:"semizlik, to'liqlik",                 level:"B2", example:"Obesity is linked to an increased risk of heart disease." },
+  { id:46, topic:"Sog'liq", word:"prevention",       uz:"oldini olish, profilaktika",          level:"B2", example:"Prevention is always better than treatment." },
+  { id:47, topic:"Sog'liq", word:"mental health",    uz:"ruhiy sog'liq",                       level:"B1", example:"Mental health awareness has grown significantly in recent years." },
+  { id:48, topic:"Sog'liq", word:"dosage",           uz:"doza, me'yor",                        level:"B2", example:"Always follow the correct dosage instructions on the label." },
+  { id:49, topic:"Sog'liq", word:"surgery",          uz:"jarrohlik, operatsiya",               level:"B1", example:"She underwent surgery to remove the tumour." },
+  { id:50, topic:"Sog'liq", word:"contagious",       uz:"yuqumli, o'tuvchi",                   level:"B2", example:"Chickenpox is highly contagious and spreads quickly." },
+  { id:51, topic:"Sog'liq", word:"vaccine",          uz:"vaktsina, emlash",                    level:"B1", example:"The flu vaccine is recommended every year for older adults." },
+  { id:52, topic:"Sog'liq", word:"allergy",          uz:"allergiya",                           level:"B1", example:"She has a severe allergy to peanuts." },
+  { id:53, topic:"Sog'liq", word:"sedentary",        uz:"o'tirib ish qiladigan, harakatsiz",   level:"C1", example:"A sedentary lifestyle increases the risk of many health problems." },
+  { id:54, topic:"Sog'liq", word:"metabolism",       uz:"moddalar almashinuvi, metabolizm",    level:"C1", example:"Regular exercise helps to boost your metabolism." },
+  { id:55, topic:"Sog'liq", word:"well-being",       uz:"farovonlik, yaxshi his etish",        level:"B2", example:"Physical activity contributes greatly to overall well-being." },
+  { id:56, topic:"Sog'liq", word:"therapy",          uz:"terapiya, davolash",                  level:"B1", example:"Cognitive behavioural therapy is widely used for anxiety disorders." },
+  { id:57, topic:"Sog'liq", word:"paramedic",        uz:"tibbiy xodim, feldsher",              level:"B2", example:"The paramedic gave first aid at the scene of the accident." },
+  { id:58, topic:"Sog'liq", word:"insomnia",         uz:"uyqusizlik",                          level:"B2", example:"Stress is a common cause of insomnia." },
+  { id:59, topic:"Sog'liq", word:"epidemic",         uz:"epidemiya, kasallik tarqalishi",      level:"B2", example:"Authorities acted quickly to contain the cholera epidemic." },
+  { id:60, topic:"Sog'liq", word:"hygiene",          uz:"gigiena, tozalik",                    level:"A2", example:"Washing your hands regularly is basic personal hygiene." },
+  { id:61, topic:"Sog'liq", word:"cardiac",          uz:"yurak, kardiak",                      level:"C1", example:"He was rushed to hospital with a cardiac arrest." },
+  { id:62, topic:"Sog'liq", word:"fracture",         uz:"suyak sinishi, yoriq",                level:"B2", example:"She suffered a fracture in her wrist after the fall." },
+  { id:63, topic:"Sog'liq", word:"anaesthetic",      uz:"narkoz, og'riq qoldiruvchi",          level:"C1", example:"The patient was placed under general anaesthetic during the procedure." },
+  { id:64, topic:"Sog'liq", word:"inflammation",     uz:"yallig'lanish, shish",                level:"C1", example:"The injury caused significant inflammation around the knee joint." },
+  { id:65, topic:"Sog'liq", word:"clinical",         uz:"klinik, tibbiy",                      level:"B2", example:"The drug passed all clinical trials before being approved." },
+  { id:66, topic:"Biznes", word:"revenue",            uz:"daromad, tushum",                    level:"B2", example:"The company reported record revenue in the last financial quarter." },
+  { id:67, topic:"Biznes", word:"investment",         uz:"investitsiya, qo'yilma",             level:"B1", example:"She made a long-term investment in renewable energy stocks." },
+  { id:68, topic:"Biznes", word:"entrepreneur",       uz:"tadbirkor, bizneschi",               level:"B2", example:"Young entrepreneurs are driving innovation in the tech sector." },
+  { id:69, topic:"Biznes", word:"merger",             uz:"birlashish, qo'shilish",             level:"C1", example:"The merger between the two airlines created the world's largest carrier." },
+  { id:70, topic:"Biznes", word:"dividend",           uz:"dividend, foyda ulushi",             level:"C1", example:"Shareholders received a generous dividend this year." },
+  { id:71, topic:"Biznes", word:"franchise",          uz:"franchayzing, litsenziya",           level:"C1", example:"She opened a coffee franchise in the city centre." },
+  { id:72, topic:"Biznes", word:"liability",          uz:"javobgarlik, majburiyat",            level:"C1", example:"The company accepted liability for the faulty product." },
+  { id:73, topic:"Biznes", word:"negotiate",          uz:"muzokaralar olib bormoq",            level:"B1", example:"They negotiated a better deal with the supplier." },
+  { id:74, topic:"Biznes", word:"asset",              uz:"aktiv, mulk",                        level:"B2", example:"Property is often considered a safe long-term asset." },
+  { id:75, topic:"Biznes", word:"profit margin",      uz:"foyda chegarasi, rentabellik",       level:"C1", example:"Rising costs have reduced the company's profit margin." },
+  { id:76, topic:"Biznes", word:"supply chain",       uz:"ta'minot zanjiri",                   level:"B2", example:"The pandemic disrupted global supply chains significantly." },
+  { id:77, topic:"Biznes", word:"inflation",          uz:"inflyatsiya, narxlar o'sishi",       level:"B2", example:"High inflation reduces the purchasing power of consumers." },
+  { id:78, topic:"Biznes", word:"audit",              uz:"audit, tekshirish",                  level:"C1", example:"An external audit revealed several accounting errors." },
+  { id:79, topic:"Biznes", word:"outsource",          uz:"autsorsing, tashqaridan topshirish", level:"C1", example:"Many firms outsource their IT support to specialist companies." },
+  { id:80, topic:"Biznes", word:"stakeholder",        uz:"manfaatdor tomon",                   level:"B2", example:"All stakeholders were consulted before the decision was made." },
+  { id:81, topic:"Biznes", word:"brand",              uz:"brend, tovar belgisi",               level:"B1", example:"A strong brand builds customer loyalty over time." },
+  { id:82, topic:"Biznes", word:"budget",             uz:"byudjet, moliyaviy reja",            level:"A2", example:"The project went over budget by twenty per cent." },
+  { id:83, topic:"Biznes", word:"marketing",          uz:"marketing, bozorga chiqarish",       level:"B1", example:"Effective marketing is key to the success of any new product." },
+  { id:84, topic:"Biznes", word:"headquarters",       uz:"markaziy ofis, bosh idora",          level:"B2", example:"The company's headquarters are located in New York." },
+  { id:85, topic:"Biznes", word:"bankruptcy",         uz:"bankrotlik, to'lovga qodir emaslik", level:"C1", example:"The airline filed for bankruptcy after years of financial losses." },
+  { id:86, topic:"Hissiyotlar", word:"anxious",       uz:"xavotirli, bezovta",                level:"B1", example:"She felt anxious before the job interview." },
+  { id:87, topic:"Hissiyotlar", word:"frustrated",    uz:"umidsiz, g'azablangan",             level:"B1", example:"He was frustrated by the constant delays." },
+  { id:88, topic:"Hissiyotlar", word:"overwhelmed",   uz:"toliqan, bosimi ostida",            level:"B2", example:"She felt overwhelmed by the amount of work she had to complete." },
+  { id:89, topic:"Hissiyotlar", word:"melancholy",    uz:"g'amgin, tushkunlik",               level:"C1", example:"A sense of melancholy settled over him as he left his hometown." },
+  { id:90, topic:"Hissiyotlar", word:"content",       uz:"qoniqarli, xotirjam",               level:"B1", example:"After moving to the countryside, she felt truly content." },
+  { id:91, topic:"Hissiyotlar", word:"irritated",     uz:"jahli chiqqan, ta'sirlangan",       level:"B1", example:"He was irritated by the constant noise from the construction site." },
+  { id:92, topic:"Hissiyotlar", word:"compassion",    uz:"rahm-shafqat, hamdardlik",          level:"B2", example:"The nurse showed great compassion to her patients." },
+  { id:93, topic:"Hissiyotlar", word:"resentment",    uz:"nafrat, xafa bo'lish",              level:"C1", example:"Years of unfair treatment built deep resentment within the team." },
+  { id:94, topic:"Hissiyotlar", word:"relief",        uz:"yengillik, xavotirdan qutulish",    level:"B1", example:"She felt a great sense of relief when the exam results came back positive." },
+  { id:95, topic:"Hissiyotlar", word:"loneliness",    uz:"yolg'izlik",                        level:"B2", example:"Moving to a new city can lead to feelings of loneliness." },
+  { id:96, topic:"Hissiyotlar", word:"pride",         uz:"g'urur, iftixor",                   level:"B1", example:"She looked at her daughter's painting with pride." },
+  { id:97, topic:"Hissiyotlar", word:"shame",         uz:"uyat, sharmandachilik",             level:"B2", example:"He felt deep shame after lying to his parents." },
+  { id:98, topic:"Hissiyotlar", word:"excitement",    uz:"hayajon, zavq",                     level:"A2", example:"There was a great sense of excitement before the festival." },
+  { id:99, topic:"Hissiyotlar", word:"apprehensive",  uz:"xavotirli, hadiksirab",             level:"B2", example:"She was apprehensive about starting her new job." },
+  { id:100,topic:"Hissiyotlar", word:"grief",         uz:"qayg'u, aza",                       level:"B2", example:"He was still dealing with grief after the loss of his father." },
+  { id:101,topic:"Hissiyotlar", word:"contempt",      uz:"nafrat, mensimovchilik",             level:"C1", example:"She looked at him with barely concealed contempt." },
+  { id:102,topic:"Hissiyotlar", word:"ecstatic",      uz:"juda xursand, ekstaz holatida",     level:"C1", example:"She was ecstatic when she found out she had won first prize." },
+  { id:103,topic:"Hissiyotlar", word:"guilty",        uz:"aybdor, vijdoni qiynalgan",         level:"B1", example:"He felt guilty for not telling the truth sooner." },
+  { id:104,topic:"Hissiyotlar", word:"nostalgic",     uz:"o'tmishni sog'inish, nostalgiya",   level:"C1", example:"Old photos make her feel nostalgic for her school days." },
+  { id:105,topic:"Hissiyotlar", word:"confident",     uz:"ishonchli, o'ziga ishongan",        level:"B1", example:"Public speaking made him feel much more confident over time." },
+  { id:106,topic:"Hissiyotlar", word:"jealous",       uz:"hasadgo'y, havaskor",               level:"B1", example:"She was jealous of her friend's success abroad." },
+  { id:107,topic:"Hissiyotlar", word:"embarrassed",   uz:"uyalgan, xijolat bo'lgan",          level:"B1", example:"She was embarrassed when she forgot her teacher's name." },
+  { id:108,topic:"Hissiyotlar", word:"optimistic",    uz:"optimistik, umidvor",               level:"B1", example:"Despite the challenges, she remained optimistic about the future." },
+  { id:109,topic:"Hissiyotlar", word:"desperate",     uz:"umidsiz, yoqasiga yetgan",          level:"B2", example:"He was desperate for work after months of unemployment." },
+  { id:110,topic:"Hissiyotlar", word:"sympathetic",   uz:"hamdard, mehribon",                 level:"B2", example:"Her friends were sympathetic when she told them the news." },
+  { id:111,topic:"Hissiyotlar", word:"indifferent",   uz:"befarq, loqayd",                    level:"C1", example:"He seemed completely indifferent to the criticism." },
+  { id:112,topic:"Hissiyotlar", word:"enthusiastic",  uz:"ishtiyoqli, shavqli",               level:"B1", example:"The students were enthusiastic about the new science project." },
+  { id:113,topic:"Hissiyotlar", word:"furious",       uz:"g'azablangan, qattiq jahli chiqqan", level:"B2", example:"She was furious when she discovered her bag had been stolen." },
+  { id:114,topic:"Munosabatlar", word:"compromise",   uz:"murosa, kelishuv",                  level:"B1", example:"A good relationship requires compromise from both sides." },
+  { id:115,topic:"Munosabatlar", word:"reconcile",    uz:"yarashmoq, murosaga kelmoq",        level:"C1", example:"They reconciled after years of disagreement." },
+  { id:116,topic:"Munosabatlar", word:"sibling",      uz:"aka-uka yoki opa-singil",           level:"A2", example:"Do you have any siblings?" },
+  { id:117,topic:"Munosabatlar", word:"loyalty",      uz:"sodiqlik, vafolilik",               level:"B2", example:"Loyalty is one of the most important values in friendship." },
+  { id:118,topic:"Munosabatlar", word:"trust",        uz:"ishonch",                           level:"A2", example:"It takes time to build trust in any relationship." },
+  { id:119,topic:"Munosabatlar", word:"supportive",   uz:"qo'llab-quvvatlovchi",              level:"B1", example:"Her family was very supportive during her recovery." },
+  { id:120,topic:"Munosabatlar", word:"affection",    uz:"mehrli munosabat, sevgi",           level:"B2", example:"She showed great affection for her younger brother." },
+  { id:121,topic:"Munosabatlar", word:"divorce",      uz:"ajralish, taloq",                   level:"B1", example:"The divorce was difficult for the whole family." },
+  { id:122,topic:"Munosabatlar", word:"mutual",       uz:"o'zaro, ikki tomonlama",            level:"B2", example:"Their relationship is based on mutual respect and understanding." },
+  { id:123,topic:"Munosabatlar", word:"argue",        uz:"bahslashmoq, talashmoq",            level:"A2", example:"They always argue about small things but never seriously." },
+  { id:124,topic:"Munosabatlar", word:"bond",         uz:"aloqa, bog'liqlik",                 level:"B2", example:"The shared experience created a strong bond between them." },
+  { id:125,topic:"Munosabatlar", word:"estranged",    uz:"begonalashgan, uzoqlashgan",        level:"C1", example:"He became estranged from his family after moving abroad." },
+  { id:126,topic:"Munosabatlar", word:"cherish",      uz:"qadrlamoq, asrab-avaylamoq",        level:"B2", example:"She cherished the letters her grandmother had written." },
+  { id:127,topic:"Munosabatlar", word:"breakup",      uz:"ajralish, uzilish",                 level:"B1", example:"The breakup was painful but ultimately the right decision." },
+  { id:128,topic:"Munosabatlar", word:"mentor",       uz:"yo'lboshchi, tajribali rahbar",     level:"B2", example:"She found a mentor who guided her through her career." },
+  { id:129,topic:"Munosabatlar", word:"acquaintance", uz:"tanish",                            level:"B2", example:"He is just an acquaintance, not a close friend." },
+  { id:130,topic:"Munosabatlar", word:"relative",     uz:"qarindosh, yaqin",                  level:"A2", example:"Most of her relatives live in the same city." },
+  { id:131,topic:"Munosabatlar", word:"rivalry",      uz:"raqobat, ziddiyat",                 level:"B2", example:"There has always been a friendly rivalry between the two brothers." },
+  { id:132,topic:"Munosabatlar", word:"commitment",   uz:"majburiyat, sadoqat",               level:"B2", example:"Marriage requires a long-term commitment from both partners." },
+  { id:133,topic:"Munosabatlar", word:"guardian",     uz:"vasiy, homiy",                      level:"B2", example:"His uncle became his legal guardian after his parents' death." },
+  { id:134,topic:"Texnologiya", word:"algorithm",     uz:"algoritm",                          level:"B2", example:"The search engine uses a complex algorithm to rank websites." },
+  { id:135,topic:"Texnologiya", word:"bandwidth",     uz:"o'tkazish quvvati, internet tezligi",level:"C1",example:"Streaming videos requires a high bandwidth connection." },
+  { id:136,topic:"Texnologiya", word:"encryption",    uz:"shifrlash, kodlash",                level:"C1", example:"The app uses end-to-end encryption to protect user data." },
+  { id:137,topic:"Texnologiya", word:"interface",     uz:"interfeys",                         level:"B2", example:"The user interface of this app is very intuitive." },
+  { id:138,topic:"Texnologiya", word:"cloud computing",uz:"bulutli hisoblash",                level:"B2", example:"Cloud computing allows businesses to store data remotely." },
+  { id:139,topic:"Texnologiya", word:"artificial intelligence",uz:"sun'iy intellekt",         level:"B2", example:"Artificial intelligence is transforming many industries." },
+  { id:140,topic:"Texnologiya", word:"cybersecurity", uz:"kiberxavfsizlik",                   level:"C1", example:"Cybersecurity threats have increased significantly this year." },
+  { id:141,topic:"Texnologiya", word:"database",      uz:"ma'lumotlar bazasi",                level:"B2", example:"The hospital stores all patient records in a secure database." },
+  { id:142,topic:"Texnologiya", word:"virtual reality",uz:"virtual haqiqat",                  level:"B2", example:"Virtual reality is increasingly used in medical training." },
+  { id:143,topic:"Texnologiya", word:"automation",    uz:"avtomatlashtirish",                 level:"B2", example:"Automation has reduced the need for manual labour in factories." },
+  { id:144,topic:"Texnologiya", word:"software",      uz:"dasturiy ta'minot",                 level:"A2", example:"You need to update the software to fix the bugs." },
+  { id:145,topic:"Texnologiya", word:"hardware",      uz:"apparat, jihozlar",                 level:"A2", example:"The technician replaced the faulty hardware component." },
+  { id:146,topic:"Texnologiya", word:"prototype",     uz:"prototip, namuna",                  level:"B2", example:"Engineers built a prototype to test the new device." },
+  { id:147,topic:"Texnologiya", word:"malware",       uz:"zararli dastur",                    level:"C1", example:"The malware infected thousands of computers overnight." },
+  { id:148,topic:"Texnologiya", word:"streaming",     uz:"onlayn uzatish, strim",             level:"B1", example:"Streaming services have replaced traditional television for many." },
+  { id:149,topic:"Texnologiya", word:"renewable energy",uz:"qayta tiklanadigan energiya",     level:"B2", example:"Solar panels are a popular form of renewable energy." },
+  { id:150,topic:"Texnologiya", word:"semiconductor", uz:"yarimo'tkazgich",                   level:"C1", example:"The semiconductor shortage affected car production globally." },
+  { id:151,topic:"Texnologiya", word:"pixel",         uz:"piksel",                            level:"B1", example:"This camera captures images at forty megapixels." },
+  { id:152,topic:"Texnologiya", word:"update",        uz:"yangilamoq",                        level:"A2", example:"Please install the latest update to improve performance." },
+  { id:153,topic:"Texnologiya", word:"blockchain",    uz:"blokcheyn texnologiyasi",           level:"C1", example:"Blockchain technology underpins most cryptocurrencies." },
+  { id:154,topic:"Texnologiya", word:"debug",         uz:"xatoliklarni tuzatmoq",             level:"B2", example:"The developer spent hours trying to debug the code." },
+  { id:155,topic:"Texnologiya", word:"router",        uz:"router, tarmoq qurilmasi",          level:"B1", example:"Restarting the router usually solves most connection problems." },
+  { id:156,topic:"Texnologiya", word:"sensor",        uz:"sensor, sezgir qurilma",            level:"B2", example:"The car's parking sensor alerts the driver to obstacles." },
+  { id:157,topic:"Texnologiya", word:"subscription",  uz:"obuna",                             level:"B1", example:"She cancelled her streaming subscription to save money." },
+  { id:158,topic:"Texnologiya", word:"innovation",    uz:"yangilik, ixtiro",                  level:"B2", example:"Innovation is the key to long-term business success." },
+  { id:159,topic:"Atrof-muhit", word:"sustainability",uz:"barqarorlik",                       level:"B2", example:"Sustainability is at the heart of our company's mission." },
+  { id:160,topic:"Atrof-muhit", word:"carbon footprint",uz:"karbon izi",                      level:"B2", example:"Flying less can significantly reduce your carbon footprint." },
+  { id:161,topic:"Atrof-muhit", word:"deforestation", uz:"o'rmonlarni yo'q qilish",           level:"B2", example:"Deforestation in the Amazon threatens thousands of species." },
+  { id:162,topic:"Atrof-muhit", word:"biodiversity",  uz:"biologik xilma-xillik",             level:"C1", example:"Loss of biodiversity is one of the greatest environmental threats." },
+  { id:163,topic:"Atrof-muhit", word:"ecosystem",     uz:"ekotizim",                          level:"B2", example:"Human activity has disrupted many fragile ecosystems." },
+  { id:164,topic:"Atrof-muhit", word:"emission",      uz:"chiqindi gaz, emissiya",            level:"B2", example:"Countries have pledged to cut carbon emissions by 2050." },
+  { id:165,topic:"Atrof-muhit", word:"drought",       uz:"qurg'oqchilik, suvsizlik",          level:"B2", example:"The prolonged drought destroyed crops across the region." },
+  { id:166,topic:"Atrof-muhit", word:"pollution",     uz:"ifloslanish",                       level:"B1", example:"Air pollution in big cities is a major public health concern." },
+  { id:167,topic:"Atrof-muhit", word:"recycle",       uz:"qayta ishlash, resiklaj",           level:"A2", example:"She recycles glass, paper, and plastic every week." },
+  { id:168,topic:"Atrof-muhit", word:"fossil fuel",   uz:"qazib olinadigan yoqilg'i",        level:"B2", example:"Burning fossil fuels is the main cause of global warming." },
+  { id:169,topic:"Atrof-muhit", word:"global warming",uz:"global isish",                      level:"B1", example:"Scientists warn that global warming will accelerate in coming decades." },
+  { id:170,topic:"Atrof-muhit", word:"habitat",       uz:"yashash joyi, muhit",               level:"B2", example:"The polar bear's natural habitat is threatened by climate change." },
+  { id:171,topic:"Atrof-muhit", word:"erosion",       uz:"eroziya, yemirilish",               level:"C1", example:"Soil erosion makes farmland less productive over time." },
+  { id:172,topic:"Atrof-muhit", word:"renewable",     uz:"qayta tiklanadigan",                level:"B2", example:"Wind power is a clean and renewable energy source." },
+  { id:173,topic:"Atrof-muhit", word:"endangered",    uz:"yo'q bo'lish xavfida",              level:"B2", example:"The snow leopard is an endangered species in Central Asia." },
+  { id:174,topic:"Atrof-muhit", word:"contamination", uz:"ifloslantirish, zaharlanish",       level:"C1", example:"Soil contamination from the factory affected local crops." },
+  { id:175,topic:"Atrof-muhit", word:"conservation",  uz:"muhofaza, saqlash",                 level:"B2", example:"Wildlife conservation is essential to protect future generations." },
+  { id:176,topic:"Atrof-muhit", word:"flood",         uz:"toshqin, sel",                      level:"B1", example:"Heavy rains caused widespread flooding across the valley." },
+  { id:177,topic:"Atrof-muhit", word:"glacier",       uz:"muzlik",                            level:"B2", example:"Glaciers are melting at an alarming rate due to rising temperatures." },
+  { id:178,topic:"Atrof-muhit", word:"compost",       uz:"kompost, organik o'g'it",           level:"B2", example:"Composting kitchen waste reduces the amount sent to landfill." },
+  { id:179,topic:"Atrof-muhit", word:"ozone layer",   uz:"ozon qatlami",                      level:"B1", example:"Certain chemicals have damaged the ozone layer over Antarctica." },
+  { id:180,topic:"Atrof-muhit", word:"toxic",         uz:"zaharli, toksik",                   level:"B2", example:"The factory released toxic waste into the river." },
+  { id:181,topic:"Atrof-muhit", word:"landfill",      uz:"axlatxona, chiqindi poligon",       level:"B2", example:"Plastic that is not recycled often ends up in landfill." },
+  { id:182,topic:"Atrof-muhit", word:"tide",          uz:"to'lqin, suv ko'tarilishi",         level:"B2", example:"High tides can cause coastal flooding in low-lying areas." },
+  { id:183,topic:"Atrof-muhit", word:"urban sprawl",  uz:"shaharning yoyilishi",              level:"C1", example:"Urban sprawl has eaten into farmland on the city's outskirts." },
+  { id:184,topic:"Ovqat", word:"cuisine",             uz:"oshxona, milliy taom",              level:"B1", example:"Italian cuisine is popular all over the world." },
+  { id:185,topic:"Ovqat", word:"ingredients",         uz:"tarkibiy qismlar",                  level:"A2", example:"Make sure you have all the ingredients before you start cooking." },
+  { id:186,topic:"Ovqat", word:"recipe",              uz:"retsept, taom pishirish usuli",     level:"A2", example:"She found a great recipe for chocolate cake online." },
+  { id:187,topic:"Ovqat", word:"seasoning",           uz:"ziravorlar, osh tuzi",              level:"B1", example:"Add seasoning to taste before serving." },
+  { id:188,topic:"Ovqat", word:"fermentation",        uz:"fermentatsiya, achitish",           level:"C1", example:"Fermentation is used to make bread, yoghurt, and wine." },
+  { id:189,topic:"Ovqat", word:"portion",             uz:"ulush, porsiya",                    level:"B1", example:"The restaurant is known for its generous portions." },
+  { id:190,topic:"Ovqat", word:"dietary",             uz:"ovqatlanish, parhez",               level:"B2", example:"She follows strict dietary guidelines for health reasons." },
+  { id:191,topic:"Ovqat", word:"marinate",            uz:"marinad qilmoq",                    level:"B2", example:"Marinate the chicken for at least two hours before grilling." },
+  { id:192,topic:"Ovqat", word:"organic",             uz:"organik, tabiiy",                   level:"B1", example:"She prefers to buy organic vegetables from the local market." },
+  { id:193,topic:"Ovqat", word:"calorie",             uz:"kaloriya",                          level:"B1", example:"This dessert contains over 500 calories per serving." },
+  { id:194,topic:"Ovqat", word:"buffet",              uz:"bufet, ochiq dasturxon",            level:"B1", example:"The hotel offers a buffet breakfast from 7am." },
+  { id:195,topic:"Ovqat", word:"vegetarian",          uz:"vegetarian, go'shtsiz ovqat",       level:"A2", example:"The menu has plenty of vegetarian options." },
+  { id:196,topic:"Ovqat", word:"gluten",              uz:"gluten, don proteini",              level:"B2", example:"Some people have an intolerance to gluten."},
+  { id:197,topic:"Ovqat", word:"garnish",             uz:"bezak, taom bezagi",                level:"B2", example:"Add a garnish of fresh herbs before serving." },
+  { id:198,topic:"Ovqat", word:"protein",             uz:"oqsil, protein",                    level:"B1", example:"Beans and lentils are excellent sources of plant-based protein." },
+  { id:199,topic:"Ovqat", word:"condiment",           uz:"sous, ziravorlar",                  level:"B2", example:"She kept a variety of condiments in her kitchen." },
+  { id:200,topic:"Ovqat", word:"ferment",             uz:"achitmoq, bijg'itmoq",              level:"C1", example:"You need to ferment the dough overnight for best results." },
+];
+
+/* ════════════════════════════════
+   STATE
+════════════════════════════════ */
+const MIN_WORDS = 20;
+let learnedIds  = [];
+let currentUser = null;
+
+/* ════════════════════════════════
+   CORE HELPER
+════════════════════════════════ */
+function getLearnedVocabulary() {
+  return ALL_WORDS.filter(w => learnedIds.includes(w.id));
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pickN(arr, n) {
+  return shuffle(arr).slice(0, n);
+}
+
+function getDistractors(correct, pool, key, count) {
+  // pick `count` items from pool whose `key` differs from correct
+  const others = pool.filter(w => w[key] !== correct[key]);
+  return shuffle(others).slice(0, count);
+}
+
+function getUzDistractors(correct, pool, count) {
+  const others = pool.filter(w => w.id !== correct.id);
+  return shuffle(others).slice(0, count).map(w => w.uz.split(',')[0].trim());
+}
+
+/* ════════════════════════════════
+   TOAST
+════════════════════════════════ */
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+/* ════════════════════════════════
+   FIREBASE AUTH
+════════════════════════════════ */
+firebase.auth().onAuthStateChanged(function(user) {
+  if (!user) { location.href = 'login.html'; return; }
+  currentUser = user;
+  // load localStorage first
+  learnedIds = JSON.parse(localStorage.getItem('vz_learned') || '[]').map(Number);
+  // then Firestore
+  db.collection('users').doc(user.uid).get().then(function(doc) {
+    if (doc.exists && doc.data().learned) {
+      learnedIds = doc.data().learned.map(Number);
+      localStorage.setItem('vz_learned', JSON.stringify(learnedIds));
+    }
+    renderDashboard();
+  }).catch(function() { renderDashboard(); });
+});
+
+// keep in sync across tabs
+window.addEventListener('storage', function(e) {
+  if (e.key === 'vz_learned') {
+    learnedIds = JSON.parse(e.newValue || '[]').map(Number);
+    renderDashboard();
+  }
+});
+
+/* ════════════════════════════════
+   DASHBOARD RENDER
+════════════════════════════════ */
+const GAMES = [
+  { id:'gameHangman',     icon:'🪢', color:'#E3F2FD', name:'Hangman',               desc:'So\'zni harfma-harf toping',        fn:'startHangman' },
+  { id:'gameTranslation', icon:'🌐', color:'#FCE4EC', name:'Tarjima tanlash',        desc:'To\'g\'ri tarjimani tanlang',       fn:'startTranslation' },
+  { id:'gameSentence',    icon:'📝', color:'#E8F5E9', name:'Gap tuzish',             desc:'So\'zlarni tartibga soling',        fn:'startSentence' },
+  { id:'gameScramble',    icon:'🔀', color:'#FFF8E1', name:'So\'z aralashtirish',    desc:'Aralashtirilgan so\'zni toping',    fn:'startScramble' },
+  { id:'gameMatch',       icon:'🔗', color:'#F3E5F5', name:'So\'z jufti',            desc:'Ingliz-o\'zbek juftlarni toping',   fn:'startMatch' },
+  { id:'gameChoose',      icon:'✅', color:'#E0F7FA', name:'To\'g\'ri tarjima',      desc:'4 ta variantdan birini tanlang',    fn:'startChoose' },
+  { id:'gameMissing',     icon:'🔠', color:'#FBE9E7', name:'Harfni top',             desc:'Tushirib qoldirilgan harfni toping',fn:'startMissing' },
+  { id:'gameSpeed',       icon:'⚡', color:'#F1F8E9', name:'Tez yozish',             desc:'Vaqt tugashidan oldin yozing',      fn:'startSpeed' },
+  { id:'gameChoose',      icon:'❓', color:'#EDE9FE', name:'So\'z Kviz',             desc:'Savollarga to\'g\'ri javob bering', fn:'startQuiz' },
+  { id:'gameTF',          icon:'✔️', color:'#FEF3C7', name:'To\'g\'ri yoki Noto\'g\'ri', desc:'Tarjimani tekshiring',          fn:'startTF' },
+];
+
+function renderDashboard() {
+  const count = learnedIds.length;
+  const unlocked = count >= MIN_WORDS;
+
+  // update topbar badge
+  const badge = document.getElementById('topbarBadge');
+  badge.textContent = count + ' ta o\'rganilgan';
+  badge.className = 'topbar-badge' + (unlocked ? ' green' : '');
+
+  let html = '';
+
+  if (!unlocked) {
+    const pct = Math.round((count / MIN_WORDS) * 100);
+    html = `
+      <div class="locked-hero">
+        <span class="locked-icon">🔒</span>
+        <div class="locked-title">O'yinlar qulflangan</div>
+        <div class="locked-sub">O'yinlarni ochish uchun kamida <strong>${MIN_WORDS} ta so'z</strong> o'rganishingiz kerak.</div>
+        <div class="locked-prog-row">
+          <span class="locked-prog-label">O'rganilgan so'zlar</span>
+          <span class="locked-prog-count">${count} / ${MIN_WORDS}</span>
+        </div>
+        <div class="locked-track">
+          <div class="locked-fill" style="width:${pct}%"></div>
+        </div>
+        <button class="btn-go-learn" onclick="location.href='topic.html'">
+          📚 So'z o'rganishga borish
+        </button>
+      </div>`;
+  } else {
+    html = `
+      <div class="unlocked-hero">
+        <div class="unlocked-icon">🎮</div>
+        <div>
+          <div class="unlocked-title">O'yinlar ochiq!</div>
+          <div class="unlocked-sub">${count} ta so'z o'rganildi · Barcha o'yinlar mavjud</div>
+        </div>
+      </div>
+      <div class="section-hdr">Barcha o'yinlar</div>
+      <div class="games-grid">
+        ${GAMES.map((g, i) => `
+          <div class="game-card" onclick="${g.fn}()" style="--gc:${g.color}">
+            <div class="game-card-icon" style="background:${g.color}">${g.icon}</div>
+            <div class="game-card-name">${g.name}</div>
+            <div class="game-card-desc">${g.desc}</div>
+            <button class="game-card-start" onclick="event.stopPropagation();${g.fn}()">Boshlash →</button>
+          </div>`).join('')}
+      </div>`;
+  }
+
+  document.getElementById('dashContent').innerHTML = html;
+}
+
+/* ════════════════════════════════
+   OPEN / CLOSE GAME
+════════════════════════════════ */
+function openGame(id) {
+  document.getElementById(id).classList.add('open');
+  document.querySelector('.topbar').style.display = 'none';
+  document.querySelector('#viewDashboard').style.display = 'none';
+  document.querySelector('.bottom-nav').style.display = 'none';
+}
+
+function closeGame(id) {
+  document.getElementById(id).classList.remove('open');
+  document.querySelector('.topbar').style.display = '';
+  document.querySelector('#viewDashboard').style.display = '';
+  document.querySelector('.bottom-nav').style.display = '';
+  // stop any timers
+  if (speedTimer) { clearInterval(speedTimer); speedTimer = null; }
+  renderDashboard();
+}
+
+/* ─────────────────────────────────
+   RESULT SCREEN helper
+────────────────────────────────── */
+function showResult(bodyEl, { emoji, title, sub, correct, wrong, total, time }) {
+  const acc = total > 0 ? Math.round((correct / total) * 100) : 0;
+  let statsHtml = `
+    <div class="grs"><div class="grs-val green">${correct}</div><div class="grs-lbl">To'g'ri</div></div>
+    <div class="grs"><div class="grs-val red">${wrong}</div><div class="grs-lbl">Xato</div></div>
+    <div class="grs"><div class="grs-val blue">${acc}%</div><div class="grs-lbl">Aniqlik</div></div>`;
+  if (time !== undefined) {
+    statsHtml += `<div class="grs"><div class="grs-val">${time}s</div><div class="grs-lbl">Vaqt</div></div>`;
+  }
+  bodyEl.innerHTML = `
+    <div class="g-result">
+      <div class="g-result-emoji">${emoji || (acc >= 70 ? '🎉' : '💪')}</div>
+      <div class="g-result-title">${title || "O'yin tugadi!"}</div>
+      <div class="g-result-sub">${sub || ''}</div>
+      <div class="g-result-stats">${statsHtml}</div>
+      <div class="g-result-btns">
+        <button class="grb primary" onclick="${bodyEl.dataset.restart}()">🔄 Qayta o'ynash</button>
+        <button class="grb secondary" onclick="closeGame('${bodyEl.dataset.game}')">⬅ O'yinlarni tanlash</button>
+      </div>
+    </div>`;
+}
+
+/* ════════════════════════════════════════════════════
+   GAME 1 — HANGMAN
+════════════════════════════════════════════════════ */
+let hmWord, hmGuessed, hmWrong, hmWords, hmIdx, hmScore = 0;
+const HM_MAX = 6;
+
+function startHangman() {
+  const pool = getLearnedVocabulary();
+  if (pool.length < 1) { showToast("O'rganilgan so'z yo'q!"); return; }
+  hmWords  = shuffle(pool).slice(0, Math.min(10, pool.length));
+  hmIdx    = 0;
+  hmScore  = 0;
+  openGame('gameHangman');
+  hmNextWord();
+}
+
+function hmNextWord() {
+  if (hmIdx >= hmWords.length) {
+    // all done
+    const body = document.getElementById('hmBody');
+    body.dataset.restart = 'startHangman';
+    body.dataset.game    = 'gameHangman';
+    showResult(body, { correct: hmScore, wrong: hmWords.length - hmScore, total: hmWords.length });
+    return;
+  }
+  hmWord    = hmWords[hmIdx].word.toLowerCase();
+  hmGuessed = [];
+  hmWrong   = [];
+  document.getElementById('hmScore').textContent = hmScore + '/' + hmWords.length;
+  hmRender();
+}
+
+function hmRender() {
+  const body   = document.getElementById('hmBody');
+  const hearts = Array.from({length: HM_MAX}, (_, i) =>
+    `<span class="hm-heart${i >= (HM_MAX - hmWrong.length) ? '' : ' lost'}">❤️</span>`
+  ).join('');
+
+  // slots
+  const slots = hmWord.split('').map(ch => {
+    if (ch === ' ') return `<div class="hm-slot space"></div>`;
+    const revealed = hmGuessed.includes(ch) ? ch.toUpperCase() : '';
+    return `<div class="hm-slot">${revealed}</div>`;
+  }).join('');
+
+  // keyboard
+  const alpha = 'abcdefghijklmnopqrstuvwxyz'.split('');
+  const keys = alpha.map(c => {
+    const used = hmGuessed.includes(c) || hmWrong.includes(c);
+    const cls  = hmGuessed.includes(c) ? 'used-correct' : hmWrong.includes(c) ? 'used-wrong' : '';
+    return `<button class="hm-key ${cls}" ${used?'disabled':''} onclick="hmGuess('${c}')">${c.toUpperCase()}</button>`;
+  }).join('');
+
+  const isComplete = hmWord.split('').filter(c => c !== ' ').every(c => hmGuessed.includes(c));
+  const isDead     = hmWrong.length >= HM_MAX;
+
+  let feedback = '';
+  if (isComplete) {
+    hmScore++;
+    document.getElementById('hmScore').textContent = hmScore + '/' + hmWords.length;
+    feedback = `<div class="g-feedback correct">🎉 To'g'ri! "${hmWord}"</div>`;
+    setTimeout(() => { hmIdx++; hmNextWord(); }, 1200);
+  } else if (isDead) {
+    feedback = `<div class="g-feedback wrong">❌ So'z: "${hmWord}"</div>`;
+    setTimeout(() => { hmIdx++; hmNextWord(); }, 1800);
+  }
+
+  body.innerHTML = `
+    <div class="g-word-card" style="padding:18px 22px;">
+      <div class="g-word-label">So'zni toping</div>
+      <div class="g-word-sub" style="opacity:.7;">${hmWords[hmIdx]?.uz?.split(',')[0] || ''}</div>
+    </div>
+    <div class="hm-lives">${hearts} <span style="margin-left:8px;font-size:.78rem;">${HM_MAX - hmWrong.length} urinish qoldi</span></div>
+    <div class="hm-letters-wrap">${slots}</div>
+    ${feedback}
+    <div class="hm-keyboard">${keys}</div>`;
+}
+
+function hmGuess(ch) {
+  if (hmGuessed.includes(ch) || hmWrong.includes(ch)) return;
+  if (hmWord.includes(ch)) hmGuessed.push(ch);
+  else hmWrong.push(ch);
+  hmRender();
+}
+
+/* ════════════════════════════════════════════════════
+   GAME 2 — TRANSLATION CHALLENGE (EN → UZ options)
+════════════════════════════════════════════════════ */
+let trWords, trIdx, trCorrect, trWrong;
+
+function startTranslation() {
+  const pool = getLearnedVocabulary();
+  if (pool.length < 4) { showToast("Kamida 4 ta so'z o'rganing!"); return; }
+  trWords   = shuffle(pool).slice(0, Math.min(10, pool.length));
+  trIdx     = 0; trCorrect = 0; trWrong = 0;
+  openGame('gameTranslation');
+  trRender();
+}
+
+function trRender() {
+  const pool = getLearnedVocabulary();
+  const body = document.getElementById('trBody');
+  document.getElementById('trScore').textContent = trCorrect + '/' + trWords.length;
+  document.getElementById('trProg').style.width = (trIdx / trWords.length * 100) + '%';
+
+  if (trIdx >= trWords.length) {
+    body.dataset.restart = 'startTranslation';
+    body.dataset.game    = 'gameTranslation';
+    showResult(body, { correct: trCorrect, wrong: trWrong, total: trWords.length });
+    return;
+  }
+
+  const w    = trWords[trIdx];
+  const distractors = getUzDistractors(w, pool, 3);
+  const opts = shuffle([w.uz.split(',')[0].trim(), ...distractors]);
+
+  body.innerHTML = `
+    <div class="g-word-card">
+      <div class="g-word-label">Bu so'zning tarjimasi qaysi?</div>
+      <div class="g-word-main">${w.word}</div>
+      <div class="g-word-sub">${w.topic}</div>
+    </div>
+    <div class="g-options">
+      ${opts.map(o => `<button class="g-opt" onclick="trAnswer(this,'${o.replace(/'/g,"\\'")}','${w.uz.split(',')[0].trim().replace(/'/g,"\\'")}')">
+        ${o}
+      </button>`).join('')}
+    </div>`;
+}
+
+function trAnswer(btn, chosen, correct) {
+  document.querySelectorAll('#gameTranslation .g-opt').forEach(b => b.disabled = true);
+  if (chosen === correct) {
+    btn.classList.add('correct'); trCorrect++;
+    setTimeout(() => { trIdx++; trRender(); }, 900);
+  } else {
+    btn.classList.add('wrong'); trWrong++;
+    document.querySelectorAll('#gameTranslation .g-opt').forEach(b => {
+      if (b.textContent.trim() === correct) b.classList.add('show-correct');
+    });
+    setTimeout(() => { trIdx++; trRender(); }, 1400);
+  }
+  document.getElementById('trScore').textContent = trCorrect + '/' + trWords.length;
+}
+
+/* ════════════════════════════════════════════════════
+   GAME 3 — MAKE A SENTENCE
+════════════════════════════════════════════════════ */
+let snWords, snIdx, snCorrect, snWrong, snPlaced;
+
+function startSentence() {
+  const pool = getLearnedVocabulary().filter(w => w.example && w.example.length > 10);
+  if (pool.length < 1) { showToast("Example mavjud so'zlar topilmadi!"); return; }
+  snWords   = shuffle(pool).slice(0, Math.min(8, pool.length));
+  snIdx     = 0; snCorrect = 0; snWrong = 0;
+  openGame('gameSentence');
+  snRender();
+}
+
+function snRender() {
+  const body = document.getElementById('snBody');
+  document.getElementById('snScore').textContent = snCorrect + '/' + snWords.length;
+  document.getElementById('snProg').style.width  = (snIdx / snWords.length * 100) + '%';
+
+  if (snIdx >= snWords.length) {
+    body.dataset.restart = 'startSentence';
+    body.dataset.game    = 'gameSentence';
+    showResult(body, { correct: snCorrect, wrong: snWrong, total: snWords.length });
+    return;
+  }
+
+  const w   = snWords[snIdx];
+  const sentence = w.example.replace(/[.!?]$/, '').trim();
+  const parts    = sentence.split(' ');
+  const shuffled = shuffle([...parts]);
+  snPlaced = [];
+
+  body.innerHTML = `
+    <div class="g-word-card">
+      <div class="g-word-label">Gap tuzing</div>
+      <div class="g-word-main" style="font-size:1.3rem">${w.word}</div>
+      <div class="g-word-sub">Ushbu so'zni ishlating</div>
+    </div>
+    <div class="sentence-slot-area" id="snSlot">So'zlarni bu yerga bosing…</div>
+    <div class="sentence-words" id="snWords">
+      ${shuffled.map((wrd, i) => `<button class="sentence-word" id="snW-${i}" onclick="snPlace(${i},'${wrd.replace(/'/g,"\\'")}')">
+        ${wrd}
+      </button>`).join('')}
+    </div>
+    <div class="g-feedback" id="snFeedback"></div>
+    <button class="g-next-btn" id="snCheck" onclick="snCheckAnswer('${sentence.replace(/'/g,"\\'")}')">Tekshirish</button>`;
+
+  setTimeout(() => document.getElementById('snCheck').classList.add('visible'), 100);
+}
+
+function snPlace(idx, word) {
+  const btn = document.getElementById('snW-' + idx);
+  if (btn.classList.contains('placed')) {
+    // remove from placed
+    snPlaced = snPlaced.filter(p => p.idx !== idx);
+    btn.classList.remove('placed');
+  } else {
+    snPlaced.push({ idx, word });
+    btn.classList.add('placed');
+  }
+  const slot = document.getElementById('snSlot');
+  if (snPlaced.length === 0) {
+    slot.innerHTML = 'So\'zlarni bu yerga bosing…';
+  } else {
+    slot.innerHTML = snPlaced.map(p =>
+      `<button class="sentence-placed" onclick="snRemove(${p.idx},'${p.word.replace(/'/g,"\\'")}')">
+        ${p.word}
+      </button>`
+    ).join('');
+  }
+}
+
+function snRemove(idx, word) {
+  const btn = document.getElementById('snW-' + idx);
+  if (btn) btn.classList.remove('placed');
+  snPlaced = snPlaced.filter(p => p.idx !== idx);
+  const slot = document.getElementById('snSlot');
+  if (snPlaced.length === 0) slot.innerHTML = 'So\'zlarni bu yerga bosing…';
+  else slot.innerHTML = snPlaced.map(p =>
+    `<button class="sentence-placed" onclick="snRemove(${p.idx},'${p.word.replace(/'/g,"\\'")}')">
+      ${p.word}
+    </button>`
+  ).join('');
+}
+
+function snCheckAnswer(correct) {
+  const attempt = snPlaced.map(p => p.word).join(' ');
+  const fb = document.getElementById('snFeedback');
+  const ok = attempt.toLowerCase() === correct.toLowerCase();
+  fb.className = 'g-feedback ' + (ok ? 'correct' : 'wrong');
+  fb.textContent = ok ? '✅ To\'g\'ri!' : '❌ To\'g\'ri gap: ' + correct;
+  if (ok) snCorrect++; else snWrong++;
+  document.getElementById('snCheck').disabled = true;
+  document.getElementById('snScore').textContent = snCorrect + '/' + snWords.length;
+  setTimeout(() => { snIdx++; snRender(); }, 1600);
+}
+
+/* ════════════════════════════════════════════════════
+   GAME 4 — WORD SCRAMBLE
+════════════════════════════════════════════════════ */
+let scWords, scIdx, scCorrect, scWrong;
+
+function startScramble() {
+  const pool = getLearnedVocabulary().filter(w => w.word.length > 3 && !w.word.includes(' '));
+  if (pool.length < 1) { showToast("Mos so'zlar topilmadi!"); return; }
+  scWords   = shuffle(pool).slice(0, Math.min(10, pool.length));
+  scIdx     = 0; scCorrect = 0; scWrong = 0;
+  openGame('gameScramble');
+  scRender();
+}
+
+function scScramble(word) {
+  let arr = word.split(''), s;
+  do { s = shuffle(arr).join(''); } while (s === word && word.length > 1);
+  return s;
+}
+
+function scRender() {
+  const body = document.getElementById('scBody');
+  document.getElementById('scScore').textContent = scCorrect + '/' + scWords.length;
+  document.getElementById('scProg').style.width  = (scIdx / scWords.length * 100) + '%';
+
+  if (scIdx >= scWords.length) {
+    body.dataset.restart = 'startScramble';
+    body.dataset.game    = 'gameScramble';
+    showResult(body, { correct: scCorrect, wrong: scWrong, total: scWords.length });
+    return;
+  }
+
+  const w = scWords[scIdx];
+  body.innerHTML = `
+    <div class="g-word-card">
+      <div class="g-word-label">Bu so'zni toping</div>
+      <div class="g-word-sub">${w.uz.split(',')[0]}</div>
+    </div>
+    <div class="scramble-display" id="scDisplay">${scScramble(w.word)}</div>
+    <div class="g-input-wrap">
+      <input class="g-input" id="scInput" placeholder="Javobingizni yozing…" autocomplete="off"
+             onkeydown="if(event.key==='Enter') scCheck('${w.word.replace(/'/g,"\\'")}')">
+    </div>
+    <div class="g-feedback" id="scFeedback"></div>
+    <button class="g-next-btn visible" onclick="scCheck('${w.word.replace(/'/g,"\\'")}')">Tekshirish →</button>`;
+  setTimeout(() => document.getElementById('scInput') && document.getElementById('scInput').focus(), 100);
+}
+
+function scCheck(correct) {
+  const input = document.getElementById('scInput');
+  const attempt = input.value.trim().toLowerCase();
+  const ok = attempt === correct.toLowerCase();
+  const fb = document.getElementById('scFeedback');
+  fb.className = 'g-feedback ' + (ok ? 'correct' : 'wrong');
+  fb.textContent = ok ? '✅ To\'g\'ri!' : '❌ To\'g\'ri so\'z: ' + correct;
+  input.className = 'g-input ' + (ok ? 'correct-input' : 'wrong-input');
+  input.disabled  = true;
+  if (ok) scCorrect++; else scWrong++;
+  document.getElementById('scScore').textContent = scCorrect + '/' + scWords.length;
+  setTimeout(() => { scIdx++; scRender(); }, 1400);
+}
+
+/* ════════════════════════════════════════════════════
+   GAME 5 — WORD MATCH
+════════════════════════════════════════════════════ */
+let mtWords, mtSelected, mtMatched, mtScore;
+
+function startMatch() {
+  const pool = getLearnedVocabulary();
+  if (pool.length < 4) { showToast("Kamida 4 ta so'z o'rganing!"); return; }
+  mtWords   = shuffle(pool).slice(0, Math.min(6, pool.length));
+  mtSelected = null;
+  mtMatched  = [];
+  mtScore    = 0;
+  openGame('gameMatch');
+  mtRender();
+}
+
+function mtRender() {
+  const body = document.getElementById('mtBody');
+  const done = mtMatched.length === mtWords.length;
+
+  if (done) {
+    body.dataset.restart = 'startMatch';
+    body.dataset.game    = 'gameMatch';
+    showResult(body, { emoji:'🎉', title:'Barcha juftlar topildi!', correct: mtScore, wrong: 0, total: mtWords.length });
+    return;
+  }
+
+  document.getElementById('mtScore').textContent = mtMatched.length + '/' + mtWords.length;
+
+  const leftWords  = [...mtWords];
+  const rightWords = shuffle([...mtWords]);
+
+  body.innerHTML = `
+    <div class="g-word-card" style="padding:14px 20px;">
+      <div class="g-word-label">Juftlarni toping</div>
+      <div class="g-word-sub">Ingliz so'zini uzbek tarjimasiga ulang</div>
+    </div>
+    <div class="match-grid">
+      <div class="match-col" id="mtLeft">
+        ${leftWords.map(w => {
+          const isMatched = mtMatched.includes(w.id);
+          return `<div class="match-item${isMatched?' matched':''}" id="ml-${w.id}" onclick="mtClick('en','${w.id}')">
+            ${isMatched ? '✅ ' : ''}${w.word}
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="match-col" id="mtRight">
+        ${rightWords.map(w => {
+          const isMatched = mtMatched.includes(w.id);
+          return `<div class="match-item${isMatched?' matched':''}" id="mr-${w.id}" onclick="mtClick('uz','${w.id}')">
+            ${isMatched ? '✅ ' : ''}${w.uz.split(',')[0].trim()}
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+}
+
+let mtSelSide = null, mtSelId = null;
+function mtClick(side, id) {
+  const numId = Number(id);
+  if (mtMatched.includes(numId)) return;
+  if (!mtSelSide) {
+    mtSelSide = side; mtSelId = numId;
+    const pfx = side === 'en' ? 'ml' : 'mr';
+    document.getElementById(pfx + '-' + numId).classList.add('selected');
+    return;
+  }
+  // second click
+  const same = mtSelSide === side;
+  if (same) {
+    // deselect old, select new
+    const oldPfx = mtSelSide === 'en' ? 'ml' : 'mr';
+    const el = document.getElementById(oldPfx + '-' + mtSelId);
+    if (el) el.classList.remove('selected');
+    mtSelSide = side; mtSelId = numId;
+    const pfx = side === 'en' ? 'ml' : 'mr';
+    document.getElementById(pfx + '-' + numId).classList.add('selected');
+    return;
+  }
+  // check match
+  const enId = mtSelSide === 'en' ? mtSelId : numId;
+  const uzId = mtSelSide === 'uz' ? mtSelId : numId;
+  if (enId === uzId) {
+    // correct
+    mtMatched.push(enId); mtScore++;
+    const ml = document.getElementById('ml-' + enId);
+    const mr = document.getElementById('mr-' + enId);
+    if (ml) { ml.classList.remove('selected'); ml.classList.add('matched'); ml.textContent = '✅ ' + ml.textContent; }
+    if (mr) { mr.classList.remove('selected'); mr.classList.add('matched'); mr.textContent = '✅ ' + mr.textContent; }
+    document.getElementById('mtScore').textContent = mtMatched.length + '/' + mtWords.length;
+    if (mtMatched.length === mtWords.length) {
+      setTimeout(() => mtRender(), 600);
+    }
+  } else {
+    // wrong
+    const wrongId  = numId;
+    const wrongPfx = side === 'en' ? 'ml' : 'mr';
+    const oldPfx   = mtSelSide === 'en' ? 'ml' : 'mr';
+    const wEl  = document.getElementById(wrongPfx + '-' + wrongId);
+    const oEl  = document.getElementById(oldPfx + '-' + mtSelId);
+    if (wEl) wEl.classList.add('wrong-match');
+    if (oEl) { oEl.classList.remove('selected'); oEl.classList.add('wrong-match'); }
+    setTimeout(() => {
+      if (wEl) wEl.classList.remove('wrong-match');
+      if (oEl) oEl.classList.remove('wrong-match');
+    }, 700);
+  }
+  mtSelSide = null; mtSelId = null;
+}
+
+/* ════════════════════════════════════════════════════
+   GAME 6 — CHOOSE CORRECT TRANSLATION (UZ → EN)
+   GAME 9 — WORD QUIZ (same engine, different direction)
+════════════════════════════════════════════════════ */
+let chWords, chIdx, chCorrect, chWrong, chMode;
+
+function startChoose() {
+  chMode = 'choose';
+  document.getElementById('chTitle').textContent = '✅ To\'g\'ri tarjima';
+  _startChooseEngine();
+}
+function startQuiz() {
+  chMode = 'quiz';
+  document.getElementById('chTitle').textContent = '❓ So\'z Kviz';
+  _startChooseEngine();
+}
+
+function _startChooseEngine() {
+  const pool = getLearnedVocabulary();
+  if (pool.length < 4) { showToast("Kamida 4 ta so'z o'rganing!"); return; }
+  chWords   = shuffle(pool).slice(0, Math.min(10, pool.length));
+  chIdx     = 0; chCorrect = 0; chWrong = 0;
+  openGame('gameChoose');
+  chRender();
+}
+
+function chRender() {
+  const pool = getLearnedVocabulary();
+  const body = document.getElementById('chBody');
+  document.getElementById('chScore').textContent = chCorrect + '/' + chWords.length;
+  document.getElementById('chProg').style.width  = (chIdx / chWords.length * 100) + '%';
+
+  if (chIdx >= chWords.length) {
+    body.dataset.restart = chMode === 'quiz' ? 'startQuiz' : 'startChoose';
+    body.dataset.game    = 'gameChoose';
+    showResult(body, { correct: chCorrect, wrong: chWrong, total: chWords.length });
+    return;
+  }
+
+  const w = chWords[chIdx];
+  if (chMode === 'choose') {
+    // Show UZ → pick EN
+    const distractors = pool.filter(x => x.id !== w.id);
+    const opts = shuffle([w, ...shuffle(distractors).slice(0, 3)]);
+    body.innerHTML = `
+      <div class="g-word-card">
+        <div class="g-word-label">Bu tarjimaning inglizchasi qaysi?</div>
+        <div class="g-word-main" style="font-size:1.4rem">${w.uz.split(',')[0]}</div>
+        <div class="g-word-sub">${w.topic}</div>
+      </div>
+      <div class="g-options">
+        ${opts.map(o => `<button class="g-opt" onclick="chAnswer(this,${o.id},${w.id})">
+          ${o.word}
+        </button>`).join('')}
+      </div>`;
+  } else {
+    // Quiz: show EN word → pick UZ
+    const distractors = getUzDistractors(w, pool, 3);
+    const correctUz   = w.uz.split(',')[0].trim();
+    const opts        = shuffle([correctUz, ...distractors]);
+    body.innerHTML = `
+      <div class="g-word-card">
+        <div class="g-word-label">Bu so'zning ma'nosi nima?</div>
+        <div class="g-word-main">${w.word}</div>
+        <div class="g-word-sub">${w.topic}</div>
+      </div>
+      <div class="g-options">
+        ${opts.map(o => `<button class="g-opt" onclick="chAnswerUz(this,'${o.replace(/'/g,"\\'")}','${correctUz.replace(/'/g,"\\'")}')">
+          ${o}
+        </button>`).join('')}
+      </div>`;
+  }
+}
+
+function chAnswer(btn, chosenId, correctId) {
+  document.querySelectorAll('#gameChoose .g-opt').forEach(b => b.disabled = true);
+  if (chosenId === correctId) { btn.classList.add('correct'); chCorrect++; setTimeout(() => { chIdx++; chRender(); }, 900); }
+  else {
+    btn.classList.add('wrong'); chWrong++;
+    document.querySelectorAll('#gameChoose .g-opt').forEach((b, i) => {
+      if (Number(chWords[chIdx].id) === correctId) b.classList.add('show-correct');
+    });
+    setTimeout(() => { chIdx++; chRender(); }, 1400);
+  }
+  document.getElementById('chScore').textContent = chCorrect + '/' + chWords.length;
+}
+
+function chAnswerUz(btn, chosen, correct) {
+  document.querySelectorAll('#gameChoose .g-opt').forEach(b => b.disabled = true);
+  if (chosen === correct) { btn.classList.add('correct'); chCorrect++; setTimeout(() => { chIdx++; chRender(); }, 900); }
+  else {
+    btn.classList.add('wrong'); chWrong++;
+    document.querySelectorAll('#gameChoose .g-opt').forEach(b => {
+      if (b.textContent.trim() === correct) b.classList.add('show-correct');
+    });
+    setTimeout(() => { chIdx++; chRender(); }, 1400);
+  }
+  document.getElementById('chScore').textContent = chCorrect + '/' + chWords.length;
+}
+
+/* ════════════════════════════════════════════════════
+   GAME 7 — MISSING LETTERS
+════════════════════════════════════════════════════ */
+let mlWords, mlIdx, mlCorrect, mlWrong, mlWordState, mlHidden;
+
+function startMissing() {
+  const pool = getLearnedVocabulary().filter(w => w.word.length >= 4 && !w.word.includes(' '));
+  if (pool.length < 1) { showToast("Mos so'zlar topilmadi!"); return; }
+  mlWords   = shuffle(pool).slice(0, Math.min(10, pool.length));
+  mlIdx     = 0; mlCorrect = 0; mlWrong = 0;
+  openGame('gameMissing');
+  mlRender();
+}
+
+function mlRender() {
+  const body = document.getElementById('mlBody');
+  document.getElementById('mlScore').textContent = mlCorrect + '/' + mlWords.length;
+  document.getElementById('mlProg').style.width  = (mlIdx / mlWords.length * 100) + '%';
+
+  if (mlIdx >= mlWords.length) {
+    body.dataset.restart = 'startMissing';
+    body.dataset.game    = 'gameMissing';
+    showResult(body, { correct: mlCorrect, wrong: mlWrong, total: mlWords.length });
+    return;
+  }
+
+  const w    = mlWords[mlIdx];
+  const word = w.word.toLowerCase();
+  // hide ~40% of letters
+  const totalChars  = word.length;
+  const hideCount   = Math.max(1, Math.round(totalChars * 0.4));
+  const indices     = shuffle([...Array(totalChars).keys()]).slice(0, hideCount);
+  mlHidden          = indices;
+  mlWordState       = word.split('').map((c, i) => indices.includes(i) ? '' : c);
+
+  const slotsHtml = word.split('').map((c, i) => {
+    if (indices.includes(i)) return `<div class="ml-slot blank" id="mls-${i}">_</div>`;
+    return `<div class="ml-slot given">${c.toUpperCase()}</div>`;
+  }).join('');
+
+  // only show letters that are hidden
+  const hiddenLetters = [...new Set(indices.map(i => word[i]))];
+  const distractors   = 'abcdefghijklmnopqrstuvwxyz'.split('').filter(c => !hiddenLetters.includes(c));
+  const keyset        = shuffle([...hiddenLetters, ...shuffle(distractors).slice(0, Math.max(0, 8 - hiddenLetters.length))]);
+
+  const keysHtml = keyset.map(c =>
+    `<button class="ml-key" onclick="mlGuess('${c}')">${c.toUpperCase()}</button>`
+  ).join('');
+
+  body.innerHTML = `
+    <div class="g-word-card">
+      <div class="g-word-label">Tushirilgan harflarni toping</div>
+      <div class="g-word-sub">${w.uz.split(',')[0]}</div>
+    </div>
+    <div class="missing-slots">${slotsHtml}</div>
+    <div class="g-feedback" id="mlFeedback"></div>
+    <div class="ml-keyboard">${keysHtml}</div>`;
+}
+
+function mlGuess(ch) {
+  // fill next blank slot that matches
+  let filled = false;
+  for (const i of mlHidden) {
+    const slot = document.getElementById('mls-' + i);
+    if (!slot) continue;
+    if (mlWordState[i] === '' && mlWords[mlIdx].word[i].toLowerCase() === ch) {
+      mlWordState[i] = ch;
+      slot.textContent = ch.toUpperCase();
+      slot.className   = 'ml-slot filled';
+      filled = true;
+      break;
+    }
+  }
+
+  const isComplete = mlHidden.every(i => mlWordState[i] !== '');
+  if (isComplete) {
+    const correct = mlWordState.join('') === mlWords[mlIdx].word.toLowerCase();
+    const fb = document.getElementById('mlFeedback');
+    fb.className = 'g-feedback ' + (correct ? 'correct' : 'wrong');
+    fb.textContent = correct ? '✅ To\'g\'ri!' : '❌ To\'g\'ri so\'z: ' + mlWords[mlIdx].word;
+    if (correct) mlCorrect++; else mlWrong++;
+    document.getElementById('mlScore').textContent = mlCorrect + '/' + mlWords.length;
+    document.querySelectorAll('.ml-key').forEach(b => b.disabled = true);
+    setTimeout(() => { mlIdx++; mlRender(); }, 1400);
+  }
+}
+
+/* ════════════════════════════════════════════════════
+   GAME 8 — SPEED TYPING
+════════════════════════════════════════════════════ */
+let spWords, spIdx, spCorrect, spWrong, speedTimer, spTimeLeft;
+const SP_TIME = 10;
+
+function startSpeed() {
+  const pool = getLearnedVocabulary();
+  if (pool.length < 1) { showToast("O'rganilgan so'z yo'q!"); return; }
+  spWords   = shuffle(pool).slice(0, Math.min(10, pool.length));
+  spIdx     = 0; spCorrect = 0; spWrong = 0;
+  openGame('gameSpeed');
+  spRender();
+}
+
+function spRender() {
+  const body = document.getElementById('spBody');
+  document.getElementById('spScore').textContent = spCorrect + '/' + spWords.length;
+  document.getElementById('spProg').style.width  = (spIdx / spWords.length * 100) + '%';
+  clearInterval(speedTimer);
+
+  if (spIdx >= spWords.length) {
+    body.dataset.restart = 'startSpeed';
+    body.dataset.game    = 'gameSpeed';
+    showResult(body, { correct: spCorrect, wrong: spWrong, total: spWords.length });
+    return;
+  }
+
+  const w = spWords[spIdx];
+  spTimeLeft = SP_TIME;
+
+  body.innerHTML = `
+    <div class="timer-display" id="spTimer">${spTimeLeft}</div>
+    <div class="g-word-card">
+      <div class="g-word-label">Bu so'zni yozing</div>
+      <div class="g-word-main">${w.uz.split(',')[0]}</div>
+      <div class="g-word-sub">Inglizcha</div>
+    </div>
+    <div class="g-input-wrap">
+      <input class="g-input" id="spInput" placeholder="Yozing…" autocomplete="off"
+             onkeydown="if(event.key==='Enter') spCheck('${w.word.replace(/'/g,"\\'")}')">
+    </div>
+    <div class="g-feedback" id="spFeedback"></div>
+    <button class="g-next-btn visible" onclick="spCheck('${w.word.replace(/'/g,"\\'")}')">Tekshirish →</button>`;
+
+  setTimeout(() => document.getElementById('spInput') && document.getElementById('spInput').focus(), 50);
+
+  speedTimer = setInterval(() => {
+    spTimeLeft--;
+    const timerEl = document.getElementById('spTimer');
+    if (timerEl) {
+      timerEl.textContent = spTimeLeft;
+      timerEl.className = 'timer-display' + (spTimeLeft <= 3 ? ' warning' : '');
+    }
+    if (spTimeLeft <= 0) {
+      clearInterval(speedTimer);
+      spTimeExpired(w.word);
+    }
+  }, 1000);
+}
+
+function spCheck(correct) {
+  clearInterval(speedTimer);
+  const input = document.getElementById('spInput');
+  if (!input) return;
+  const attempt = input.value.trim().toLowerCase();
+  const ok      = attempt === correct.toLowerCase();
+  const fb      = document.getElementById('spFeedback');
+  fb.className  = 'g-feedback ' + (ok ? 'correct' : 'wrong');
+  fb.textContent = ok ? '✅ To\'g\'ri! +1' : '❌ To\'g\'ri so\'z: ' + correct;
+  input.disabled = true;
+  if (ok) spCorrect++; else spWrong++;
+  document.getElementById('spScore').textContent = spCorrect + '/' + spWords.length;
+  setTimeout(() => { spIdx++; spRender(); }, 1200);
+}
+
+function spTimeExpired(correct) {
+  const input = document.getElementById('spInput');
+  if (input) input.disabled = true;
+  const fb = document.getElementById('spFeedback');
+  if (fb) { fb.className = 'g-feedback wrong'; fb.textContent = '⏰ Vaqt tugadi! To\'g\'ri: ' + correct; }
+  spWrong++;
+  document.getElementById('spScore').textContent = spCorrect + '/' + spWords.length;
+  setTimeout(() => { spIdx++; spRender(); }, 1600);
+}
+
+/* ════════════════════════════════════════════════════
+   GAME 10 — TRUE OR FALSE
+════════════════════════════════════════════════════ */
+let tfWords, tfIdx, tfCorrect, tfWrong;
+
+function startTF() {
+  const pool = getLearnedVocabulary();
+  if (pool.length < 2) { showToast("Kamida 2 ta so'z o'rganing!"); return; }
+  tfWords   = shuffle(pool).slice(0, Math.min(12, pool.length));
+  tfIdx     = 0; tfCorrect = 0; tfWrong = 0;
+  openGame('gameTF');
+  tfRender();
+}
+
+function tfRender() {
+  const pool = getLearnedVocabulary();
+  const body = document.getElementById('tfBody');
+  document.getElementById('tfScore').textContent = tfCorrect + '/' + tfWords.length;
+  document.getElementById('tfProg').style.width  = (tfIdx / tfWords.length * 100) + '%';
+
+  if (tfIdx >= tfWords.length) {
+    body.dataset.restart = 'startTF';
+    body.dataset.game    = 'gameTF';
+    showResult(body, { correct: tfCorrect, wrong: tfWrong, total: tfWords.length });
+    return;
+  }
+
+  const w        = tfWords[tfIdx];
+  const isTrue   = Math.random() > 0.4; // 60% true
+  let displayUz;
+  if (isTrue) {
+    displayUz = w.uz.split(',')[0].trim();
+  } else {
+    const others  = pool.filter(x => x.id !== w.id);
+    const wrongW  = shuffle(others)[0];
+    displayUz     = wrongW ? wrongW.uz.split(',')[0].trim() : w.uz.split(',')[0].trim();
+  }
+
+  body.innerHTML = `
+    <div class="g-word-card">
+      <div class="g-word-label">Bu to'g'rimi?</div>
+      <div class="g-word-main">${w.word}</div>
+      <div class="g-word-sub">= "${displayUz}"</div>
+    </div>
+    <div class="g-feedback" id="tfFeedback"></div>
+    <div class="tf-btns">
+      <button class="tf-btn true" onclick="tfAnswer(this, true, ${isTrue})">✅ To'g'ri</button>
+      <button class="tf-btn false" onclick="tfAnswer(this, false, ${!isTrue})">❌ Noto'g'ri</button>
+    </div>`;
+}
+
+function tfAnswer(btn, userChoice, isCorrect) {
+  document.querySelectorAll('#gameTF .tf-btn').forEach(b => b.disabled = true);
+  const fb = document.getElementById('tfFeedback');
+  if (isCorrect) {
+    btn.classList.add('correct');
+    fb.className = 'g-feedback correct'; fb.textContent = '✅ To\'g\'ri!';
+    tfCorrect++;
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'g-feedback wrong'; fb.textContent = '❌ Noto\'g\'ri!';
+    tfWrong++;
+  }
+  document.getElementById('tfScore').textContent = tfCorrect + '/' + tfWords.length;
+  setTimeout(() => { tfIdx++; tfRender(); }, 1100);
+}
+</script>
+</body>
+</html>
