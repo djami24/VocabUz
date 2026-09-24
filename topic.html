@@ -237,7 +237,7 @@ body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:v
 </div>
 
 <!-- VIEW 2: SO'ZLAR -->
-<div id="viewWords">
+<div id="viewWords" style="display:none;">
   <div id="progressBanner"></div>
   <div class="words-list" id="wordsList"></div>
 </div>
@@ -420,6 +420,7 @@ function renderLevels(){
   document.getElementById('viewLevels').style.display = 'block';
   document.getElementById('viewTopics').style.display = 'none';
   document.getElementById('viewWords').style.display  = 'none';
+  document.getElementById('viewTest').classList.remove('open');
 
   let html = '';
   LEVEL_ORDER.forEach(function(lvl){
@@ -433,15 +434,15 @@ function renderLevels(){
     const learnedInLvl  = lvlWords.filter(function(w){ return learnedIds.includes(w.id); }).length;
     const pct           = count > 0 ? Math.round(learnedInLvl / count * 100) : 0;
 
-    html += `<div class="level-select-card" onclick="openLevel('${lvl}')" style="border-color:${pct===100?'var(--green)':'transparent'}">
-      <div class="level-select-icon" style="background:${cfg.color};">${cfg.emoji}</div>
-      <div class="level-select-info">
-        <div class="level-select-name" style="color:${cfg.textColor}">${lvl} <span style="font-size:.82rem;font-weight:600;color:var(--ink-mid)">— ${cfg.label}</span></div>
-        <div class="level-select-sub">${topicsInLevel.length} ta mavzu · ${count} ta so'z</div>
-      </div>
-      <div class="level-select-meta" style="background:${cfg.color};color:${cfg.textColor}">${learnedInLvl}/${count}</div>
-      <div class="level-select-card-bar" style="width:${pct}%;background:${cfg.textColor}"></div>
-    </div>`;
+    html += '<div class="level-select-card" onclick="openLevel(\''+lvl+'\')" style="border-color:'+(pct===100?'var(--green)':'transparent')+'">' +
+      '<div class="level-select-icon" style="background:'+cfg.color+';">'+cfg.emoji+'</div>' +
+      '<div class="level-select-info">' +
+        '<div class="level-select-name" style="color:'+cfg.textColor+'">'+lvl+' <span style="font-size:.82rem;font-weight:600;color:var(--ink-mid)">— '+cfg.label+'</span></div>' +
+        '<div class="level-select-sub">'+topicsInLevel.length+' ta mavzu · '+count+' ta so\'z</div>' +
+      '</div>' +
+      '<div class="level-select-meta" style="background:'+cfg.color+';color:'+cfg.textColor+'">'+learnedInLvl+'/'+count+'</div>' +
+      '<div class="level-select-card-bar" style="width:'+pct+'%;background:'+cfg.textColor+'"></div>' +
+    '</div>';
   });
 
   if(!html) html = '<div style="text-align:center;padding:40px;color:var(--ink-soft);font-size:.88rem;">Hali so\'zlar qo\'shilmagan</div>';
@@ -461,6 +462,8 @@ function renderTopics(){
   const cfg = LEVEL_CONFIG[currentLevel] || { emoji:'📚', label:currentLevel, color:'#E3F2FD', textColor:'#1565C0' };
   document.getElementById('topbarTitle').textContent = currentLevel + ' — Mavzular';
   document.getElementById('topbarCount').textContent = currentLevel;
+  document.getElementById('viewLevels').style.display = 'none';
+  document.getElementById('viewWords').style.display  = 'none';
   document.getElementById('viewTopics').style.display = 'block';
 
   // Faqat shu darajadagi mavzular
@@ -489,17 +492,16 @@ function renderTopics(){
     }
 
     const cardClass = 'topic-card'+(full?' completed':'');
-    const clickAttr = `onclick="openTopic('${topic.replace(/'/g,\"\\\\'\")}', '${currentLevel}')"`;
+    const safeT = topic.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
 
-    html+=`
-      <div class="${cardClass}" ${clickAttr}>
-        <div class="topic-info">
-          <div class="topic-name">${topic}</div>
-          <div class="topic-meta">${total} ta so'z &bull; ${pct}% ${badgeHtml}</div>
-        </div>
-        ${rightHtml}
-        <div class="topic-card-progress-bar" style="width:${pct}%"></div>
-      </div>`;
+    html += '<div class="'+cardClass+'" onclick="openTopic(\''+safeT+'\',\''+currentLevel+'\')">' +
+      '<div class="topic-info">' +
+        '<div class="topic-name">'+topic+'</div>' +
+        '<div class="topic-meta">'+total+' ta so\'z &bull; '+pct+'% '+badgeHtml+'</div>' +
+      '</div>' +
+      rightHtml +
+      '<div class="topic-card-progress-bar" style="width:'+pct+'%"></div>' +
+    '</div>';
   });
   if(!html) html = '<div style="text-align:center;padding:40px;color:var(--ink-soft);font-size:.88rem;">Bu darajada mavzular mavjud emas</div>';
   document.getElementById('topicsGrid').innerHTML = html +
@@ -548,53 +550,57 @@ function renderWords(){
   document.getElementById('topbarCount').textContent = learned+'/'+total;
 
   // Progress banner
-  let bannerHtml;
+  var bannerHtml;
   if(passed){
-    bannerHtml=`<div style="margin:0 16px 14px;background:var(--green-light);border-radius:var(--radius-sm);padding:14px 16px;display:flex;align-items:center;gap:12px;">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--green-deep)" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="20 6 9 17 4 12"/></svg>
-      <div><div style="font-size:.92rem;font-weight:800;color:var(--green-deep)">Mavzu o'tildi! <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green-deep)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle"><polyline points="22 2 11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div><div style="font-size:.78rem;color:var(--green-deep);opacity:.8">Barcha so'zlarni yaxshi bilasiz</div></div>
-    </div>`;
+    bannerHtml='<div style="margin:0 16px 14px;background:var(--green-light);border-radius:var(--radius-sm);padding:14px 16px;display:flex;align-items:center;gap:12px;">' +
+      '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--green-deep)" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="20 6 9 17 4 12"/></svg>' +
+      '<div><div style="font-size:.92rem;font-weight:800;color:var(--green-deep)">Mavzu o\'tildi! \u2713</div>' +
+      '<div style="font-size:.78rem;color:var(--green-deep);opacity:.8">Barcha so\'zlarni yaxshi bilasiz</div></div>' +
+    '</div>';
   } else if(full){
-    bannerHtml=`<div class="test-ready-banner" onclick="startTest()">
-      <div class="test-ready-txt"><div class="test-ready-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:6px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Test boshlashga tayyor!</div><div class="test-ready-sub">Barcha ${total} ta so'zni o'rgandingiz</div></div>
-      <button class="test-ready-btn">Testni boshlash</button>
-    </div>`;
+    bannerHtml='<div class="test-ready-banner" onclick="startTest()">' +
+      '<div class="test-ready-txt"><div class="test-ready-title">Test boshlashga tayyor!</div>' +
+      '<div class="test-ready-sub">Barcha '+total+' ta so\'zni o\'rgandingiz</div></div>' +
+      '<button class="test-ready-btn">Testni boshlash</button>' +
+    '</div>';
   } else {
-    bannerHtml=`<div class="progress-banner">
-      <div class="progress-banner-row"><span class="progress-banner-title">O'rganish jarayoni</span><span class="progress-banner-pct">${pct}%</span></div>
-      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
-    </div>`;
+    bannerHtml='<div class="progress-banner">' +
+      '<div class="progress-banner-row"><span class="progress-banner-title">O\'rganish jarayoni</span><span class="progress-banner-pct">'+pct+'%</span></div>' +
+      '<div class="progress-track"><div class="progress-fill" style="width:'+pct+'%"></div></div>' +
+    '</div>';
   }
   document.getElementById('progressBanner').innerHTML=bannerHtml;
 
   // So'zlar
   let html=words.map(function(w,i){
-    const isLearned  = learnedIds.includes(w.id);
-    const isBookmark = bookmarks.includes(w.id);
-    const isLiked    = likes.includes(w.id);
-    return `<div class="word-card${isLearned?' learned-card':''}" id="card-${w.id}">
-      <div class="word-header">
-        <span class="word-num">${i+1}.</span>
-        <span class="word-en">${w.word}</span>
-        <span class="word-dash"> – </span>
-        <span class="word-uz">${w.uz}</span>
-        <span class="level-badge">${w.level}</span>
-      </div>
-      ${w.example?`<div class="word-example">${w.example}</div>`:''}
-      <div class="word-actions">
-        <button class="btn-learned${isLearned?' done':''}" id="lrn-${w.id}" onclick="markLearned(${w.id})">
-          ${isLearned
-            ?'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> O\'rgandim'
-            :'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> O\'rgandim'}
-        </button>
-        <button class="btn-icon${isBookmark?' bookmarked':''}" id="bm-${w.id}" onclick="toggleBookmark(${w.id})" title="Yodlash">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="${isBookmark?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-        </button>
-        <button class="btn-icon${isLiked?' liked':''}" id="lk-${w.id}" onclick="toggleLike(${w.id})" title="Yoqtirganlar">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="${isLiked?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-        </button>
-      </div>
-    </div>`;
+    var isLearned  = learnedIds.includes(w.id);
+    var isBookmark = bookmarks.includes(w.id);
+    var isLiked    = likes.includes(w.id);
+    var exampleHtml = w.example ? '<div class="word-example">'+w.example+'</div>' : '';
+    var learnedIcon = isLearned
+      ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+      : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>';
+    return '<div class="word-card'+(isLearned?' learned-card':'')+'" id="card-'+w.id+'">' +
+      '<div class="word-header">' +
+        '<span class="word-num">'+(i+1)+'.</span>' +
+        '<span class="word-en">'+(w.word||'')+'</span>' +
+        '<span class="word-dash"> \u2013 </span>' +
+        '<span class="word-uz">'+(w.uz||'')+'</span>' +
+        '<span class="level-badge">'+(w.level||'')+'</span>' +
+      '</div>' +
+      exampleHtml +
+      '<div class="word-actions">' +
+        '<button class="btn-learned'+(isLearned?' done':'')+'" id="lrn-'+w.id+'" onclick="markLearned('+w.id+')">' +
+          learnedIcon+" O'rgandim" +
+        '</button>' +
+        '<button class="btn-icon'+(isBookmark?' bookmarked':'')+'" id="bm-'+w.id+'" onclick="toggleBookmark('+w.id+')" title="Yodlash">' +
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="'+(isBookmark?'currentColor':'none')+'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>' +
+        '</button>' +
+        '<button class="btn-icon'+(isLiked?' liked':'')+'" id="lk-'+w.id+'" onclick="toggleLike('+w.id+')" title="Yoqtirganlar">' +
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="'+(isLiked?'currentColor':'none')+'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>' +
+        '</button>' +
+      '</div>' +
+    '</div>';
   }).join('');
   document.getElementById('wordsList').innerHTML = html +
     '<div style="height:120px;flex-shrink:0;display:block;"></div>';
@@ -624,7 +630,7 @@ function toggleBookmark(id){
   if(bm){
     const active=bookmarks.includes(numId);
     bm.className='btn-icon'+(active?' bookmarked':'');
-    bm.innerHTML=`<svg width="16" height="16" viewBox="0 0 24 24" fill="${active?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>`;
+    bm.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="'+(active?'currentColor':'none')+'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
   }
 }
 
@@ -640,7 +646,7 @@ function toggleLike(id){
   if(lk){
     const active=likes.includes(numId);
     lk.className='btn-icon'+(active?' liked':'');
-    lk.innerHTML=`<svg width="16" height="16" viewBox="0 0 24 24" fill="${active?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
+    lk.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="'+(active?'currentColor':'none')+'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
   }
 }
 
@@ -696,29 +702,28 @@ function renderTestQuestion(){
   const options = [w,...wrong3].sort(function(){return Math.random()-.5;});
 
   // Xato indikatorlari
-  let errDots='';
-  for(let i=0;i<2;i++){
-    errDots+=`<div class="test-error-dot${i<testErrors?'':' empty'}"></div>`;
+  var errDots='';
+  for(var i=0;i<2;i++){
+    errDots+='<div class="test-error-dot'+(i<testErrors?'':' empty')+'"></div>';
   }
 
-  let optsHtml=options.map(function(opt){
-    return `<button class="test-opt" onclick="checkAnswer(${opt.id},${w.id},this)">${opt.uz}</button>`;
+  var optsHtml=options.map(function(opt){
+    return '<button class="test-opt" onclick="checkAnswer('+opt.id+','+w.id+',this)">'+(opt.uz||'')+'</button>';
   }).join('');
 
-  document.getElementById('testBody').innerHTML=`
-    <div class="test-question">
-      <div class="test-q-label">Tarjimasini tanlang</div>
-      <div class="test-q-word">${w.word}</div>
-      <div class="test-q-topic">${w.topic} · ${w.level}</div>
-    </div>
-    <div class="test-error-info">
-      Xato: ${errDots}
-      <span style="margin-left:4px;color:var(--ink-soft)">(2 ta xatoda test o'tkazib yuboriladi)</span>
-    </div>
-    <div class="test-options">${optsHtml}</div>
-    <button class="test-next-btn" id="testNextBtn" onclick="nextQuestion()">
-      ${testIdx+1<testWords.length ? 'Keyingi savol' : 'Natijani ko\'rish'}
-    </button>`;
+  document.getElementById('testBody').innerHTML=
+    '<div class="test-question">' +
+      '<div class="test-q-label">Tarjimasini tanlang</div>' +
+      '<div class="test-q-word">'+(w.word||'')+'</div>' +
+      '<div class="test-q-topic">'+(w.topic||'')+' \u00b7 '+(w.level||'')+'</div>' +
+    '</div>' +
+    '<div class="test-error-info">Xato: '+errDots+
+      '<span style="margin-left:4px;color:var(--ink-soft)">(2 ta xatoda test o\'tkazib yuboriladi)</span>' +
+    '</div>' +
+    '<div class="test-options">'+optsHtml+'</div>' +
+    '<button class="test-next-btn" id="testNextBtn" onclick="nextQuestion()">' +
+      (testIdx+1<testWords.length ? 'Keyingi savol' : "Natijani ko'rish") +
+    '</button>';
 }
 
 function checkAnswer(selectedId, correctId, btn){
@@ -752,9 +757,9 @@ function checkAnswer(selectedId, correctId, btn){
   // Xato indikatorini yangilash
   const errDots=document.querySelector('.test-error-info');
   if(errDots){
-    let dots='';
-    for(let i=0;i<2;i++){
-      dots+=`<div class="test-error-dot${i<testErrors?'':' empty'}"></div>`;
+    var dots='';
+    for(var i=0;i<2;i++){
+      dots+='<div class="test-error-dot'+(i<testErrors?'':' empty')+'"></div>';
     }
     errDots.innerHTML='Xato: '+dots+'<span style="margin-left:4px;color:var(--ink-soft)">(2 ta xatoda test o\'tkazib yuboriladi)</span>';
   }
@@ -772,25 +777,25 @@ function nextQuestion(){
 }
 
 function renderTestFail(){
-  document.getElementById('testBody').innerHTML=`
-    <div class="test-result">
-      <div class="test-result-title">Test o'tmadi</div>
-      <div class="test-result-sub">2 ta xato qildingiz. Yana bir bor so'zlarni yaxshi o'rganib, qayta urining!</div>
-      <div class="test-result-stats">
-        <div class="trs"><div class="trs-val green">${testCorrect}</div><div class="trs-lbl">To'g'ri</div></div>
-        <div class="trs"><div class="trs-val red">${testErrors}</div><div class="trs-lbl">Xato</div></div>
-        <div class="trs"><div class="trs-val" style="color:var(--ink-mid)">${testIdx+1}</div><div class="trs-lbl">Savol</div></div>
-      </div>
-      <div class="test-result-btns">
-        <button class="trb primary" onclick="startTest()">Qaytadan boshlash</button>
-        <button class="trb secondary" onclick="closeTest()">So'zlarni takrorlash</button>
-      </div>
-    </div>`;
+  document.getElementById('testBody').innerHTML=
+    '<div class="test-result">' +
+      '<div class="test-result-title">Test o\'tmadi</div>' +
+      '<div class="test-result-sub">2 ta xato qildingiz. Yana bir bor so\'zlarni yaxshi o\'rganib, qayta urining!</div>' +
+      '<div class="test-result-stats">' +
+        '<div class="trs"><div class="trs-val green">'+testCorrect+'</div><div class="trs-lbl">To\'g\'ri</div></div>' +
+        '<div class="trs"><div class="trs-val red">'+testErrors+'</div><div class="trs-lbl">Xato</div></div>' +
+        '<div class="trs"><div class="trs-val" style="color:var(--ink-mid)">'+(testIdx+1)+'</div><div class="trs-lbl">Savol</div></div>' +
+      '</div>' +
+      '<div class="test-result-btns">' +
+        '<button class="trb primary" onclick="startTest()">Qaytadan boshlash</button>' +
+        '<button class="trb secondary" onclick="closeTest()">So\'zlarni takrorlash</button>' +
+      '</div>' +
+    '</div>';
 }
 
 function renderTestResult(){
-  const total  = testWords.length;
-  const passed = testErrors<=MAX_ERRORS;
+  var total  = testWords.length;
+  var passed = testErrors<=MAX_ERRORS;
 
   if(passed && !isTopicPassed(currentTopic)){
     passedTopics.push(currentTopic);
@@ -798,28 +803,34 @@ function renderTestResult(){
     saveToFirestore();
   }
 
-  const nextTopicIdx = TOPIC_ORDER.indexOf(currentTopic)+1;
-  const nextTopic    = TOPIC_ORDER[nextTopicIdx];
-  const hasNext      = !!nextTopic;
+  var nextTopicIdx = TOPIC_ORDER.indexOf(currentTopic)+1;
+  var nextTopic    = TOPIC_ORDER[nextTopicIdx];
+  var hasNext      = !!nextTopic;
 
   if(passed){
-    document.getElementById('testBody').innerHTML=`
-      <div class="test-result">
-        <div class="test-result-title">Tabriklaymiz!</div>
-        <div class="test-result-sub">
-          ${currentTopic} mavzusidan testni muvaffaqiyatli o'tdingiz!
-          ${hasNext?('<br><br><strong>'+nextTopic+'</strong> mavzusi ochildi!'):'<br><br>Barcha mavzularni tugatdingiz!'}
-        </div>
-        <div class="test-result-stats">
-          <div class="trs"><div class="trs-val green">${testCorrect}</div><div class="trs-lbl">To'g'ri</div></div>
-          <div class="trs"><div class="trs-val red">${testErrors}</div><div class="trs-lbl">Xato</div></div>
-          <div class="trs"><div class="trs-val" style="color:var(--blue)">${Math.round(testCorrect/total*100)}%</div><div class="trs-lbl">Natija</div></div>
-        </div>
-        <div class="test-result-btns">
-          ${hasNext?`<button class="trb green" onclick="closeTestGoNext(this.dataset.topic)" data-topic="${nextTopic}">${nextTopic} mavzusiga o'tish</button>`:''}
-          <button class="trb secondary" onclick="closeTest();renderTopics()">Mavzular ro'yxatiga</button>
-        </div>
-      </div>`;
+    var nextBtn = hasNext
+      ? '<button class="trb green" onclick="closeTestGoNext(\''+nextTopic.replace(/'/g,"\\'")+'\')" >'+nextTopic+" mavzusiga o'tish</button>"
+      : '';
+    var subExtra = hasNext
+      ? '<br><br><strong>'+nextTopic+'</strong> mavzusi ochildi!'
+      : '<br><br>Barcha mavzularni tugatdingiz!';
+
+    document.getElementById('testBody').innerHTML=
+      '<div class="test-result">' +
+        '<div class="test-result-title">Tabriklaymiz!</div>' +
+        '<div class="test-result-sub">' +
+          currentTopic+" mavzusidan testni muvaffaqiyatli o'tdingiz!" + subExtra +
+        '</div>' +
+        '<div class="test-result-stats">' +
+          '<div class="trs"><div class="trs-val green">'+testCorrect+'</div><div class="trs-lbl">To\'g\'ri</div></div>' +
+          '<div class="trs"><div class="trs-val red">'+testErrors+'</div><div class="trs-lbl">Xato</div></div>' +
+          '<div class="trs"><div class="trs-val" style="color:var(--blue)">'+Math.round(testCorrect/total*100)+'%</div><div class="trs-lbl">Natija</div></div>' +
+        '</div>' +
+        '<div class="test-result-btns">' +
+          nextBtn +
+          '<button class="trb secondary" onclick="closeTest();renderTopics()">Mavzular ro\'yxatiga</button>' +
+        '</div>' +
+      '</div>';
   } else {
     renderTestFail();
   }
