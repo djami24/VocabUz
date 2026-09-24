@@ -318,7 +318,7 @@ firebase.auth().onAuthStateChanged(function(user){
   // To'liq Firestore'dan yuklash
   Promise.all([
     db.collection('users').doc(user.uid).get(),
-    db.collection('words').where('vocabType','==','topic').orderBy('id').get()
+    db.collection('words').where('vocabType','==','topic').get()
   ]).then(function(results){
     var userDoc   = results[0];
     var wordsSnap = results[1];
@@ -336,7 +336,12 @@ firebase.auth().onAuthStateChanged(function(user){
     TOPIC_COLOR = {};
     var colorIdx = 0;
 
-    wordsSnap.docs.forEach(function(d){
+    // id bo'yicha tartiblash (composite index kerak bo'lmasin)
+    var sortedDocs = wordsSnap.docs.slice().sort(function(a, b){
+      return (Number(a.data().id) || 0) - (Number(b.data().id) || 0);
+    });
+
+    sortedDocs.forEach(function(d){
       var w = Object.assign({ _id: d.id }, d.data());
       ALL_WORDS.push(w);
       if(w.topic && TOPIC_ORDER.indexOf(w.topic) === -1){
