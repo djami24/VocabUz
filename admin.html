@@ -494,7 +494,7 @@ textarea.form-input {
 }
 .type-card:hover { border-color: var(--blue); box-shadow: var(--shadow-md); }
 .type-card.selected { border-color: var(--blue); background: var(--blue-soft); }
-.type-card-icon { font-size: 2.2rem; margin-bottom: 10px; }
+.type-card-icon { font-size: 2.2rem; margin-bottom: 10px; display:flex; align-items:center; justify-content:center; width:52px; height:52px; margin-left:auto; margin-right:auto; }
 .type-card-title { font-size: .95rem; font-weight: 800; color: var(--ink); margin-bottom: 4px; }
 .type-card-sub { font-size: .78rem; color: var(--ink-soft); line-height: 1.4; }
 
@@ -902,32 +902,122 @@ textarea.form-input {
           <p style="font-size:.82rem;color:var(--ink-soft);margin-bottom:20px" id="levelStepSubtitle">So'zlar qaysi darajaga tegishli?</p>
           <div class="type-grid" id="levelPickerGrid">
             <div class="type-card" onclick="selectLevel('A1')" id="vlevelA1">
-              <div class="type-card-icon">🌱</div>
+              <div class="type-card-icon">
+                <!-- A1: Seedling / Sprout -->
+                <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="22" cy="22" r="22" fill="#DCFCE7"/>
+                  <!-- Stem -->
+                  <path d="M22 32 L22 20" stroke="#16A34A" stroke-width="2" stroke-linecap="round"/>
+                  <!-- Left leaf -->
+                  <path d="M22 24 C22 24 16 22 15 16 C19 16 22 20 22 24Z" fill="#22C55E"/>
+                  <!-- Right leaf -->
+                  <path d="M22 21 C22 21 28 19 29 13 C25 13 22 17 22 21Z" fill="#4ADE80"/>
+                  <!-- Soil -->
+                  <ellipse cx="22" cy="33" rx="6" ry="2" fill="#A3814A" opacity="0.5"/>
+                </svg>
+              </div>
               <div class="type-card-title">A1</div>
               <div class="type-card-sub">Boshlang'ich daraja</div>
             </div>
             <div class="type-card" onclick="selectLevel('A2')" id="vlevelA2">
-              <div class="type-card-icon">🌿</div>
+              <div class="type-card-icon">
+                <!-- A2: Growing Plant / Branch -->
+                <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="22" cy="22" r="22" fill="#DCFCE7"/>
+                  <!-- Main stem -->
+                  <path d="M22 34 C22 34 22 18 22 14" stroke="#15803D" stroke-width="2.2" stroke-linecap="round"/>
+                  <!-- Left branch -->
+                  <path d="M22 26 C22 26 15 24 13 18" stroke="#15803D" stroke-width="1.8" stroke-linecap="round"/>
+                  <!-- Right branch -->
+                  <path d="M22 20 C22 20 29 18 31 12" stroke="#15803D" stroke-width="1.8" stroke-linecap="round"/>
+                  <!-- Left leaf blob -->
+                  <ellipse cx="13" cy="17" rx="4.5" ry="3" fill="#22C55E" transform="rotate(-30 13 17)"/>
+                  <!-- Right leaf blob -->
+                  <ellipse cx="31" cy="11" rx="4.5" ry="3" fill="#4ADE80" transform="rotate(-30 31 11)"/>
+                  <!-- Top leaf -->
+                  <ellipse cx="22" cy="12" rx="3.5" ry="4.5" fill="#16A34A"/>
+                  <!-- Soil -->
+                  <ellipse cx="22" cy="34.5" rx="6" ry="2" fill="#A3814A" opacity="0.5"/>
+                </svg>
+              </div>
               <div class="type-card-title">A2</div>
               <div class="type-card-sub">Boshlang'ich-o'rta</div>
             </div>
             <div class="type-card" onclick="selectLevel('B1')" id="vlevelB1">
-              <div class="type-card-icon">⭐</div>
+              <div class="type-card-icon">
+                <!-- B1: Single Star -->
+                <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="22" cy="22" r="22" fill="#FEF9C3"/>
+                  <!-- Star shadow/glow -->
+                  <path d="M22 10 L24.9 18.2 H33.5 L26.8 23.4 L29.7 31.6 L22 26.4 L14.3 31.6 L17.2 23.4 L10.5 18.2 H19.1 Z" fill="#FDE047" opacity="0.3"/>
+                  <!-- Star -->
+                  <path d="M22 11.5 L24.5 19 H32.5 L26.2 23.8 L28.7 31.3 L22 26.5 L15.3 31.3 L17.8 23.8 L11.5 19 H19.5 Z" fill="#FACC15"/>
+                  <!-- Star shine -->
+                  <path d="M22 13 L23.8 18.5 H19.2 Z" fill="#FEF08A" opacity="0.7"/>
+                </svg>
+              </div>
               <div class="type-card-title">B1</div>
               <div class="type-card-sub">O'rta daraja</div>
             </div>
             <div class="type-card" onclick="selectLevel('B2')" id="vlevelB2">
-              <div class="type-card-icon">⭐⭐</div>
+              <div class="type-card-icon">
+                <!-- B2: Two Stars -->
+                <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="22" cy="22" r="22" fill="#FEF9C3"/>
+                  <!-- Left star (slightly smaller, behind) -->
+                  <path d="M15 13 L16.9 18.8 H23 L18.2 22.2 L20 28 L15 24.5 L10 28 L11.8 22.2 L7 18.8 H13.1 Z" fill="#FDE047" opacity="0.85"/>
+                  <!-- Right star (foreground) -->
+                  <path d="M29 11 L31.2 17.5 H38 L32.6 21.4 L34.8 27.9 L29 24.0 L23.2 27.9 L25.4 21.4 L20 17.5 H26.8 Z" fill="#FACC15"/>
+                  <!-- Right star shine -->
+                  <path d="M29 12.5 L30.4 17 H27.2 Z" fill="#FEF08A" opacity="0.7"/>
+                </svg>
+              </div>
               <div class="type-card-title">B2</div>
               <div class="type-card-sub">O'rta-yuqori daraja</div>
             </div>
             <div class="type-card" onclick="selectLevel('C1')" id="vlevelC1">
-              <div class="type-card-icon">🏆</div>
+              <div class="type-card-icon">
+                <!-- C1: Trophy -->
+                <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="22" cy="22" r="22" fill="#FEF3C7"/>
+                  <!-- Trophy cup -->
+                  <path d="M15 10 H29 V22 C29 26.4 25.9 30 22 30 C18.1 30 15 26.4 15 22 Z" fill="#F59E0B"/>
+                  <!-- Trophy cup highlight -->
+                  <path d="M17 11 H25 V21 C25 24 23.2 26.5 21 27.2" stroke="#FDE68A" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+                  <!-- Left handle -->
+                  <path d="M15 13 C15 13 10 13 10 17 C10 20 13 21 15 20" stroke="#D97706" stroke-width="2" stroke-linecap="round" fill="none"/>
+                  <!-- Right handle -->
+                  <path d="M29 13 C29 13 34 13 34 17 C34 20 31 21 29 20" stroke="#D97706" stroke-width="2" stroke-linecap="round" fill="none"/>
+                  <!-- Trophy stem -->
+                  <rect x="19.5" y="30" width="5" height="4" rx="1" fill="#D97706"/>
+                  <!-- Trophy base -->
+                  <rect x="15" y="34" width="14" height="3" rx="1.5" fill="#B45309"/>
+                  <!-- Star on cup -->
+                  <path d="M22 15 L23 18 H26 L23.5 19.8 L24.5 22.8 L22 21 L19.5 22.8 L20.5 19.8 L18 18 H21 Z" fill="#FEF08A" opacity="0.9"/>
+                </svg>
+              </div>
               <div class="type-card-title">C1</div>
               <div class="type-card-sub">Ilg'or daraja</div>
             </div>
             <div class="type-card" onclick="selectLevel('C2')" id="vlevelC2">
-              <div class="type-card-icon">🎓</div>
+              <div class="type-card-icon">
+                <!-- C2: Graduation Cap -->
+                <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="22" cy="22" r="22" fill="#EDE9FE"/>
+                  <!-- Cap board (diamond/rhombus top) -->
+                  <path d="M22 9 L36 16 L22 23 L8 16 Z" fill="#4C1D95"/>
+                  <!-- Cap board top highlight -->
+                  <path d="M22 10.5 L33 16 L22 21.5 L11 16 Z" fill="#6D28D9" opacity="0.5"/>
+                  <!-- Tassel string -->
+                  <line x1="36" y1="16" x2="36" y2="26" stroke="#7C3AED" stroke-width="2" stroke-linecap="round"/>
+                  <!-- Tassel ball -->
+                  <circle cx="36" cy="27.5" r="2.5" fill="#7C3AED"/>
+                  <!-- Cap body / mortarboard brim -->
+                  <path d="M14 19 L14 27 C14 27 17 31 22 31 C27 31 30 27 30 27 L30 19" stroke="#4C1D95" stroke-width="2.2" stroke-linecap="round" fill="#5B21B6"/>
+                  <!-- Diploma roll hint -->
+                  <path d="M17 29 C17 29 19 31.5 22 31.5 C25 31.5 27 29 27 29" stroke="#7C3AED" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                </svg>
+              </div>
               <div class="type-card-title">C2</div>
               <div class="type-card-sub">Mukammal daraja</div>
             </div>
