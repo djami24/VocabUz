@@ -455,6 +455,130 @@ textarea.form-input {
 .tab-page { display: none; }
 .tab-page.active { display: block; }
 
+/* ── SO'Z QO'SHISH WIZARD ── */
+.wizard-steps {
+  display: flex; align-items: center; gap: 0;
+  margin-bottom: 28px; background: var(--white);
+  border-radius: var(--radius-md); padding: 16px 20px;
+  box-shadow: var(--shadow-sm); border: 1px solid var(--line);
+  flex-wrap: wrap; gap: 8px;
+}
+.wstep {
+  display: flex; align-items: center; gap: 8px;
+  font-size: .82rem; font-weight: 600; color: var(--ink-soft);
+}
+.wstep.active { color: var(--blue); }
+.wstep.done { color: var(--green); }
+.wstep-num {
+  width: 24px; height: 24px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .72rem; font-weight: 800;
+  background: var(--line); color: var(--ink-soft);
+  flex-shrink: 0;
+}
+.wstep.active .wstep-num { background: var(--blue); color: #fff; }
+.wstep.done .wstep-num { background: var(--green); color: #fff; }
+.wstep-sep { color: var(--line); font-size: 1.2rem; margin: 0 4px; }
+
+.type-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px; margin-bottom: 20px;
+}
+.type-card {
+  background: var(--white); border: 2px solid var(--line);
+  border-radius: var(--radius-md); padding: 22px 18px;
+  cursor: pointer; transition: all .15s;
+  text-align: center;
+}
+.type-card:hover { border-color: var(--blue); box-shadow: var(--shadow-md); }
+.type-card.selected { border-color: var(--blue); background: var(--blue-soft); }
+.type-card-icon { font-size: 2.2rem; margin-bottom: 10px; }
+.type-card-title { font-size: .95rem; font-weight: 800; color: var(--ink); margin-bottom: 4px; }
+.type-card-sub { font-size: .78rem; color: var(--ink-soft); line-height: 1.4; }
+
+.topic-picker {
+  display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;
+}
+.topic-option {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--white); border: 2px solid var(--line);
+  border-radius: var(--radius-sm); padding: 13px 16px;
+  cursor: pointer; transition: all .15s;
+  font-size: .9rem; font-weight: 600; color: var(--ink);
+}
+.topic-option:hover { border-color: var(--blue); }
+.topic-option.selected { border-color: var(--blue); background: var(--blue-soft); color: var(--blue); }
+.topic-option-new {
+  border-style: dashed; color: var(--ink-soft);
+  justify-content: center;
+}
+.topic-option-new:hover { color: var(--blue); }
+
+.mode-tabs {
+  display: flex; gap: 8px; margin-bottom: 20px;
+}
+.mode-tab {
+  flex: 1; padding: 11px; border-radius: var(--radius-sm);
+  border: 2px solid var(--line); background: var(--white);
+  font-size: .88rem; font-weight: 700; color: var(--ink-mid);
+  cursor: pointer; text-align: center; transition: all .15s;
+}
+.mode-tab.active { border-color: var(--blue); background: var(--blue-soft); color: var(--blue); }
+
+.bulk-textarea {
+  width: 100%; min-height: 240px;
+  padding: 14px; border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm); font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: .9rem; line-height: 1.7; color: var(--ink);
+  background: var(--sky); resize: vertical; outline: none;
+  transition: border .15s;
+}
+.bulk-textarea:focus { border-color: var(--blue); background: var(--white); }
+
+.preview-box {
+  background: var(--sky); border: 1px solid var(--line);
+  border-radius: var(--radius-sm); padding: 14px 16px;
+  margin: 14px 0; font-size: .85rem;
+}
+.preview-count {
+  font-size: 1.1rem; font-weight: 800; color: var(--blue); margin-bottom: 8px;
+}
+.preview-errors { margin-top: 10px; }
+.preview-error-row {
+  color: var(--red); font-size: .78rem; margin-bottom: 3px;
+  display: flex; align-items: baseline; gap: 6px;
+}
+.preview-ok-row {
+  color: var(--green-deep); font-size: .78rem; margin-bottom: 3px;
+  display: flex; align-items: baseline; gap: 6px;
+}
+
+.dup-badge {
+  font-size: .7rem; font-weight: 700; background: #FEF3C7; color: #92400E;
+  padding: 2px 7px; border-radius: 6px; margin-left: 6px;
+}
+.err-badge {
+  font-size: .7rem; font-weight: 700; background: #FEE2E2; color: #9B1C1C;
+  padding: 2px 7px; border-radius: 6px; margin-left: 6px;
+}
+
+.wizard-section { display: none; }
+.wizard-section.active { display: block; }
+
+.back-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: .83rem; font-weight: 600; color: var(--ink-mid);
+  cursor: pointer; margin-bottom: 16px;
+  padding: 6px 0; border: none; background: none;
+}
+.back-link:hover { color: var(--blue); }
+
+.info-row {
+  background: var(--blue-soft); border-radius: var(--radius-sm);
+  padding: 10px 14px; font-size: .82rem; color: var(--blue);
+  margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+}
+
 /* ── RESPONSIVE ── */
 @media (max-width: 768px) {
   .sidebar {
@@ -539,6 +663,11 @@ textarea.form-input {
       <div class="nav-item" onclick="showPage('words')">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
         So'zlar
+      </div>
+      <div class="nav-label">So'z boshqaruvi</div>
+      <div class="nav-item" onclick="showPage('addword')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        So'z qo'shish
       </div>
       <div class="nav-label">Foydalanuvchilar</div>
       <div class="nav-item" onclick="showPage('users')">
@@ -698,6 +827,204 @@ textarea.form-input {
         <div class="card-body">
           <div id="usersTableWrap"><div class="loading"><div class="spinner"></div>Yuklanmoqda…</div></div>
           <div id="usersPagination" class="pagination"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SO'Z QO'SHISH ── -->
+    <div class="tab-page" id="page-addword">
+      <div class="page-header">
+        <div>
+          <div class="page-title">So'z qo'shish</div>
+          <div class="page-sub">Lug'atga yangi so'z qo'shing</div>
+        </div>
+      </div>
+
+      <!-- Wizard steps indicator -->
+      <div class="wizard-steps" id="wizardSteps">
+        <div class="wstep active" id="wstep1"><div class="wstep-num">1</div>Lug'at turi</div>
+        <span class="wstep-sep">›</span>
+        <div class="wstep" id="wstep2"><div class="wstep-num">2</div>Mavzu</div>
+        <span class="wstep-sep">›</span>
+        <div class="wstep" id="wstep3"><div class="wstep-num">3</div>So'z qo'shish</div>
+      </div>
+
+      <!-- STEP 1: Vocabulary Type -->
+      <div class="wizard-section active" id="wsec1">
+        <div class="card" style="padding:24px">
+          <div class="card-title" style="margin-bottom:20px">Qaysi lug'atga so'z qo'shmoqchisiz?</div>
+          <div class="type-grid">
+            <div class="type-card" onclick="selectVocabType('topic')" id="vtopic">
+              <div class="type-card-icon">📚</div>
+              <div class="type-card-title">Topic Vocabulary</div>
+              <div class="type-card-sub">Mavzu bo'yicha so'zlar. O'rgandim, test va o'yinlarda ishlatiladi.</div>
+            </div>
+            <div class="type-card" onclick="selectVocabType('speaking')" id="vspeaking">
+              <div class="type-card-icon">🗣️</div>
+              <div class="type-card-title">Speaking Vocabulary</div>
+              <div class="type-card-sub">Speaking bo'limidagi so'zlar va iboralar.</div>
+            </div>
+            <div class="type-card" onclick="selectVocabType('writing')" id="vwriting">
+              <div class="type-card-icon">✍️</div>
+              <div class="type-card-title">Writing Vocabulary</div>
+              <div class="type-card-sub">Writing bo'limidagi so'zlar va iboralar.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: Topic selection -->
+      <div class="wizard-section" id="wsec2">
+        <button class="back-link" onclick="goToStep(1)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Orqaga
+        </button>
+        <div class="card" style="padding:24px">
+          <div class="card-title" style="margin-bottom:6px">Mavzu tanlang</div>
+          <p style="font-size:.82rem;color:var(--ink-soft);margin-bottom:18px" id="topicSubtitle">Topic Vocabulary uchun mavzu</p>
+
+          <div id="topicPickerList" class="topic-picker">
+            <div class="loading"><div class="spinner"></div>Yuklanmoqda…</div>
+          </div>
+
+          <!-- New topic form (hidden) -->
+          <div id="newTopicForm" style="display:none;margin-top:14px">
+            <div class="info-row">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              Yangi mavzu yaratilmoqda
+            </div>
+            <div class="form-group">
+              <label class="form-label">Mavzu nomi *</label>
+              <input class="form-input" type="text" id="newTopicName" placeholder="Masalan: Sayohat, Sport, Madaniyat…">
+              <div class="form-error" id="newTopicErr"></div>
+            </div>
+            <div class="form-row" id="topicLevelRow">
+              <div class="form-group">
+                <label class="form-label">Daraja (ixtiyoriy)</label>
+                <select class="form-input filter-select" id="newTopicLevel" style="width:100%">
+                  <option value="">Tanlang</option>
+                  <option value="A1">A1</option>
+                  <option value="A2">A2</option>
+                  <option value="B1">B1</option>
+                  <option value="B2">B2</option>
+                  <option value="C1">C1</option>
+                  <option value="C2">C2</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Emoji (ixtiyoriy)</label>
+                <input class="form-input" type="text" id="newTopicEmoji" placeholder="📚">
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:8px">
+              <button class="btn-secondary" onclick="cancelNewTopic()">Bekor qilish</button>
+              <button class="btn-save" onclick="confirmNewTopic()">Mavzu yaratish</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3: Add words -->
+      <div class="wizard-section" id="wsec3">
+        <button class="back-link" onclick="goToStep(2)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Orqaga
+        </button>
+
+        <div class="card" style="padding:24px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+            <div class="card-title" id="step3Title">So'z qo'shish</div>
+            <span class="badge badge-blue" id="step3Badge">—</span>
+          </div>
+          <p style="font-size:.82rem;color:var(--ink-soft);margin-bottom:18px" id="step3Sub">Qo'shiladigan so'zlarni kiriting</p>
+
+          <!-- Mode tabs: single / bulk -->
+          <div class="mode-tabs" id="modeTabs">
+            <button class="mode-tab active" onclick="setMode('single')" id="tabSingle">Bitta so'z</button>
+            <button class="mode-tab" onclick="setMode('bulk')" id="tabBulk">Ko'p so'z (100 tagacha)</button>
+          </div>
+
+          <!-- SINGLE WORD MODE -->
+          <div id="modeSingle">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Ingliz so'zi *</label>
+                <input class="form-input" type="text" id="swWord" placeholder="important">
+                <div class="form-error" id="swWordErr"></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">O'zbekcha tarjima *</label>
+                <input class="form-input" type="text" id="swUz" placeholder="muhim">
+                <div class="form-error" id="swUzErr"></div>
+              </div>
+            </div>
+            <div class="form-row" id="singleLevelRow">
+              <div class="form-group">
+                <label class="form-label">Daraja *</label>
+                <select class="form-input filter-select" id="swLevel" style="width:100%">
+                  <option value="">Tanlang</option>
+                  <option value="A1">A1</option>
+                  <option value="A2">A2</option>
+                  <option value="B1">B1</option>
+                  <option value="B2">B2</option>
+                  <option value="C1">C1</option>
+                  <option value="C2">C2</option>
+                </select>
+                <div class="form-error" id="swLevelErr"></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">So'z turi (ixtiyoriy)</label>
+                <input class="form-input" type="text" id="swType" placeholder="noun, verb, adjective…">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Misol gap (ixtiyoriy)</label>
+              <textarea class="form-input" id="swExample" placeholder="This is an important decision." style="min-height:70px;resize:vertical"></textarea>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:6px">
+              <button class="btn-save" id="btnAddSingle" onclick="addSingleWord()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;margin-right:4px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Qo'shish
+              </button>
+            </div>
+          </div>
+
+          <!-- BULK MODE -->
+          <div id="modeBulk" style="display:none">
+            <div class="info-row">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              Har bir qatorda: <strong style="margin-left:4px">inglizcha | o'zbekcha</strong> &nbsp; (misol: <em>important | muhim</em>)
+            </div>
+            <div class="form-group">
+              <label class="form-label">So'zlar ro'yxati * (100 tagacha)</label>
+              <textarea class="bulk-textarea" id="bulkText" placeholder="important | muhim&#10;beautiful | chiroyli&#10;improve | yaxshilamoq&#10;..." oninput="previewBulk()"></textarea>
+            </div>
+
+            <!-- Bulk level (for topic vocab) -->
+            <div id="bulkLevelRow" class="form-group">
+              <label class="form-label">Daraja (barcha so'zlar uchun)</label>
+              <select class="form-input filter-select" id="bulkLevel" style="max-width:160px">
+                <option value="B1">B1</option>
+                <option value="A1">A1</option>
+                <option value="A2">A2</option>
+                <option value="B2">B2</option>
+                <option value="C1">C1</option>
+                <option value="C2">C2</option>
+              </select>
+            </div>
+
+            <!-- Preview -->
+            <div id="bulkPreview" class="preview-box" style="display:none">
+              <div class="preview-count" id="bulkPreviewCount">0 ta so'z qo'shiladi</div>
+              <div id="bulkPreviewList"></div>
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:12px">
+              <button class="btn-save" id="btnAddBulk" onclick="addBulkWords()" disabled>
+                Barchasini qo'shish
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1348,11 +1675,19 @@ function showPage(name) {
   document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
+  const navKeywords = {
+    dashboard: 'dashboard',
+    words:     "so'zlar",
+    addword:   "so'z qo'shish",
+    users:     'barcha foydalanuvchilar',
+    visits:    'kirish tarixi'
+  };
+  const kw = navKeywords[name] || name;
   document.querySelectorAll('.nav-item').forEach(n => {
-    if (n.textContent.toLowerCase().includes(
-      name==='dashboard'?'dashboard':name==='words'?'so\'z':name==='users'?'barcha':'kirish'
-    )) n.classList.add('active');
+    if (n.textContent.toLowerCase().includes(kw)) n.classList.add('active');
   });
+  // Reset wizard when navigating to addword
+  if(name === 'addword') goToStep(1);
   closeSidebar();
 }
 
@@ -1407,6 +1742,415 @@ function formatTime(ts) {
     const d = ts.toDate ? ts.toDate() : new Date(ts);
     return d.toLocaleTimeString('uz-UZ', { hour:'2-digit', minute:'2-digit' });
   } catch { return '—'; }
+}
+
+// ══════════════════════════════════════
+//  SO'Z QO'SHISH WIZARD
+// ══════════════════════════════════════
+
+// ── Wizard state ──
+let wzVocabType   = '';   // 'topic' | 'speaking' | 'writing'
+let wzTopic       = '';   // selected topic name or id
+let wzTopicIsNew  = false;
+let wzStep        = 1;
+let wzMode        = 'single'; // 'single' | 'bulk'
+let wzExistingTopicWords = []; // words already in selected topic (for dup check)
+let wzMaxNumericId = 0;        // max numeric id in /words for topic words
+
+// ── Step navigation ──
+function goToStep(n) {
+  // hide all sections
+  [1,2,3].forEach(i => {
+    document.getElementById('wsec'+i).classList.toggle('active', i===n);
+    const el = document.getElementById('wstep'+i);
+    el.classList.remove('active','done');
+    if(i < n) el.classList.add('done');
+    else if(i === n) el.classList.add('active');
+  });
+  wzStep = n;
+  if(n === 1) { wzVocabType=''; wzTopic=''; wzTopicIsNew=false; clearTypeCards(); }
+  if(n === 2) { loadTopicsForPicker(); }
+  if(n === 3) { setupStep3(); }
+}
+
+function clearTypeCards(){
+  ['vtopic','vspeaking','vwriting'].forEach(id => document.getElementById(id).classList.remove('selected'));
+}
+
+// ── STEP 1: Vocab type selection ──
+function selectVocabType(type) {
+  wzVocabType = type;
+  clearTypeCards();
+  document.getElementById('v'+type).classList.add('selected');
+  // Small delay so user sees the selection
+  setTimeout(() => goToStep(2), 200);
+}
+
+// ── STEP 2: Topic picker ──
+async function loadTopicsForPicker() {
+  const listEl = document.getElementById('topicPickerList');
+  const subtitle = document.getElementById('topicSubtitle');
+
+  const typeLabels = { topic:'Topic Vocabulary', speaking:'Speaking Vocabulary', writing:'Writing Vocabulary' };
+  subtitle.textContent = typeLabels[wzVocabType] + ' uchun mavzu';
+
+  // For speaking/writing: hide topic concept since they use 'type' sub-field
+  if(wzVocabType === 'speaking' || wzVocabType === 'writing') {
+    // For speaking/writing, "topic" = the 'type' field (e.g., "Debate", "Opinion", etc.)
+    // Load distinct type values from Firestore
+    listEl.innerHTML = '<div class="loading"><div class="spinner"></div>Yuklanmoqda…</div>';
+    try {
+      const snap = await db.collection('words').where('category','==',wzVocabType).get();
+      const types = [...new Set(snap.docs.map(d => d.data().type).filter(Boolean))].sort();
+      const maxOrder = snap.docs.reduce((m,d) => Math.max(m, d.data().order||0), 0);
+      wzMaxNumericId = maxOrder; // for speaking/writing, 'order' serves as ordering
+
+      renderTopicPicker(types, 'So\'z turi (type)', true);
+    } catch(e) {
+      listEl.innerHTML = '<div class="form-error">Yuklab bo\'lmadi: ' + esc(e.message) + '</div>';
+    }
+    return;
+  }
+
+  // For topic vocabulary: use topic names from existing words
+  listEl.innerHTML = '<div class="loading"><div class="spinner"></div>Yuklanmoqda…</div>';
+  try {
+    // Get max numeric id
+    const snap = await db.collection('words').orderBy('id','desc').limit(1).get();
+    if(!snap.empty) wzMaxNumericId = snap.docs[0].data().id || 0;
+    else wzMaxNumericId = Math.max(...ALL_WORDS.map(w => w.id||0), 0);
+
+    // Existing topics from Firestore + hardcoded
+    const fsSnap = await db.collection('words').get();
+    const fsTopics = [...new Set(fsSnap.docs.map(d => d.data().topic).filter(Boolean))];
+    const hwTopics = [...new Set(ALL_WORDS.map(w => w.topic).filter(Boolean))];
+    const allTopics = [...new Set([...hwTopics, ...fsTopics])].sort();
+
+    renderTopicPicker(allTopics, 'Mavzu nomi', false);
+  } catch(e) {
+    // Fallback to hardcoded
+    wzMaxNumericId = Math.max(...ALL_WORDS.map(w => w.id||0), 0);
+    const allTopics = [...new Set(ALL_WORDS.map(w => w.topic).filter(Boolean))].sort();
+    renderTopicPicker(allTopics, 'Mavzu nomi', false);
+  }
+}
+
+function renderTopicPicker(topics, newLabel, isSpeakingMode) {
+  const listEl = document.getElementById('topicPickerList');
+  let html = '';
+  topics.forEach(t => {
+    html += `<div class="topic-option" onclick="selectTopic('${esc(t)}', false)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      ${esc(t)}
+    </div>`;
+  });
+  // "Create new topic" option
+  html += `<div class="topic-option topic-option-new" onclick="showNewTopicForm()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+    Yangi ${newLabel.toLowerCase()} yaratish
+  </div>`;
+  listEl.innerHTML = html;
+  document.getElementById('newTopicForm').style.display = 'none';
+}
+
+function selectTopic(topicName, isNew) {
+  wzTopic = topicName;
+  wzTopicIsNew = isNew;
+  // Highlight
+  document.querySelectorAll('.topic-option').forEach(el => {
+    el.classList.toggle('selected', el.textContent.trim() === topicName);
+  });
+  setTimeout(() => goToStep(3), 180);
+}
+
+function showNewTopicForm() {
+  document.getElementById('newTopicForm').style.display = 'block';
+  document.getElementById('newTopicName').focus();
+  // Show/hide level for speaking/writing
+  document.getElementById('topicLevelRow').style.display = (wzVocabType==='topic') ? 'grid' : 'none';
+}
+
+function cancelNewTopic() {
+  document.getElementById('newTopicForm').style.display = 'none';
+  document.getElementById('newTopicName').value = '';
+  document.getElementById('newTopicErr').textContent = '';
+}
+
+function confirmNewTopic() {
+  const name = document.getElementById('newTopicName').value.trim();
+  if(!name) { document.getElementById('newTopicErr').textContent = 'Mavzu nomini kiriting'; return; }
+  document.getElementById('newTopicErr').textContent = '';
+  wzTopicIsNew = true;
+  selectTopic(name, true);
+}
+
+// ── STEP 3 setup ──
+async function setupStep3() {
+  const typeLabels = { topic:'Topic Vocabulary', speaking:'Speaking Vocabulary', writing:'Writing Vocabulary' };
+  document.getElementById('step3Title').textContent = 'So\'z qo\'shish';
+  document.getElementById('step3Badge').textContent = wzVocabType==='topic' ? wzTopic : typeLabels[wzVocabType] + (wzTopic ? ' › ' + wzTopic : '');
+  document.getElementById('step3Sub').textContent = (wzTopicIsNew ? '🆕 Yangi mavzu: ' : 'Mavzu: ') + wzTopic;
+
+  // Show/hide level for speaking/writing single word
+  document.getElementById('singleLevelRow').style.display = wzVocabType === 'topic' ? 'grid' : 'none';
+  document.getElementById('bulkLevelRow').style.display = wzVocabType === 'topic' ? 'block' : 'none';
+
+  // Clear fields
+  ['swWord','swUz','swType','swExample'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('swLevel').value = '';
+  ['swWordErr','swUzErr','swLevelErr'].forEach(id => document.getElementById(id).textContent = '');
+  document.getElementById('bulkText').value = '';
+  document.getElementById('bulkPreview').style.display = 'none';
+  document.getElementById('btnAddBulk').disabled = true;
+  setMode('single');
+
+  // Load existing words in this topic for duplicate detection
+  wzExistingTopicWords = [];
+  try {
+    let q;
+    if(wzVocabType === 'topic') {
+      const fsSnap = await db.collection('words').where('topic','==',wzTopic).get();
+      wzExistingTopicWords = fsSnap.docs.map(d => (d.data().word||'').toLowerCase().trim());
+      // Also include hardcoded words
+      ALL_WORDS.filter(w => w.topic === wzTopic).forEach(w => {
+        const lw = w.word.toLowerCase().trim();
+        if(!wzExistingTopicWords.includes(lw)) wzExistingTopicWords.push(lw);
+      });
+    } else {
+      const fsSnap = await db.collection('words').where('category','==',wzVocabType).where('type','==',wzTopic).get();
+      wzExistingTopicWords = fsSnap.docs.map(d => (d.data().word||'').toLowerCase().trim());
+    }
+  } catch(e) { /* no-op */ }
+}
+
+function setMode(mode) {
+  wzMode = mode;
+  document.getElementById('tabSingle').classList.toggle('active', mode==='single');
+  document.getElementById('tabBulk').classList.toggle('active', mode==='bulk');
+  document.getElementById('modeSingle').style.display = mode==='single' ? 'block' : 'none';
+  document.getElementById('modeBulk').style.display   = mode==='bulk'   ? 'block' : 'none';
+}
+
+// ── SINGLE WORD ADD ──
+async function addSingleWord() {
+  const word    = document.getElementById('swWord').value.trim();
+  const uz      = document.getElementById('swUz').value.trim();
+  const level   = document.getElementById('swLevel').value;
+  const type    = document.getElementById('swType').value.trim();
+  const example = document.getElementById('swExample').value.trim();
+
+  let ok = true;
+  if(!word) { document.getElementById('swWordErr').textContent = 'So\'zni kiriting'; ok=false; }
+  else document.getElementById('swWordErr').textContent = '';
+  if(!uz) { document.getElementById('swUzErr').textContent = 'Tarjimani kiriting'; ok=false; }
+  else document.getElementById('swUzErr').textContent = '';
+  if(wzVocabType==='topic' && !level) { document.getElementById('swLevelErr').textContent = 'Darajani tanlang'; ok=false; }
+  else document.getElementById('swLevelErr').textContent = '';
+  if(!ok) return;
+
+  // Duplicate check
+  if(wzExistingTopicWords.includes(word.toLowerCase())) {
+    document.getElementById('swWordErr').textContent = 'Bu so\'z ushbu mavzuda allaqachon mavjud.';
+    return;
+  }
+
+  const btn = document.getElementById('btnAddSingle');
+  btn.disabled = true; btn.textContent = 'Saqlanmoqda…';
+
+  try {
+    if(wzVocabType === 'topic') {
+      await addTopicWord({ word, uz, level, example, types: type });
+    } else {
+      await addCategoryWord({ word, uz, type: wzTopic, example });
+    }
+    wzExistingTopicWords.push(word.toLowerCase());
+    // Refresh word count in admin
+    await loadWords();
+    renderDashboard();
+    // Clear form
+    ['swWord','swUz','swType','swExample'].forEach(id => document.getElementById(id).value='');
+    document.getElementById('swLevel').value = '';
+    showToast('✅ "' + word + '" muvaffaqiyatli qo\'shildi!');
+  } catch(e) {
+    showToast('❌ Xatolik: ' + e.message);
+  }
+
+  btn.disabled = false; btn.textContent = 'Qo\'shish';
+  // Re-insert the + icon
+  btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;margin-right:4px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Qo\'shish';
+}
+
+// ── BULK PREVIEW ──
+function previewBulk() {
+  const raw = document.getElementById('bulkText').value;
+  const lines = raw.split('\n').filter(l => l.trim());
+  const previewEl = document.getElementById('bulkPreview');
+  const countEl   = document.getElementById('bulkPreviewCount');
+  const listEl    = document.getElementById('bulkPreviewList');
+  const addBtn    = document.getElementById('btnAddBulk');
+
+  if(!lines.length) { previewEl.style.display='none'; addBtn.disabled=true; return; }
+  previewEl.style.display='block';
+
+  let valid = 0, html = '', errors = 0;
+
+  lines.slice(0,100).forEach((line, i) => {
+    const trimmed = line.trim();
+    if(!trimmed) return;
+    const parts = trimmed.split('|');
+    if(parts.length < 2) {
+      html += `<div class="preview-error-row">• Qator ${i+1}: "${esc(trimmed)}" <span class="err-badge">Format xatosi</span></div>`;
+      errors++; return;
+    }
+    const w = parts[0].trim(); const uz = parts[1].trim();
+    if(!w || !uz) {
+      html += `<div class="preview-error-row">• Qator ${i+1}: bo'sh maydon <span class="err-badge">Xato</span></div>`;
+      errors++; return;
+    }
+    if(wzExistingTopicWords.includes(w.toLowerCase())) {
+      html += `<div class="preview-error-row">• "${esc(w)}" <span class="dup-badge">Allaqachon mavjud</span></div>`;
+      errors++; return;
+    }
+    valid++;
+    if(valid <= 5) html += `<div class="preview-ok-row">✓ ${esc(w)} — ${esc(uz)}</div>`;
+  });
+
+  if(valid > 5) html += `<div style="font-size:.78rem;color:var(--ink-soft);margin-top:4px">… va yana ${valid-5} ta so'z</div>`;
+  if(errors > 0 && valid < 1) html += `<div style="color:var(--red);font-size:.82rem;margin-top:6px">Hech qanday yaroqli so'z topilmadi.</div>`;
+
+  countEl.textContent = valid + ' ta so\'z qo\'shiladi';
+  if(errors > 0) countEl.textContent += ' (' + errors + ' ta xato/dublikat e\'tiborga olinmaydi)';
+  listEl.innerHTML = html;
+  addBtn.disabled = (valid === 0);
+}
+
+// ── BULK ADD ──
+async function addBulkWords() {
+  const raw   = document.getElementById('bulkText').value;
+  const level = document.getElementById('bulkLevel').value || 'B1';
+  const lines = raw.split('\n').filter(l => l.trim()).slice(0,100);
+  const btn   = document.getElementById('btnAddBulk');
+
+  // Parse valid words
+  const toAdd = [];
+  lines.forEach(line => {
+    const trimmed = line.trim();
+    if(!trimmed) return;
+    const parts = trimmed.split('|');
+    if(parts.length < 2) return;
+    const w = parts[0].trim(); const uz = parts[1].trim();
+    if(!w || !uz) return;
+    if(wzExistingTopicWords.includes(w.toLowerCase())) return;
+    toAdd.push({ word: w, uz: uz, example: (parts[2]||'').trim() });
+  });
+
+  if(!toAdd.length) { showToast('❌ Qo\'shiladigan so\'z yo\'q'); return; }
+
+  btn.disabled = true; btn.textContent = 'Qo\'shilmoqda…';
+
+  try {
+    // Write in batches of 500 (Firestore limit)
+    const BATCH_SIZE = 400;
+    for(let i = 0; i < toAdd.length; i += BATCH_SIZE) {
+      const batch = db.batch();
+      const slice = toAdd.slice(i, i+BATCH_SIZE);
+      for(let j = 0; j < slice.length; j++) {
+        const w = slice[j];
+        if(wzVocabType === 'topic') {
+          wzMaxNumericId++;
+          const ref = db.collection('words').doc(String(wzMaxNumericId));
+          batch.set(ref, {
+            id:         wzMaxNumericId,
+            word:       w.word,
+            uz:         w.uz,
+            topic:      wzTopic,
+            level:      level,
+            example:    w.example || '',
+            vocabType:  'topic',
+            addedByAdmin: true,
+            addedAt:    firebase.firestore.FieldValue.serverTimestamp()
+          });
+        } else {
+          // speaking/writing: auto-increment order
+          wzMaxNumericId++;
+          const ref = db.collection('words').doc();
+          batch.set(ref, {
+            word:       w.word,
+            uz:         w.uz,
+            type:       wzTopic,
+            category:   wzVocabType,
+            order:      wzMaxNumericId,
+            example:    w.example || '',
+            vocabType:  wzVocabType,
+            addedByAdmin: true,
+            addedAt:    firebase.firestore.FieldValue.serverTimestamp()
+          });
+        }
+        wzExistingTopicWords.push(w.word.toLowerCase());
+      }
+      await batch.commit();
+    }
+
+    showToast('✅ ' + toAdd.length + ' ta so\'z muvaffaqiyatli qo\'shildi!');
+    document.getElementById('bulkText').value = '';
+    document.getElementById('bulkPreview').style.display = 'none';
+    btn.disabled = true;
+    await loadWords();
+    renderDashboard();
+  } catch(e) {
+    showToast('❌ Xatolik: ' + e.message);
+    btn.disabled = false;
+  }
+
+  btn.textContent = 'Barchasini qo\'shish';
+}
+
+// ── Helpers: write a single word to Firestore ──
+async function addTopicWord({ word, uz, level, example, types }) {
+  // Get fresh max id
+  const snap = await db.collection('words').orderBy('id','desc').limit(1).get();
+  let maxId = wzMaxNumericId;
+  if(!snap.empty) maxId = Math.max(maxId, snap.docs[0].data().id||0);
+  maxId = Math.max(maxId, ...ALL_WORDS.map(w=>w.id||0));
+  const newId = maxId + 1;
+  wzMaxNumericId = newId;
+
+  await db.collection('words').doc(String(newId)).set({
+    id:           newId,
+    word:         word,
+    uz:           uz,
+    topic:        wzTopic,
+    level:        level || 'B1',
+    example:      example || '',
+    types:        types  || '',
+    vocabType:    'topic',
+    addedByAdmin: true,
+    addedAt:      firebase.firestore.FieldValue.serverTimestamp()
+  });
+  // Also update local ALL_WORDS so admin table reflects it instantly
+  ALL_WORDS.push({ _id: String(newId), id: newId, word, uz, topic: wzTopic, level, example, types });
+}
+
+async function addCategoryWord({ word, uz, type, example }) {
+  // Get max order for this category
+  const snap = await db.collection('words').where('category','==',wzVocabType).orderBy('order','desc').limit(1).get();
+  let maxOrder = wzMaxNumericId;
+  if(!snap.empty) maxOrder = Math.max(maxOrder, snap.docs[0].data().order||0);
+  const newOrder = maxOrder + 1;
+  wzMaxNumericId = newOrder;
+
+  const ref = db.collection('words').doc();
+  await ref.set({
+    word:         word,
+    uz:           uz,
+    type:         type || '',
+    category:     wzVocabType,
+    order:        newOrder,
+    example:      example || '',
+    vocabType:    wzVocabType,
+    addedByAdmin: true,
+    addedAt:      firebase.firestore.FieldValue.serverTimestamp()
+  });
 }
 
 // ══════════ LOCAL WORDS SEED ══════════
