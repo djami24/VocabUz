@@ -860,9 +860,11 @@ textarea.form-input {
       <div class="wizard-steps" id="wizardSteps">
         <div class="wstep active" id="wstep1" onclick="wizardStepClick(1)" style="cursor:pointer"><div class="wstep-num">1</div>Lug'at turi</div>
         <span class="wstep-sep">›</span>
-        <div class="wstep" id="wstep2" onclick="wizardStepClick(2)" style="cursor:pointer"><div class="wstep-num">2</div>Mavzu</div>
+        <div class="wstep" id="wstep2" onclick="wizardStepClick(2)" style="cursor:pointer"><div class="wstep-num">2</div>Daraja</div>
         <span class="wstep-sep">›</span>
-        <div class="wstep" id="wstep3" onclick="wizardStepClick(3)" style="cursor:pointer"><div class="wstep-num">3</div>So'z qo'shish</div>
+        <div class="wstep" id="wstep3" onclick="wizardStepClick(3)" style="cursor:pointer"><div class="wstep-num">3</div>Mavzu</div>
+        <span class="wstep-sep">›</span>
+        <div class="wstep" id="wstep4" onclick="wizardStepClick(4)" style="cursor:pointer"><div class="wstep-num">4</div>So'z qo'shish</div>
       </div>
 
       <!-- STEP 1: Vocabulary Type -->
@@ -889,14 +891,59 @@ textarea.form-input {
         </div>
       </div>
 
-      <!-- STEP 2: Topic selection -->
+      <!-- STEP 2: Daraja tanlash -->
       <div class="wizard-section" id="wsec2">
         <button class="back-link" onclick="goToStep(1)">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
           Orqaga
         </button>
         <div class="card" style="padding:24px">
+          <div class="card-title" style="margin-bottom:6px">Daraja tanlang</div>
+          <p style="font-size:.82rem;color:var(--ink-soft);margin-bottom:20px" id="levelStepSubtitle">So'zlar qaysi darajaga tegishli?</p>
+          <div class="type-grid" id="levelPickerGrid">
+            <div class="type-card" onclick="selectLevel('A1')" id="vlevelA1">
+              <div class="type-card-icon">🌱</div>
+              <div class="type-card-title">A1</div>
+              <div class="type-card-sub">Boshlang'ich daraja</div>
+            </div>
+            <div class="type-card" onclick="selectLevel('A2')" id="vlevelA2">
+              <div class="type-card-icon">🌿</div>
+              <div class="type-card-title">A2</div>
+              <div class="type-card-sub">Boshlang'ich-o'rta</div>
+            </div>
+            <div class="type-card" onclick="selectLevel('B1')" id="vlevelB1">
+              <div class="type-card-icon">⭐</div>
+              <div class="type-card-title">B1</div>
+              <div class="type-card-sub">O'rta daraja</div>
+            </div>
+            <div class="type-card" onclick="selectLevel('B2')" id="vlevelB2">
+              <div class="type-card-icon">⭐⭐</div>
+              <div class="type-card-title">B2</div>
+              <div class="type-card-sub">O'rta-yuqori daraja</div>
+            </div>
+            <div class="type-card" onclick="selectLevel('C1')" id="vlevelC1">
+              <div class="type-card-icon">🏆</div>
+              <div class="type-card-title">C1</div>
+              <div class="type-card-sub">Ilg'or daraja</div>
+            </div>
+            <div class="type-card" onclick="selectLevel('C2')" id="vlevelC2">
+              <div class="type-card-icon">🎓</div>
+              <div class="type-card-title">C2</div>
+              <div class="type-card-sub">Mukammal daraja</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3: Topic selection -->
+      <div class="wizard-section" id="wsec3">
+        <button class="back-link" onclick="goToStep(2)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Orqaga
+        </button>
+        <div class="card" style="padding:24px">
           <div class="card-title" style="margin-bottom:6px">Mavzu tanlang</div>
+          <div id="topicLevelBadge" style="display:inline-flex;align-items:center;gap:6px;margin-bottom:12px;padding:4px 12px;background:var(--blue-soft);color:var(--blue);border-radius:8px;font-size:.82rem;font-weight:700"></div>
           <p style="font-size:.82rem;color:var(--ink-soft);margin-bottom:18px" id="topicSubtitle">Topic Vocabulary uchun mavzu</p>
 
           <div id="topicPickerList" class="topic-picker">
@@ -940,9 +987,9 @@ textarea.form-input {
         </div>
       </div>
 
-      <!-- STEP 3: Add words -->
-      <div class="wizard-section" id="wsec3">
-        <button class="back-link" onclick="goToStep(2)">
+      <!-- STEP 4: Add words -->
+      <div class="wizard-section" id="wsec4">
+        <button class="back-link" onclick="goToStep(3)">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
           Orqaga
         </button>
@@ -1788,6 +1835,7 @@ function formatTime(ts) {
 
 // ── Wizard state ──
 let wzVocabType   = '';   // 'topic' | 'speaking' | 'writing'
+let wzLevel       = '';   // 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2'
 let wzTopic       = '';   // selected topic name or id
 let wzTopicIsNew  = false;
 let wzStep        = 1;
@@ -1798,35 +1846,48 @@ let wzMaxNumericId = 0;        // max numeric id in /words for topic words
 // ── Step navigation ──
 function goToStep(n) {
   // hide all sections
-  [1,2,3].forEach(i => {
-    document.getElementById('wsec'+i).classList.toggle('active', i===n);
+  [1,2,3,4].forEach(i => {
+    const sec = document.getElementById('wsec'+i);
+    if(sec) sec.classList.toggle('active', i===n);
     const el = document.getElementById('wstep'+i);
-    el.classList.remove('active','done');
-    if(i < n) el.classList.add('done');
-    else if(i === n) el.classList.add('active');
+    if(el) {
+      el.classList.remove('active','done');
+      if(i < n) el.classList.add('done');
+      else if(i === n) el.classList.add('active');
+    }
   });
   wzStep = n;
-  if(n === 1) { wzVocabType=''; wzTopic=''; wzTopicIsNew=false; clearTypeCards(); }
-  if(n === 2) { loadTopicsForPicker(); }
-  if(n === 3) { setupStep3(); }
+  if(n === 1) { wzVocabType=''; wzLevel=''; wzTopic=''; wzTopicIsNew=false; clearTypeCards(); clearLevelCards(); }
+  if(n === 2) { setupLevelStep(); }
+  if(n === 3) { loadTopicsForPicker(); }
+  if(n === 4) { setupStep4(); }
 }
 
 // ── Wizard step click (breadcrumb navigation) ──
 function wizardStepClick(n) {
   // Faqat "done" (o'tilgan) bosqichlarga qaytish mumkin
   const el = document.getElementById('wstep' + n);
-  if (el.classList.contains('done') || el.classList.contains('active')) {
+  if (el && (el.classList.contains('done') || el.classList.contains('active'))) {
     // 1-bosqichga har doim qaytish mumkin
     if (n === 1) { goToStep(1); return; }
     // 2-bosqichga faqat vocabType tanlangan bo'lsa o'tish mumkin
     if (n === 2 && wzVocabType) { goToStep(2); return; }
-    // 3-bosqichga faqat mavzu ham tanlangan bo'lsa o'tish mumkin
-    if (n === 3 && wzVocabType && wzTopic) { goToStep(3); return; }
+    // 3-bosqichga daraja ham tanlangan bo'lsa o'tish mumkin
+    if (n === 3 && wzVocabType && wzLevel) { goToStep(3); return; }
+    // 4-bosqichga mavzu ham tanlangan bo'lsa o'tish mumkin
+    if (n === 4 && wzVocabType && wzLevel && wzTopic) { goToStep(4); return; }
   }
 }
 
 function clearTypeCards(){
   ['vtopic','vspeaking','vwriting'].forEach(id => document.getElementById(id).classList.remove('selected'));
+}
+
+function clearLevelCards(){
+  ['A1','A2','B1','B2','C1','C2'].forEach(l => {
+    const el = document.getElementById('vlevel'+l);
+    if(el) el.classList.remove('selected');
+  });
 }
 
 // ── STEP 1: Vocab type selection ──
@@ -1838,10 +1899,39 @@ function selectVocabType(type) {
   setTimeout(() => goToStep(2), 200);
 }
 
-// ── STEP 2: Topic picker ──
+// ── STEP 2: Level selection ──
+function setupLevelStep() {
+  // For speaking/writing: level not strictly required but still useful
+  const subtitle = document.getElementById('levelStepSubtitle');
+  const typeLabels = { topic:'Topic Vocabulary', speaking:'Speaking Vocabulary', writing:'Writing Vocabulary' };
+  subtitle.textContent = typeLabels[wzVocabType] + ' — so\'z darajasini tanlang';
+  clearLevelCards();
+}
+
+function selectLevel(level) {
+  wzLevel = level;
+  clearLevelCards();
+  document.getElementById('vlevel'+level).classList.add('selected');
+  setTimeout(() => goToStep(3), 200);
+}
+
+// ── STEP 3: Topic picker ──
 async function loadTopicsForPicker() {
   const listEl = document.getElementById('topicPickerList');
   const subtitle = document.getElementById('topicSubtitle');
+
+  // Show selected level badge
+  const badge = document.getElementById('topicLevelBadge');
+  if(badge && wzLevel) {
+    badge.style.display = 'inline-flex';
+    badge.textContent = '📊 Daraja: ' + wzLevel;
+  } else if(badge) {
+    badge.style.display = 'none';
+  }
+
+  // Pre-fill level in new topic form
+  const newTopicLevelEl = document.getElementById('newTopicLevel');
+  if(newTopicLevelEl && wzLevel) newTopicLevelEl.value = wzLevel;
 
   const typeLabels = { topic:'Topic Vocabulary', speaking:'Speaking Vocabulary', writing:'Writing Vocabulary' };
   subtitle.textContent = typeLabels[wzVocabType] + ' uchun mavzu';
@@ -1986,7 +2076,7 @@ function selectTopic(topicName, isNew) {
   document.querySelectorAll('.topic-option').forEach(el => {
     el.classList.toggle('selected', el.textContent.trim() === topicName);
   });
-  setTimeout(() => goToStep(3), 180);
+  setTimeout(() => goToStep(4), 180);
 }
 
 function showNewTopicForm() {
@@ -2011,11 +2101,11 @@ function confirmNewTopic() {
 }
 
 // ── STEP 3 setup ──
-async function setupStep3() {
+async function setupStep4() {
   const typeLabels = { topic:'Topic Vocabulary', speaking:'Speaking Vocabulary', writing:'Writing Vocabulary' };
   document.getElementById('step3Title').textContent = 'So\'z qo\'shish';
-  document.getElementById('step3Badge').textContent = wzVocabType==='topic' ? wzTopic : typeLabels[wzVocabType] + (wzTopic ? ' › ' + wzTopic : '');
-  document.getElementById('step3Sub').textContent = (wzTopicIsNew ? '🆕 Yangi mavzu: ' : 'Mavzu: ') + wzTopic;
+  document.getElementById('step3Badge').textContent = (wzLevel ? wzLevel + ' · ' : '') + (wzVocabType==='topic' ? wzTopic : typeLabels[wzVocabType] + (wzTopic ? ' › ' + wzTopic : ''));
+  document.getElementById('step3Sub').textContent = (wzTopicIsNew ? '🆕 Yangi mavzu: ' : 'Mavzu: ') + wzTopic + (wzLevel ? ' · Daraja: ' + wzLevel : '');
 
   // Show/hide level for speaking/writing single word
   document.getElementById('singleLevelRow').style.display = wzVocabType === 'topic' ? 'grid' : 'none';
@@ -2023,7 +2113,9 @@ async function setupStep3() {
 
   // Clear fields
   ['swWord','swUz','swType','swExample'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('swLevel').value = '';
+  // Pre-fill level from wizard step 2
+  document.getElementById('swLevel').value = wzLevel || '';
+  document.getElementById('bulkLevel').value = wzLevel || 'B1';
   ['swWordErr','swUzErr','swLevelErr'].forEach(id => document.getElementById(id).textContent = '');
   document.getElementById('bulkText').value = '';
   document.getElementById('bulkPreview').style.display = 'none';
