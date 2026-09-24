@@ -574,7 +574,7 @@ function saveToFirestore(){
 function updateMenuSub(){
   var sub = document.getElementById('tvMenuSub');
   if(!sub) return;
-  var total = TV_WORDS.filter(function(w){ return w.vocabType==='topic'; }).length;
+  var total = TV_WORDS.length; // All loaded words are topic words (filtered on load)
   if(total > 0){
     sub.textContent = tvLearned.length + '/' + total + " so'z o'rganildi";
   }
@@ -629,17 +629,38 @@ function loadTVWords(){
   document.getElementById('tvBadge').textContent = '';
   document.getElementById('tvBody').innerHTML = '<div class="tv-spinner-wrap"><div class="tv-spinner"></div></div>';
 
-  db.collection('words').where('vocabType','==','topic').get().then(function(snap){
+  // ✅ FIX: Load BOTH words with vocabType='topic' AND legacy words that have a 'topic' field
+  // This ensures admin-added words AND old seeded words all appear in student profile
+  var p1 = db.collection('words').where('vocabType','==','topic').get();
+  var p2 = db.collection('words').where('topic','>','').get(); // words with any topic value
+
+  Promise.all([p1, p2]).then(function(results){
     TV_WORDS = [];
     TOPIC_COLOR_MAP = {};
     var colorIdx = 0;
+    var seenIds = new Set();
 
-    var sorted = snap.docs.slice().sort(function(a,b){
+    // Merge both result sets, deduplicate by doc id
+    var allDocs = [];
+    results.forEach(function(snap){
+      snap.docs.forEach(function(d){
+        if(!seenIds.has(d.id)){
+          seenIds.add(d.id);
+          allDocs.push(d);
+        }
+      });
+    });
+
+    // Sort by numeric id
+    allDocs.sort(function(a,b){
       return (Number(a.data().id)||0) - (Number(b.data().id)||0);
     });
 
-    sorted.forEach(function(d){
-      var w = Object.assign({ _docId: d.id }, d.data());
+    allDocs.forEach(function(d){
+      var data = d.data();
+      // Only include if it has a topic field (skip speaking/writing words)
+      if(!data.topic) return;
+      var w = Object.assign({ _docId: d.id, vocabType: data.vocabType || 'topic' }, data);
       TV_WORDS.push(w);
       if(w.topic && !TOPIC_COLOR_MAP[w.topic]){
         TOPIC_COLOR_MAP[w.topic] = TOPIC_COLORS[colorIdx % TOPIC_COLORS.length];
