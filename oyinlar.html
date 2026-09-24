@@ -1014,12 +1014,26 @@ firebase.auth().onAuthStateChanged(function(user) {
   currentUser = user;
   // load localStorage first
   learnedIds = JSON.parse(localStorage.getItem('vz_learned') || '[]').map(Number);
-  // then Firestore
-  db.collection('users').doc(user.uid).get().then(function(doc) {
-    if (doc.exists && doc.data().learned) {
-      learnedIds = doc.data().learned.map(Number);
+  // Load user data AND admin-added Firestore topic words in parallel
+  Promise.all([
+    db.collection('users').doc(user.uid).get(),
+    db.collection('words').where('vocabType','==','topic').get()
+  ]).then(function(results) {
+    var userDoc   = results[0];
+    var wordsSnap = results[1];
+    if (userDoc.exists && userDoc.data().learned) {
+      learnedIds = userDoc.data().learned.map(Number);
       localStorage.setItem('vz_learned', JSON.stringify(learnedIds));
     }
+    // Merge Firestore-added topic words into ALL_WORDS
+    var existingIds = new Set(ALL_WORDS.map(function(w){ return w.id; }));
+    wordsSnap.docs.forEach(function(d) {
+      var w = d.data();
+      if (w.id && !existingIds.has(w.id)) {
+        ALL_WORDS.push(w);
+        existingIds.add(w.id);
+      }
+    });
     renderDashboard();
   }).catch(function() { renderDashboard(); });
 });
