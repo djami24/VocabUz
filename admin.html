@@ -1954,7 +1954,7 @@ async function loadTopicsForPicker() {
     return;
   }
 
-  // For topic vocabulary: use topic names from existing words
+  // For topic vocabulary: use topic names from existing words — filtered by selected level
   listEl.innerHTML = '<div class="loading"><div class="spinner"></div>Yuklanmoqda…</div>';
   try {
     // Get max numeric id
@@ -1962,17 +1962,27 @@ async function loadTopicsForPicker() {
     if(!snap.empty) wzMaxNumericId = snap.docs[0].data().id || 0;
     else wzMaxNumericId = Math.max(...ALL_WORDS.map(w => w.id||0), 0);
 
-    // Existing topics from Firestore + hardcoded
-    const fsSnap = await db.collection('words').get();
+    // ✅ FIX: Filter topics by selected level so only this level's topics appear
+    let fsQuery = db.collection('words');
+    if (wzLevel) {
+      fsQuery = fsQuery.where('level', '==', wzLevel);
+    }
+    const fsSnap = await fsQuery.get();
     const fsTopics = [...new Set(fsSnap.docs.map(d => d.data().topic).filter(Boolean))];
-    const hwTopics = [...new Set(ALL_WORDS.map(w => w.topic).filter(Boolean))];
+
+    // ✅ FIX: Also filter hardcoded words by level
+    const hwTopics = [...new Set(
+      ALL_WORDS.filter(w => !wzLevel || w.level === wzLevel).map(w => w.topic).filter(Boolean)
+    )];
     const allTopics = [...new Set([...hwTopics, ...fsTopics])].sort();
 
     renderTopicPicker(allTopics, 'Mavzu nomi', false);
   } catch(e) {
-    // Fallback to hardcoded
+    // Fallback to hardcoded (level-filtered)
     wzMaxNumericId = Math.max(...ALL_WORDS.map(w => w.id||0), 0);
-    const allTopics = [...new Set(ALL_WORDS.map(w => w.topic).filter(Boolean))].sort();
+    const allTopics = [...new Set(
+      ALL_WORDS.filter(w => !wzLevel || w.level === wzLevel).map(w => w.topic).filter(Boolean)
+    )].sort();
     renderTopicPicker(allTopics, 'Mavzu nomi', false);
   }
 }
@@ -2127,10 +2137,13 @@ async function setupStep4() {
   try {
     let q;
     if(wzVocabType === 'topic') {
-      const fsSnap = await db.collection('words').where('topic','==',wzTopic).get();
+      // ✅ FIX: Filter duplicate check by BOTH topic AND level
+      let dupQuery = db.collection('words').where('topic','==',wzTopic);
+      if (wzLevel) dupQuery = dupQuery.where('level','==',wzLevel);
+      const fsSnap = await dupQuery.get();
       wzExistingTopicWords = fsSnap.docs.map(d => (d.data().word||'').toLowerCase().trim());
-      // Also include hardcoded words
-      ALL_WORDS.filter(w => w.topic === wzTopic).forEach(w => {
+      // Also include hardcoded words (filtered by level)
+      ALL_WORDS.filter(w => w.topic === wzTopic && (!wzLevel || w.level === wzLevel)).forEach(w => {
         const lw = w.word.toLowerCase().trim();
         if(!wzExistingTopicWords.includes(lw)) wzExistingTopicWords.push(lw);
       });
@@ -2153,7 +2166,8 @@ function setMode(mode) {
 async function addSingleWord() {
   const word    = document.getElementById('swWord').value.trim();
   const uz      = document.getElementById('swUz').value.trim();
-  const level   = document.getElementById('swLevel').value;
+  // ✅ FIX: Use wizard-selected level (wzLevel) as the authoritative level
+  const level   = wzLevel || document.getElementById('swLevel').value;
   const type    = document.getElementById('swType').value.trim();
   const example = document.getElementById('swExample').value.trim();
 
@@ -2245,7 +2259,8 @@ function previewBulk() {
 // ── BULK ADD ──
 async function addBulkWords() {
   const raw   = document.getElementById('bulkText').value;
-  const level = document.getElementById('bulkLevel').value || 'B1';
+  // ✅ FIX: Use wizard-selected level (wzLevel) as primary, fallback to bulkLevel input
+  const level = wzLevel || document.getElementById('bulkLevel').value || 'B1';
   const lines = raw.split('\n').filter(l => l.trim()).slice(0,100);
   const btn   = document.getElementById('btnAddBulk');
 
