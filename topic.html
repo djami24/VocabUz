@@ -509,13 +509,33 @@ firebase.auth().onAuthStateChanged(function(user){
   if(!user){ location.href='login.html'; return; }
   currentUser = user;
   loadLocalState();
-  db.collection('users').doc(user.uid).get().then(function(doc){
-    if(doc.exists){
-      if(doc.data().learned)    learnedIds   = doc.data().learned.map(Number);
-      if(doc.data().passed)     passedTopics = doc.data().passed;
-      if(doc.data().bookmarks)  bookmarks    = doc.data().bookmarks;
-      if(doc.data().likes)      likes        = doc.data().likes;
+  // Load both user data AND any admin-added Firestore topic words in parallel
+  Promise.all([
+    db.collection('users').doc(user.uid).get(),
+    db.collection('words').where('vocabType','==','topic').get()
+  ]).then(function(results){
+    var userDoc  = results[0];
+    var wordsSnap = results[1];
+    if(userDoc.exists){
+      if(userDoc.data().learned)    learnedIds   = userDoc.data().learned.map(Number);
+      if(userDoc.data().passed)     passedTopics = userDoc.data().passed;
+      if(userDoc.data().bookmarks)  bookmarks    = userDoc.data().bookmarks;
+      if(userDoc.data().likes)      likes        = userDoc.data().likes;
     }
+    // Merge Firestore words with hardcoded ALL_WORDS (avoiding duplicates by id)
+    var existingIds = new Set(ALL_WORDS.map(function(w){ return w.id; }));
+    wordsSnap.docs.forEach(function(d){
+      var w = d.data();
+      if(w.id && !existingIds.has(w.id)){
+        ALL_WORDS.push(w);
+        existingIds.add(w.id);
+      }
+      // If the topic doesn't exist yet in TOPIC_ORDER, add it dynamically
+      if(w.topic && TOPIC_ORDER.indexOf(w.topic) === -1){
+        TOPIC_ORDER.push(w.topic);
+        if(!TOPIC_COLOR[w.topic]) TOPIC_COLOR[w.topic] = '#E3F2FD';
+      }
+    });
     saveState();
     renderTopics();
   }).catch(function(){
