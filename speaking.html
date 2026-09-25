@@ -410,6 +410,7 @@ function renderWords() {
   var wordsHtml = words.map(function(w, i) {
     var isLearned = svLearned.includes(w._docId);
     var safe = w._docId.replace(/'/g, "\\'");
+    var wNumId = Number(w.id) || 0;
     return (
       '<div class="sv-word-card' + (isLearned ? ' learned' : '') + '" id="svcard-' + w._docId + '">' +
         '<div class="sv-word-head">' +
