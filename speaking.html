@@ -237,6 +237,17 @@ function svSaveFirestore() {
   });
 }
 
+function svLogActivityToday(delta) {
+  if (!currentUser || delta === 0) return;
+  var d = new Date();
+  var key = 'activityLog.' + d.getFullYear() + '-' +
+    (d.getMonth()+1).toString().padStart(2,'0') + '-' +
+    d.getDate().toString().padStart(2,'0');
+  var upd = {};
+  upd[key] = firebase.firestore.FieldValue.increment(delta);
+  db.collection('users').doc(currentUser.uid).set(upd, {merge:true}).catch(function(){});
+}
+
 // ═══ AUTH ═══
 firebase.auth().onAuthStateChanged(function(user) {
   if (!user) { location.href = 'login.html'; return; }
@@ -458,9 +469,11 @@ function svMarkLearned(docId) {
   if (idx === -1) {
     svLearned.push(docId);
     svShowToast("O'rgandim! So'z saqlandi!");
+    svLogActivityToday(1);
   } else {
     svLearned.splice(idx, 1);
     svShowToast("O'rganilganlardan olib tashlandi");
+    svLogActivityToday(-1);
   }
   svSaveLocal();
   svSaveFirestore();
