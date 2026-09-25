@@ -136,7 +136,7 @@
           <div style="font-size:.78rem;opacity:.7;color:#fff;margin-top:5px;">Flashcard · Statistika · Streak</div>
         </div>
         <div style="margin-top:14px;">
-          <button onclick="location.href='flashcards.html'" style="background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.35);color:#fff;font-size:.82rem;font-weight:700;padding:8px 18px;border-radius:99px;cursor:pointer;-webkit-tap-highlight-color:transparent;">Flashcard →</button>
+          <button onclick="location.href='oyinlar.html'" style="background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.35);color:#fff;font-size:.82rem;font-weight:700;padding:8px 18px;border-radius:99px;cursor:pointer;-webkit-tap-highlight-color:transparent;">O'yinlar →</button>
         </div>
       </div>
 
@@ -240,14 +240,17 @@ document.addEventListener('DOMContentLoaded', function () {
   // ═══ O'RGANILGAN SO'ZLAR SONI (Ko'k kartochka) ═══
   function updateLearnedCount() {
     var GOAL = 1000;
-    // Barcha learned so'zlarni yig'amiz (takrorsiz)
+    // vz_learned va tv_learned — numeric id lar (topic + mywords + flashcards)
     var vzLearned = JSON.parse(localStorage.getItem('vz_learned') || '[]').map(Number);
-    var svLearned = JSON.parse(localStorage.getItem('sv_learned') || '[]').map(Number);
     var tvLearned = JSON.parse(localStorage.getItem('tv_learned') || '[]').map(Number);
+    // sv_learned — speaking so'zlari (Firestore docId string lar, alohida namespace)
+    var svLearned = JSON.parse(localStorage.getItem('sv_learned') || '[]');
 
-    // Unikal so'zlar (id bo'yicha birlashtirish)
-    var allSet = new Set([].concat(vzLearned, svLearned, tvLearned));
-    var total = allSet.size;
+    // Numeric so'zlarni unikal birlashtirish
+    var numSet = new Set([].concat(vzLearned, tvLearned));
+    // Speaking so'zlari alohida (boshqa namespace)
+    var svSet = new Set(svLearned);
+    var total = numSet.size + svSet.size;
 
     var pct = Math.min(Math.round((total / GOAL) * 100), 100);
 
