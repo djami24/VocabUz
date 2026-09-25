@@ -220,18 +220,18 @@ var TYPE_EMOJIS = ['🗣️','💬','🎯','📢','🧠','✨','🔥','💡','�
 // ═══ PERSIST ═══
 function svLoadLocal() {
   svLearned   = JSON.parse(localStorage.getItem('sv_learned')    || '[]');
-  svBookmarks = JSON.parse(localStorage.getItem('vz_bookmarks')  || '[]').map(Number);
-  svLikes     = JSON.parse(localStorage.getItem('vz_likes')      || '[]').map(Number);
+  svBookmarks = JSON.parse(localStorage.getItem('sv_bookmarks')  || '[]');
+  svLikes     = JSON.parse(localStorage.getItem('sv_likes')      || '[]');
 }
 function svSaveLocal() {
   localStorage.setItem('sv_learned',   JSON.stringify(svLearned));
-  localStorage.setItem('vz_bookmarks', JSON.stringify(svBookmarks));
-  localStorage.setItem('vz_likes',     JSON.stringify(svLikes));
+  localStorage.setItem('sv_bookmarks', JSON.stringify(svBookmarks));
+  localStorage.setItem('sv_likes',     JSON.stringify(svLikes));
 }
 function svSaveFirestore() {
   if (!currentUser) return;
   var ref = db.collection('users').doc(currentUser.uid);
-  var data = { svLearned: svLearned, bookmarks: svBookmarks, likes: svLikes };
+  var data = { svLearned: svLearned, svBookmarks: svBookmarks, svLikes: svLikes };
   ref.update(data).catch(function() {
     ref.set(data, { merge: true });
   });
@@ -255,8 +255,8 @@ firebase.auth().onAuthStateChanged(function(user) {
     if (userDoc.exists) {
       var ud = userDoc.data();
       (ud.svLearned   || []).forEach(function(id) { if (!svLearned.includes(id))   svLearned.push(id); });
-      svBookmarks = (ud.bookmarks || []).map(Number);
-      svLikes     = (ud.likes     || []).map(Number);
+      svBookmarks = (ud.svBookmarks || ud.bookmarks || []);
+      svLikes     = (ud.svLikes     || ud.likes     || []);
       svSaveLocal();
     }
 
@@ -427,11 +427,11 @@ function renderWords() {
               ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> O\'rgandim'
               : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> O\'rgandim') +
           '</button>' +
-          '<button class="sv-btn-icon' + (svBookmarks.includes(wNumId) ? ' bookmarked' : '') + '" id="svbm-' + w._docId + '" onclick="svToggleBookmark(' + wNumId + ')" title="Bookmark">' +
-            '<svg width="15" height="15" viewBox="0 0 24 24" fill="' + (svBookmarks.includes(wNumId) ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>' +
+          '<button class="sv-btn-icon' + (svBookmarks.includes(w._docId) ? ' bookmarked' : '') + '" id="svbm-' + w._docId + '" onclick="svToggleBookmark(\'' + safe + '\')" title="Bookmark">' +
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="' + (svBookmarks.includes(w._docId) ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>' +
           '</button>' +
-          '<button class="sv-btn-icon' + (svLikes.includes(wNumId) ? ' liked' : '') + '" id="svlk-' + w._docId + '" onclick="svToggleLike(' + wNumId + ')" title="Yoqtirish">' +
-            '<svg width="15" height="15" viewBox="0 0 24 24" fill="' + (svLikes.includes(wNumId) ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>' +
+          '<button class="sv-btn-icon' + (svLikes.includes(w._docId) ? ' liked' : '') + '" id="svlk-' + w._docId + '" onclick="svToggleLike(\'' + safe + '\')" title="Yoqtirish">' +
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="' + (svLikes.includes(w._docId) ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>' +
           '</button>' +
           '<button class="sv-btn-icon" onclick="svSpeak(\'' + esc(w.word || '') + '\')" title="Talaffuz">' +
             '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>' +
@@ -462,35 +462,33 @@ function svMarkLearned(docId) {
 }
 
 
-function svToggleBookmark(numId) {
-  numId = Number(numId);
-  var idx = svBookmarks.indexOf(numId);
+function svToggleBookmark(docId) {
+  var idx = svBookmarks.indexOf(docId);
   if (idx === -1) {
-    svBookmarks.push(numId);
-    svShowToast("Yodlash ro'yxatiga qo'shildi!");
+    svBookmarks.push(docId);
+    svSaveLocal();
+    svSaveFirestore();
+    svShowToast("Yodlash ro'yxatiga qo'shildi! So'zlarim sahifasiga o'tilmoqda...");
+    setTimeout(function(){ location.href = 'mywords.html'; }, 1200);
+    return;
   } else {
     svBookmarks.splice(idx, 1);
     svShowToast("Yodlashdan olib tashlandi");
   }
   svSaveLocal();
   svSaveFirestore();
-  // update button UI
-  var w = SV_WORDS.find(function(x){ return Number(x.id) === numId; });
-  if (w) {
-    var btn = document.getElementById('svbm-' + w._docId);
-    if (btn) {
-      var a = svBookmarks.includes(numId);
-      btn.className = 'sv-btn-icon' + (a ? ' bookmarked' : '');
-      btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="' + (a ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
-    }
+  var btn = document.getElementById('svbm-' + docId);
+  if (btn) {
+    var a = svBookmarks.includes(docId);
+    btn.className = 'sv-btn-icon' + (a ? ' bookmarked' : '');
+    btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="' + (a ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
   }
 }
 
-function svToggleLike(numId) {
-  numId = Number(numId);
-  var idx = svLikes.indexOf(numId);
+function svToggleLike(docId) {
+  var idx = svLikes.indexOf(docId);
   if (idx === -1) {
-    svLikes.push(numId);
+    svLikes.push(docId);
     svShowToast("Yoqtirganlarga qo'shildi!");
   } else {
     svLikes.splice(idx, 1);
@@ -498,14 +496,11 @@ function svToggleLike(numId) {
   }
   svSaveLocal();
   svSaveFirestore();
-  var w = SV_WORDS.find(function(x){ return Number(x.id) === numId; });
-  if (w) {
-    var btn = document.getElementById('svlk-' + w._docId);
-    if (btn) {
-      var a = svLikes.includes(numId);
-      btn.className = 'sv-btn-icon' + (a ? ' liked' : '');
-      btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="' + (a ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
-    }
+  var btn = document.getElementById('svlk-' + docId);
+  if (btn) {
+    var a = svLikes.includes(docId);
+    btn.className = 'sv-btn-icon' + (a ? ' liked' : '');
+    btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="' + (a ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
   }
 }
 
