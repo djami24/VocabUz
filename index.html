@@ -60,6 +60,71 @@
   transition: background .15s;
 }
 .notif-btn:active { background: var(--sky-mid); }
+
+/* ── MINI TOP LEARNERS ── */
+.home-top-learners-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  padding: 14px 14px 12px !important;
+  min-height: 120px;
+}
+.mini-leader-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 3px 0;
+}
+.mini-medal {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .6rem; font-weight: 900; color: #fff;
+  flex-shrink: 0;
+}
+.mini-medal-1 { background: linear-gradient(135deg,#F59E0B,#FBBF24); }
+.mini-medal-2 { background: linear-gradient(135deg,#64748B,#94A3B8); }
+.mini-medal-3 { background: linear-gradient(135deg,#B45309,#D97706); }
+.mini-avatar {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .62rem; font-weight: 800; color: #fff;
+  flex-shrink: 0;
+}
+.mini-name {
+  flex: 1;
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mini-count {
+  font-size: .68rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+  flex-shrink: 0;
+}
+.mini-loading {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  font-size: .72rem;
+  color: var(--ink-soft);
+  padding: 4px 0;
+}
+.mini-skeleton {
+  height: 10px;
+  border-radius: 99px;
+  background: linear-gradient(90deg,#e8eff8 25%,#f5f8ff 50%,#e8eff8 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 </style>
 </head>
 <body>
@@ -164,12 +229,16 @@
       </div>
     </div>
 
-    <div class="home-card" onclick="location.href='top-learners.html'">
-      <div class="home-card-title">Top Learners</div>
-      <div class="home-card-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/>
-        </svg>
+    <div class="home-card home-top-learners-card" onclick="location.href='top-learners.html'" style="cursor:pointer;">
+      <div class="home-card-title" style="display:flex;align-items:center;gap:5px;">
+        🏆 Top Learners
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <div id="miniLeaderboard" style="margin-top:8px;width:100%;display:flex;flex-direction:column;gap:5px;">
+        <!-- skeleton loading -->
+        <div class="mini-leader-row"><div class="mini-medal mini-medal-1">1</div><div class="mini-skeleton" style="flex:1;height:10px;"></div></div>
+        <div class="mini-leader-row"><div class="mini-medal mini-medal-2">2</div><div class="mini-skeleton" style="flex:1;height:10px;"></div></div>
+        <div class="mini-leader-row"><div class="mini-medal mini-medal-3">3</div><div class="mini-skeleton" style="flex:1;height:10px;"></div></div>
       </div>
     </div>
 
@@ -268,7 +337,67 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   updateLearnedCount();
+
+  // ═══ MINI TOP LEARNERS ═══
+  loadMiniLeaderboard();
 });
+
+function loadMiniLeaderboard() {
+  db.collection('users').get().then(function(snap) {
+    var users = [];
+    snap.forEach(function(doc) {
+      var data = doc.data();
+      var vzSet = new Set((data.learned   || []).map(Number));
+      var tvSet = new Set((data.tvLearned || []).map(Number));
+      tvSet.forEach(function(id){ vzSet.add(id); });
+      var total = vzSet.size + (data.svLearned || []).length;
+      var name = data.name || data.email || 'Foydalanuvchi';
+      users.push({ name: name, total: total });
+    });
+    users.sort(function(a,b){ return b.total - a.total; });
+    var top3 = users.slice(0, 3);
+    renderMiniLeaderboard(top3);
+  }).catch(function(){ /* sessiz xato — skeleton qoladi */ });
+}
+
+function renderMiniLeaderboard(top3) {
+  var medalColors = [
+    { bg:'linear-gradient(135deg,#F59E0B,#FBBF24)', cls:'mini-medal-1', avBg:'linear-gradient(135deg,#F59E0B,#D97706)' },
+    { bg:'linear-gradient(135deg,#64748B,#94A3B8)', cls:'mini-medal-2', avBg:'linear-gradient(135deg,#64748B,#475569)' },
+    { bg:'linear-gradient(135deg,#B45309,#D97706)', cls:'mini-medal-3', avBg:'linear-gradient(135deg,#B45309,#92400E)' },
+  ];
+  var medals = ['🥇','🥈','🥉'];
+  var html = '';
+  if (top3.length === 0) {
+    html = '<div style="font-size:.72rem;color:var(--ink-soft);padding:4px 0;">Hali o\'quvchi yo\'q</div>';
+  } else {
+    top3.forEach(function(u, i) {
+      var m = medalColors[i];
+      var initials = getInitialsMini(u.name);
+      html += '<div class="mini-leader-row">' +
+        '<div class="mini-medal ' + m.cls + '">' + medals[i] + '</div>' +
+        '<div class="mini-avatar" style="background:' + m.avBg + '">' + initials + '</div>' +
+        '<div class="mini-name">' + escHtmlMini(shortNameMini(u.name)) + '</div>' +
+        '<div class="mini-count">' + u.total + ' 📚</div>' +
+        '</div>';
+    });
+  }
+  document.getElementById('miniLeaderboard').innerHTML = html;
+}
+
+function getInitialsMini(name) {
+  if (!name) return '?';
+  var p = name.trim().split(/\s+/);
+  return p.length >= 2 ? (p[0][0] + p[1][0]).toUpperCase() : name[0].toUpperCase();
+}
+function shortNameMini(name) {
+  if (!name) return '?';
+  var p = name.trim().split(/\s+/);
+  return p.length >= 2 ? p[0] + ' ' + p[1][0] + '.' : p[0];
+}
+function escHtmlMini(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
 
 // ═══ BANNER CAROUSEL ═══
 (function(){
