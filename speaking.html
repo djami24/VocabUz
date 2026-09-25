@@ -110,6 +110,8 @@ body { background: #F0FFF4; }
   -webkit-tap-highlight-color:transparent; flex-shrink:0;
 }
 .sv-btn-icon.speak-active { background:#DCFCE7; color:#16A34A; }
+.sv-btn-icon.bookmarked { background:#EFF6FF; color:#2196F3; }
+.sv-btn-icon.liked { background:#FEE2E2; color:#EF4444; }
 
 /* Progress banner */
 .sv-progress-box {
@@ -208,6 +210,8 @@ body { background: #F0FFF4; }
 var currentUser = null;
 var SV_WORDS    = [];        // all speaking words
 var svLearned   = [];        // doc ids (strings) of learned words
+var svBookmarks = [];        // doc ids of bookmarked words
+var svLikes     = [];        // doc ids of liked words
 var svView      = 'types';   // 'types' | 'words'
 var svCurrentType = null;
 
@@ -215,16 +219,21 @@ var TYPE_EMOJIS = ['🗣️','💬','🎯','📢','🧠','✨','🔥','💡','�
 
 // ═══ PERSIST ═══
 function svLoadLocal() {
-  svLearned = JSON.parse(localStorage.getItem('sv_learned') || '[]');
+  svLearned   = JSON.parse(localStorage.getItem('sv_learned')   || '[]');
+  svBookmarks = JSON.parse(localStorage.getItem('sv_bookmarks') || '[]');
+  svLikes     = JSON.parse(localStorage.getItem('sv_likes')     || '[]');
 }
 function svSaveLocal() {
-  localStorage.setItem('sv_learned', JSON.stringify(svLearned));
+  localStorage.setItem('sv_learned',   JSON.stringify(svLearned));
+  localStorage.setItem('sv_bookmarks', JSON.stringify(svBookmarks));
+  localStorage.setItem('sv_likes',     JSON.stringify(svLikes));
 }
 function svSaveFirestore() {
   if (!currentUser) return;
   var ref = db.collection('users').doc(currentUser.uid);
-  ref.update({ svLearned: svLearned }).catch(function() {
-    ref.set({ svLearned: svLearned }, { merge: true });
+  var data = { svLearned: svLearned, svBookmarks: svBookmarks, svLikes: svLikes };
+  ref.update(data).catch(function() {
+    ref.set(data, { merge: true });
   });
 }
 
@@ -242,12 +251,12 @@ firebase.auth().onAuthStateChanged(function(user) {
     var userDoc   = results[0];
     var wordsSnap = results[1];
 
-    // Merge Firestore svLearned into local
-    if (userDoc.exists && userDoc.data().svLearned) {
-      var fsl = userDoc.data().svLearned || [];
-      fsl.forEach(function(id) {
-        if (!svLearned.includes(id)) svLearned.push(id);
-      });
+    // Merge Firestore data into local
+    if (userDoc.exists) {
+      var ud = userDoc.data();
+      (ud.svLearned   || []).forEach(function(id) { if (!svLearned.includes(id))   svLearned.push(id); });
+      (ud.svBookmarks || []).forEach(function(id) { if (!svBookmarks.includes(id)) svBookmarks.push(id); });
+      (ud.svLikes     || []).forEach(function(id) { if (!svLikes.includes(id))     svLikes.push(id); });
       svSaveLocal();
     }
 
@@ -417,6 +426,12 @@ function renderWords() {
               ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> O\'rgandim'
               : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> O\'rgandim') +
           '</button>' +
+          '<button class="sv-btn-icon' + (svBookmarks.includes(w._docId) ? ' bookmarked' : '') + '" id="svbm-' + w._docId + '" onclick="svToggleBookmark(\'' + safe + '\')" title="Bookmark">' +
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="' + (svBookmarks.includes(w._docId) ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>' +
+          '</button>' +
+          '<button class="sv-btn-icon' + (svLikes.includes(w._docId) ? ' liked' : '') + '" id="svlk-' + w._docId + '" onclick="svToggleLike(\'' + safe + '\')" title="Yoqtirish">' +
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="' + (svLikes.includes(w._docId) ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>' +
+          '</button>' +
           '<button class="sv-btn-icon" onclick="svSpeak(\'' + esc(w.word || '') + '\')" title="Talaffuz">' +
             '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>' +
           '</button>' +
@@ -443,6 +458,35 @@ function svMarkLearned(docId) {
   svSaveLocal();
   svSaveFirestore();
   renderWords();
+}
+
+
+function svToggleBookmark(docId) {
+  var idx = svBookmarks.indexOf(docId);
+  if (idx === -1) { svBookmarks.push(docId); svShowToast("Yodlash ro'yxatiga qo'shildi!"); }
+  else            { svBookmarks.splice(idx, 1); svShowToast("Yodlashdan olib tashlandi"); }
+  svSaveLocal();
+  svSaveFirestore();
+  var btn = document.getElementById('svbm-' + docId);
+  if (btn) {
+    var a = svBookmarks.includes(docId);
+    btn.className = 'sv-btn-icon' + (a ? ' bookmarked' : '');
+    btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="' + (a ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
+  }
+}
+
+function svToggleLike(docId) {
+  var idx = svLikes.indexOf(docId);
+  if (idx === -1) { svLikes.push(docId); svShowToast("Yoqtirganlarga qo'shildi!"); }
+  else            { svLikes.splice(idx, 1); svShowToast("Yoqtirganlardan olib tashlandi"); }
+  svSaveLocal();
+  svSaveFirestore();
+  var btn = document.getElementById('svlk-' + docId);
+  if (btn) {
+    var a = svLikes.includes(docId);
+    btn.className = 'sv-btn-icon' + (a ? ' liked' : '');
+    btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="' + (a ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+  }
 }
 
 function svSpeak(word) {
