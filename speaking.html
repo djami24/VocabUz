@@ -410,13 +410,13 @@ function renderWords() {
   var wordsHtml = words.map(function(w, i) {
     var isLearned = svLearned.includes(w._docId);
     var safe = w._docId.replace(/'/g, "\\'");
-    // Use only numeric w.id for bookmarks/likes (must match mywords.html)
-    var wNumId   = (w.id != null && w.id !== '') ? Number(w.id) : null;
-    var hasNumId = (wNumId !== null && !isNaN(wNumId));
-    var isBm     = hasNumId && svBookmarks.includes(wNumId);
-    var isLk     = hasNumId && svLikes.includes(wNumId);
-    var bmClick  = hasNumId ? ('svToggleBookmark(' + wNumId + ')') : 'svShowToast(\'ID topilmadi\')';
-    var lkClick  = hasNumId ? ('svToggleLike(' + wNumId + ')') : 'svShowToast(\'ID topilmadi\')';
+    // bookmarkId: numeric w.id bo'lsa u, yo'q bo'lsa _docId (mywords.html ikkalasini ham qabul qiladi)
+    var bookmarkId = (w.id != null && w.id !== '' && !isNaN(Number(w.id))) ? Number(w.id) : w._docId;
+    var isBm = svBookmarks.includes(bookmarkId);
+    var isLk = svLikes.includes(bookmarkId);
+    var safeBookmarkId = (typeof bookmarkId === 'string') ? ('\'' + bookmarkId.replace(/'/g, "\\'") + '\'') : bookmarkId;
+    var bmClick = 'svToggleBookmark(' + safeBookmarkId + ')';
+    var lkClick = 'svToggleLike(' + safeBookmarkId + ')';
     return (
       '<div class="sv-word-card' + (isLearned ? ' learned' : '') + '" id="svcard-' + w._docId + '">' +
         '<div class="sv-word-head">' +
@@ -468,15 +468,13 @@ function svMarkLearned(docId) {
 }
 
 
-function svToggleBookmark(numId) {
-  if (numId === null || numId === undefined || isNaN(Number(numId))) {
-    svShowToast("Bu so'z uchun bookmark ishlamaydi (ID yo'q)");
-    return;
-  }
-  numId = Number(numId);
-  var idx = svBookmarks.indexOf(numId);
+function svToggleBookmark(bmId) {
+  // bmId raqam yoki _docId string bo'lishi mumkin
+  var idx = svBookmarks.indexOf(bmId);
+  if (typeof bmId === 'number' || !isNaN(Number(bmId))) bmId = Number(bmId);
+  idx = svBookmarks.indexOf(bmId);
   if (idx === -1) {
-    svBookmarks.push(numId);
+    svBookmarks.push(bmId);
     svShowToast("Yodlash ro'yxatiga qo'shildi!");
   } else {
     svBookmarks.splice(idx, 1);
@@ -484,26 +482,23 @@ function svToggleBookmark(numId) {
   }
   svSaveLocal();
   svSaveFirestore();
-  var w = SV_WORDS.find(function(x){ return Number(x.id) === numId; });
+  var w = SV_WORDS.find(function(x){ return (Number(x.id) === bmId) || x._docId === String(bmId); });
   if (w) {
     var btn = document.getElementById('svbm-' + w._docId);
     if (btn) {
-      var a = svBookmarks.includes(numId);
+      var a = svBookmarks.includes(bmId);
       btn.className = 'sv-btn-icon' + (a ? ' bookmarked' : '');
       btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="' + (a ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
     }
   }
 }
 
-function svToggleLike(numId) {
-  if (numId === null || numId === undefined || isNaN(Number(numId))) {
-    svShowToast("Bu so'z uchun yoqtirish ishlamaydi (ID yo'q)");
-    return;
-  }
-  numId = Number(numId);
-  var idx = svLikes.indexOf(numId);
+function svToggleLike(bmId) {
+  // bmId raqam yoki _docId string bo'lishi mumkin
+  if (typeof bmId === 'number' || !isNaN(Number(bmId))) bmId = Number(bmId);
+  var idx = svLikes.indexOf(bmId);
   if (idx === -1) {
-    svLikes.push(numId);
+    svLikes.push(bmId);
     svShowToast("Yoqtirganlarga qo'shildi!");
   } else {
     svLikes.splice(idx, 1);
@@ -511,11 +506,11 @@ function svToggleLike(numId) {
   }
   svSaveLocal();
   svSaveFirestore();
-  var w = SV_WORDS.find(function(x){ return Number(x.id) === numId; });
+  var w = SV_WORDS.find(function(x){ return (Number(x.id) === bmId) || x._docId === String(bmId); });
   if (w) {
     var btn = document.getElementById('svlk-' + w._docId);
     if (btn) {
-      var a = svLikes.includes(numId);
+      var a = svLikes.includes(bmId);
       btn.className = 'sv-btn-icon' + (a ? ' liked' : '');
       btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="' + (a ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
     }
