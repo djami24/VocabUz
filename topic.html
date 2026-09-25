@@ -435,6 +435,18 @@ function saveToFirestore(){
   ref.update(data).catch(function(){ ref.set(data, {merge:true}); });
 }
 
+function logActivityToday(delta){
+  if(!currentUser) return;
+  if(delta === 0) return;
+  const d = new Date();
+  const key = 'activityLog.' + d.getFullYear()+'-'+
+    (d.getMonth()+1).toString().padStart(2,'0')+'-'+
+    d.getDate().toString().padStart(2,'0');
+  const upd = {};
+  upd[key] = firebase.firestore.FieldValue.increment(delta);
+  db.collection('users').doc(currentUser.uid).set(upd,{merge:true}).catch(function(){});
+}
+
 // ─── TOAST ───────────────────────────────────────────────
 let toastTimer;
 function showToast(msg){
@@ -661,8 +673,8 @@ function markLearned(id){
   const numId=Number(id);
   const idx=learnedIds.indexOf(numId);
   const isNew=idx===-1;
-  if(isNew){ learnedIds.push(numId); showToast("O'rgandim! So'z saqlandi!"); }
-  else      { learnedIds.splice(idx,1); showToast("O'rganilganlardan olib tashlandi"); }
+  if(isNew){ learnedIds.push(numId); showToast("O'rgandim! So'z saqlandi!"); logActivityToday(1); }
+  else      { learnedIds.splice(idx,1); showToast("O'rganilganlardan olib tashlandi"); logActivityToday(-1); }
   saveState();
   saveToFirestore();
   renderWords();
