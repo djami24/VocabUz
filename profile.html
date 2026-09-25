@@ -466,12 +466,8 @@ firebase.auth().onAuthStateChanged(function(user){
   if(!user){ location.href='login.html'; return; }
   currentUser = user;
   var name = user.displayName || user.email || 'Foydalanuvchi';
-  var parts = name.trim().split(/\s+/);
-  var initials = parts.length >= 2
-    ? (parts[0][0] + parts[1][0]).toUpperCase()
-    : name[0].toUpperCase();
-  document.getElementById('profAvatar').textContent = initials;
   document.getElementById('profName').textContent = name;
+  setAvatarImg('profAvatar', 52);
   document.getElementById('profEmail').textContent = user.email || '';
 
   // Load topic vocab state from Firestore
