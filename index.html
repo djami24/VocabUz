@@ -82,35 +82,62 @@
     </button>
   </div>
 
-  <!-- Banner Carousel -->
+  <!-- Hero Cards Carousel -->
   <div class="banner-wrap" id="bannerWrap">
     <div class="banner-track" id="bannerTrack">
 
-      <!-- Slide 1 -->
-      <div class="banner-slide" style="background:linear-gradient(135deg,#0D47A1 0%,#1DA1F2 100%)">
+      <!-- Slide 1: Ko'k — O'rganilgan so'zlar -->
+      <div class="banner-slide" style="background:linear-gradient(135deg,#0D47A1 0%,#1DA1F2 100%); position:relative; overflow:hidden;">
+        <!-- decorative circles -->
+        <div style="position:absolute;top:-30px;right:-30px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.08);pointer-events:none;"></div>
+        <div style="position:absolute;bottom:-20px;right:30px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.06);pointer-events:none;"></div>
         <div>
-          <div class="banner-title">Ingliz tilini tezroq o'rganing</div>
-          <div class="banner-sub">1000+ so'z · Audio · Misollar</div>
+          <div style="font-size:.72rem;font-weight:600;opacity:.7;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">O'rganilgan so'zlar</div>
+          <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:2px;">
+            <div id="heroLearnedCount" style="font-size:2.6rem;font-weight:900;line-height:1;color:#fff;">—</div>
+            <div style="font-size:.85rem;font-weight:600;opacity:.75;color:#fff;">ta so'z</div>
+          </div>
+          <div style="font-size:.78rem;opacity:.65;color:#fff;">Davom eting, zo'r ketayapsiz! 💪</div>
         </div>
-        <div class="banner-dots" id="bannerDots"></div>
+        <!-- progress bar -->
+        <div style="margin-top:14px;">
+          <div style="display:flex;justify-content:space-between;font-size:.7rem;opacity:.7;color:#fff;margin-bottom:5px;">
+            <span>Maqsad: 1000 ta so'z</span>
+            <span id="heroProgressPct">0%</span>
+          </div>
+          <div style="background:rgba(255,255,255,.22);border-radius:99px;height:6px;overflow:hidden;">
+            <div id="heroProgressBar" style="height:100%;background:#fff;border-radius:99px;width:0%;transition:width .6s ease;"></div>
+          </div>
+        </div>
+        <div class="banner-dots" id="bannerDots" style="margin-top:12px;"></div>
       </div>
 
-      <!-- Slide 2 -->
-      <div class="banner-slide" style="background:linear-gradient(135deg,#1B5E20 0%,#43A047 100%)">
+      <!-- Slide 2: Zangori — Bugungi streak -->
+      <div class="banner-slide" style="background:linear-gradient(135deg,#006064 0%,#00BCD4 100%); position:relative; overflow:hidden;">
+        <div style="position:absolute;top:-40px;right:-20px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.07);pointer-events:none;"></div>
+        <div style="position:absolute;bottom:-10px;right:40px;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.05);pointer-events:none;"></div>
         <div>
-          <div class="banner-title">Speaking ko'nikmangni oshir</div>
-          <div class="banner-sub">Talaffuz · Mashqlar · Test</div>
+          <div style="font-size:.72rem;font-weight:600;opacity:.7;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">Bugungi natija</div>
+          <div style="font-size:1.15rem;font-weight:800;color:#fff;line-height:1.25;max-width:75%;">Speaking ko'nikmangni oshir</div>
+          <div style="font-size:.78rem;opacity:.7;color:#fff;margin-top:5px;">Talaffuz · Mashqlar · Test</div>
         </div>
-        <div style="height:22px"></div>
+        <div style="margin-top:14px;">
+          <button onclick="location.href='speaking.html'" style="background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.35);color:#fff;font-size:.82rem;font-weight:700;padding:8px 18px;border-radius:99px;cursor:pointer;-webkit-tap-highlight-color:transparent;">Boshlash →</button>
+        </div>
       </div>
 
-      <!-- Slide 3 -->
-      <div class="banner-slide" style="background:linear-gradient(135deg,#4A148C 0%,#AB47BC 100%)">
+      <!-- Slide 3: Binafsha — Flashcard -->
+      <div class="banner-slide" style="background:linear-gradient(135deg,#4A148C 0%,#AB47BC 100%); position:relative; overflow:hidden;">
+        <div style="position:absolute;top:-35px;right:-25px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.07);pointer-events:none;"></div>
+        <div style="position:absolute;bottom:-15px;right:35px;width:75px;height:75px;border-radius:50%;background:rgba(255,255,255,.05);pointer-events:none;"></div>
         <div>
-          <div class="banner-title">Har kuni yangi so'zlar</div>
-          <div class="banner-sub">Flashcard · Statistika · Streak</div>
+          <div style="font-size:.72rem;font-weight:600;opacity:.7;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">Kunlik mashq</div>
+          <div style="font-size:1.15rem;font-weight:800;color:#fff;line-height:1.25;max-width:75%;">Har kuni yangi so'zlar</div>
+          <div style="font-size:.78rem;opacity:.7;color:#fff;margin-top:5px;">Flashcard · Statistika · Streak</div>
         </div>
-        <div style="height:22px"></div>
+        <div style="margin-top:14px;">
+          <button onclick="location.href='flashcards.html'" style="background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.35);color:#fff;font-size:.82rem;font-weight:700;padding:8px 18px;border-radius:99px;cursor:pointer;-webkit-tap-highlight-color:transparent;">Flashcard →</button>
+        </div>
       </div>
 
     </div>
@@ -209,6 +236,35 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('homeUserName').textContent = name;
     document.getElementById('homeUserSub').textContent = user.email || '';
   });
+
+  // ═══ O'RGANILGAN SO'ZLAR SONI (Ko'k kartochka) ═══
+  function updateLearnedCount() {
+    var GOAL = 1000;
+    // Barcha learned so'zlarni yig'amiz (takrorsiz)
+    var vzLearned = JSON.parse(localStorage.getItem('vz_learned') || '[]').map(Number);
+    var svLearned = JSON.parse(localStorage.getItem('sv_learned') || '[]').map(Number);
+    var tvLearned = JSON.parse(localStorage.getItem('tv_learned') || '[]').map(Number);
+
+    // Unikal so'zlar (id bo'yicha birlashtirish)
+    var allSet = new Set([].concat(vzLearned, svLearned, tvLearned));
+    var total = allSet.size;
+
+    var pct = Math.min(Math.round((total / GOAL) * 100), 100);
+
+    var countEl = document.getElementById('heroLearnedCount');
+    var barEl   = document.getElementById('heroProgressBar');
+    var pctEl   = document.getElementById('heroProgressPct');
+
+    if (countEl) countEl.textContent = total;
+    if (pctEl)   pctEl.textContent   = pct + '%';
+
+    // Animatsiya bilan progress bar
+    if (barEl) {
+      setTimeout(function () { barEl.style.width = pct + '%'; }, 200);
+    }
+  }
+
+  updateLearnedCount();
 });
 
 // ═══ BANNER CAROUSEL ═══
