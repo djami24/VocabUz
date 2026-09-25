@@ -508,9 +508,9 @@ function render(top10, myRank, myData, totalUsers) {
     }
     podiumHtml += `
       <div class="podium-item">
-        <div class="podium-avatar ${rankClass[i]}"${isMe?' style="outline:3px solid rgba(255,255,255,.7);"':''}>
+        <div class="podium-avatar ${rankClass[i]}"${isMe?' style="outline:3px solid rgba(255,255,255,.7);overflow:hidden;padding:0;"':''}>
           ${rk === 1 ? '<div class="podium-crown">👑</div>' : ''}
-          ${getInitials(u.name)}
+          ${isMe ? '<img src="'+DEFAULT_AVATAR_SRC+'" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">' : getInitials(u.name)}
         </div>
         <div class="podium-name"${isMe?' style="color:var(--blue);"':''}>${escHtml(shortName(u.name))}</div>
         <div class="podium-count">${u.total} so'z</div>
@@ -542,7 +542,7 @@ function render(top10, myRank, myData, totalUsers) {
       listHtml += `
         <div class="learner-row${isMe?' is-me':''}">
           <div class="rank-num">${rank}</div>
-          <div class="learner-avatar" style="background:${color}">${avatar}</div>
+          <div class="learner-avatar" style="${isMe?'background:none;overflow:hidden;padding:0;':'background:'+color}">${isMe?'<img src="'+DEFAULT_AVATAR_SRC+'" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">':avatar}</div>
           <div class="learner-info">
             <div class="learner-name">${escHtml(u.name)}</div>
             <div class="learner-sub">${u.total} ta so'z o'rganilgan</div>
