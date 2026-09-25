@@ -82,18 +82,37 @@
     </button>
   </div>
 
-  <!-- Banner -->
-  <div class="banner-wrap">
-    <div class="banner-slide">
-      <div>
-        <div class="banner-title">Ingliz tilini tezroq o'rganing</div>
-        <div class="banner-sub">1000+ so'z · Audio · Misollar</div>
+  <!-- Banner Carousel -->
+  <div class="banner-wrap" id="bannerWrap">
+    <div class="banner-track" id="bannerTrack">
+
+      <!-- Slide 1 -->
+      <div class="banner-slide" style="background:linear-gradient(135deg,#0D47A1 0%,#1DA1F2 100%)">
+        <div>
+          <div class="banner-title">Ingliz tilini tezroq o'rganing</div>
+          <div class="banner-sub">1000+ so'z · Audio · Misollar</div>
+        </div>
+        <div class="banner-dots" id="bannerDots"></div>
       </div>
-      <div class="banner-dots">
-        <div class="banner-dot is-active"></div>
-        <div class="banner-dot"></div>
-        <div class="banner-dot"></div>
+
+      <!-- Slide 2 -->
+      <div class="banner-slide" style="background:linear-gradient(135deg,#1B5E20 0%,#43A047 100%)">
+        <div>
+          <div class="banner-title">Speaking ko'nikmangni oshir</div>
+          <div class="banner-sub">Talaffuz · Mashqlar · Test</div>
+        </div>
+        <div style="height:22px"></div>
       </div>
+
+      <!-- Slide 3 -->
+      <div class="banner-slide" style="background:linear-gradient(135deg,#4A148C 0%,#AB47BC 100%)">
+        <div>
+          <div class="banner-title">Har kuni yangi so'zlar</div>
+          <div class="banner-sub">Flashcard · Statistika · Streak</div>
+        </div>
+        <div style="height:22px"></div>
+      </div>
+
     </div>
   </div>
 
@@ -191,6 +210,62 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('homeUserSub').textContent = user.email || '';
   });
 });
+
+// ═══ BANNER CAROUSEL ═══
+(function(){
+  var track     = document.getElementById('bannerTrack');
+  var wrap      = document.getElementById('bannerWrap');
+  var dotsWrap  = document.getElementById('bannerDots');
+  var slides    = track.querySelectorAll('.banner-slide');
+  var total     = slides.length;
+  var current   = 0;
+  var startX    = 0;
+  var startY    = 0;
+  var isDrag    = false;
+  var autoTimer;
+
+  // Dots yasash
+  for(var i=0;i<total;i++){
+    var d = document.createElement('div');
+    d.className = 'banner-dot' + (i===0?' is-active':'');
+    d.dataset.i = i;
+    d.addEventListener('click', function(){ goTo(Number(this.dataset.i)); });
+    dotsWrap.appendChild(d);
+  }
+
+  function goTo(n){
+    current = (n + total) % total;
+    track.style.transform = 'translateX(-' + (current * 100) + '%)';
+    dotsWrap.querySelectorAll('.banner-dot').forEach(function(d,i){
+      d.className = 'banner-dot' + (i===current?' is-active':'');
+    });
+  }
+
+  // Auto-play
+  function startAuto(){ autoTimer = setInterval(function(){ goTo(current+1); }, 3500); }
+  function stopAuto(){ clearInterval(autoTimer); }
+  startAuto();
+
+  // Touch swipe
+  track.addEventListener('touchstart', function(e){
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    isDrag = false;
+    stopAuto();
+  }, {passive:true});
+  track.addEventListener('touchmove', function(e){
+    var dx = e.touches[0].clientX - startX;
+    var dy = e.touches[0].clientY - startY;
+    if(Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 8) isDrag = true;
+  }, {passive:true});
+  track.addEventListener('touchend', function(e){
+    if(!isDrag){ startAuto(); return; }
+    var dx = e.changedTouches[0].clientX - startX;
+    if(dx < -40)      goTo(current + 1);
+    else if(dx > 40)  goTo(current - 1);
+    startAuto();
+  });
+})();
 </script>
 </body>
 </html>
