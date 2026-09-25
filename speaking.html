@@ -3,38 +3,178 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Speaking vocabulary — VocaabUZ</title>
+<title>Speaking Vocabulary — VocaabUZ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<style>
+/* ═══ SPEAKING VOCABULARY PAGE ═══ */
+body { background: #F0FFF4; }
+
+.sv-topbar {
+  display:flex; align-items:center; gap:10px;
+  padding:14px 16px 12px; background:#F0FFF4;
+  position:sticky; top:0; z-index:10;
+  border-bottom:1px solid #D1FAE5;
+}
+.sv-back {
+  width:38px; height:38px; border-radius:50%; background:#fff;
+  border:none; cursor:pointer; display:flex; align-items:center;
+  justify-content:center; box-shadow:0 1px 4px rgba(34,197,94,.15);
+  color:#5A6070; flex-shrink:0;
+}
+.sv-title { font-size:1.05rem; font-weight:700; flex:1; color:#1A1A2E; }
+.sv-badge {
+  font-size:.75rem; font-weight:700; padding:4px 10px; border-radius:20px;
+  background:#DCFCE7; color:#16A34A; white-space:nowrap;
+}
+
+.sv-body { flex:1; overflow-y:auto; padding:0 16px 100px; }
+
+.sv-section-label {
+  padding:18px 0 10px; font-size:.78rem; font-weight:600;
+  color:#9AA0AD; letter-spacing:.3px; text-transform:uppercase;
+}
+
+/* ── Type cards (View 1) ── */
+.sv-type-card {
+  background:#fff; border-radius:16px; padding:16px;
+  box-shadow:0 1px 4px rgba(34,197,94,.12);
+  display:flex; align-items:center; gap:14px;
+  cursor:pointer; margin-bottom:10px;
+  border:2px solid transparent;
+  transition:border-color .15s, transform .12s;
+  -webkit-tap-highlight-color:transparent;
+  position:relative; overflow:hidden;
+}
+.sv-type-card:active { transform:scale(.98); }
+.sv-type-card.completed { border-color:#22C55E; }
+.sv-type-icon {
+  width:48px; height:48px; border-radius:14px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.4rem; flex-shrink:0; background:#DCFCE7;
+}
+.sv-type-info { flex:1; min-width:0; }
+.sv-type-name { font-size:.95rem; font-weight:800; color:#1A1A2E; }
+.sv-type-sub { font-size:.75rem; color:#9AA0AD; margin-top:2px; }
+.sv-type-badge {
+  font-size:.72rem; font-weight:700; padding:3px 9px;
+  border-radius:20px; white-space:nowrap; flex-shrink:0;
+  background:#DCFCE7; color:#16A34A;
+}
+.sv-type-bar {
+  position:absolute; bottom:0; left:0; height:3px;
+  border-radius:0 2px 0 0; background:#22C55E;
+  transition:width .4s ease;
+}
+
+/* ── Word cards (View 2) ── */
+.sv-word-card {
+  background:#fff; border-radius:14px; padding:13px 15px 11px;
+  box-shadow:0 1px 4px rgba(34,197,94,.1); margin-bottom:10px;
+}
+.sv-word-card.learned { border-left:3px solid #22C55E; }
+.sv-word-head {
+  display:flex; align-items:baseline; gap:6px; margin-bottom:4px; flex-wrap:wrap;
+}
+.sv-word-num { font-size:.8rem; font-weight:700; color:#16A34A; flex-shrink:0; min-width:20px; }
+.sv-word-en { font-size:.95rem; font-weight:700; color:#1A1A2E; }
+.sv-word-dash { color:#8A9BB0; }
+.sv-word-uz { font-size:.88rem; font-weight:500; color:#5A6070; flex:1; }
+.sv-type-pill {
+  display:inline-flex; align-items:center;
+  background:#DCFCE7; color:#16A34A;
+  font-size:.65rem; font-weight:700; padding:2px 6px; border-radius:6px;
+  flex-shrink:0;
+}
+.sv-word-example {
+  font-size:.82rem; color:#5A6070; font-style:italic; line-height:1.5;
+  padding:5px 0 8px; border-bottom:1px solid #D1FAE5; margin-bottom:8px;
+}
+.sv-word-example::before { content:'• '; }
+.sv-word-actions { display:flex; gap:8px; }
+.sv-btn-learned {
+  flex:1; height:36px; border-radius:10px; border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:5px;
+  font-size:.8rem; font-weight:700; font-family:inherit;
+  background:#DCFCE7; color:#16A34A;
+  transition:background .15s, color .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.sv-btn-learned.done { background:#22C55E; color:#fff; }
+.sv-btn-icon {
+  width:36px; height:36px; border-radius:10px; border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  background:#F0FFF4; color:#9AA0AD;
+  transition:background .15s, color .15s;
+  -webkit-tap-highlight-color:transparent; flex-shrink:0;
+}
+.sv-btn-icon.speak-active { background:#DCFCE7; color:#16A34A; }
+
+/* Progress banner */
+.sv-progress-box {
+  background:#fff; border-radius:12px; padding:13px 15px;
+  box-shadow:0 1px 4px rgba(34,197,94,.1); margin-bottom:12px;
+}
+.sv-progress-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:7px; }
+.sv-progress-label { font-size:.82rem; font-weight:700; color:#1A1A2E; }
+.sv-progress-pct { font-size:.82rem; font-weight:800; color:#16A34A; }
+.sv-progress-track { height:7px; background:#D1FAE5; border-radius:7px; overflow:hidden; }
+.sv-progress-fill { height:100%; background:linear-gradient(90deg,#22C55E,#16A34A); border-radius:7px; transition:width .4s; }
+
+/* Done banner */
+.sv-done-box {
+  background:#DCFCE7; border-radius:12px; padding:13px 15px;
+  display:flex; align-items:center; gap:10px; margin-bottom:12px;
+}
+
+/* Overall progress (top of type list) */
+.sv-overall-box {
+  background:#fff; border-radius:14px; padding:14px 16px;
+  box-shadow:0 1px 4px rgba(34,197,94,.12); margin-bottom:14px;
+}
+.sv-overall-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.sv-overall-label { font-size:.85rem; font-weight:700; color:#1A1A2E; }
+.sv-overall-nums { font-size:.85rem; font-weight:800; color:#16A34A; }
+.sv-overall-track { height:8px; background:#D1FAE5; border-radius:8px; overflow:hidden; }
+.sv-overall-fill { height:100%; background:linear-gradient(90deg,#22C55E,#16A34A); border-radius:8px; transition:width .4s; }
+
+/* Spinner */
+.sv-spinner-wrap { display:flex; align-items:center; justify-content:center; padding:60px 0; }
+.sv-spinner { width:32px; height:32px; border:3px solid #BBF7D0; border-top-color:#22C55E; border-radius:50%; animation:svSpin .8s linear infinite; }
+@keyframes svSpin { to { transform:rotate(360deg) } }
+
+/* Toast */
+.sv-toast {
+  position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(20px);
+  background:#1A1A2E; color:#fff; padding:9px 18px; border-radius:20px;
+  font-size:.8rem; font-weight:600; pointer-events:none; opacity:0;
+  transition:opacity .25s, transform .25s; white-space:nowrap; z-index:600;
+}
+.sv-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+.sv-empty { text-align:center; padding:48px 16px; color:#9AA0AD; font-size:.88rem; }
+</style>
 </head>
-<body>
+<body style="background:#F0FFF4">
 
-<div class="topbar">
-  <a class="topbar-back" href="index.html">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-  </a>
-  <div class="topbar-title">Speaking vocabulary</div>
-  <div class="topbar-action"></div>
+<!-- TOP BAR -->
+<div class="sv-topbar" id="svTopbar">
+  <button class="sv-back" id="svBackBtn" onclick="svGoBack()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <span class="sv-title" id="svTitle">Speaking Vocabulary</span>
+  <span class="sv-badge" id="svBadge"></span>
 </div>
 
-<div class="page">
-  <div class="search-wrap">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <input class="search-input" type="search" placeholder="Qidirish" id="searchInput" oninput="filterWords()">
-  </div>
-
-  <!-- Tabs -->
-  <div class="tabs-wrap" id="tabsWrap"></div>
-
-  <div id="wordList"></div>
-  <div class="spinner" id="loader"></div>
+<!-- BODY -->
+<div class="sv-body" id="svBody">
+  <div class="sv-spinner-wrap"><div class="sv-spinner"></div></div>
 </div>
 
-<div class="toast" id="toast"></div>
-
+<!-- BOTTOM NAV -->
 <nav class="bottom-nav">
-  <a class="bottom-nav-item is-active" href="index.html">
+  <a class="bottom-nav-item" href="index.html">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
     Asosiy
   </a>
@@ -56,152 +196,256 @@
   </a>
 </nav>
 
+<div class="sv-toast" id="svToast"></div>
+
+<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script>
-var allWords = [];
-var userBookmarks = [];
-var userLikes = [];
+// ═══ STATE ═══
 var currentUser = null;
-var currentTab = 'ALL';
+var SV_WORDS    = [];        // all speaking words
+var svLearned   = [];        // doc ids (strings) of learned words
+var svView      = 'types';   // 'types' | 'words'
+var svCurrentType = null;
 
+var TYPE_EMOJIS = ['🗣️','💬','🎯','📢','🧠','✨','🔥','💡','🎤','📣'];
+
+// ═══ PERSIST ═══
+function svLoadLocal() {
+  svLearned = JSON.parse(localStorage.getItem('sv_learned') || '[]');
+}
+function svSaveLocal() {
+  localStorage.setItem('sv_learned', JSON.stringify(svLearned));
+}
+function svSaveFirestore() {
+  if (!currentUser) return;
+  var ref = db.collection('users').doc(currentUser.uid);
+  ref.update({ svLearned: svLearned }).catch(function() {
+    ref.set({ svLearned: svLearned }, { merge: true });
+  });
+}
+
+// ═══ AUTH ═══
 firebase.auth().onAuthStateChanged(function(user) {
   if (!user) { location.href = 'login.html'; return; }
   currentUser = user;
+  svLoadLocal();
 
+  // Load Firestore state + words in parallel
   Promise.all([
     db.collection('users').doc(user.uid).get(),
     db.collection('words').where('category', '==', 'speaking').get()
   ]).then(function(results) {
     var userDoc   = results[0];
     var wordsSnap = results[1];
-    document.getElementById('loader').style.display = 'none';
-    if (userDoc.exists) {
-      userBookmarks = userDoc.data().bookmarks || [];
-      userLikes     = userDoc.data().likes     || [];
+
+    // Merge Firestore svLearned into local
+    if (userDoc.exists && userDoc.data().svLearned) {
+      var fsl = userDoc.data().svLearned || [];
+      fsl.forEach(function(id) {
+        if (!svLearned.includes(id)) svLearned.push(id);
+      });
+      svSaveLocal();
     }
-    allWords = wordsSnap.docs.map(function(d) {
+
+    // Build word list (normalize field names)
+    SV_WORDS = wordsSnap.docs.map(function(d) {
       var data = d.data();
-      // "uz" field'ini "translation" sifatida ishlatamiz (admin uz deb saqlaydi)
-      return Object.assign({ id: d.id, translation: data.uz || data.translation || '' }, data);
+      return Object.assign({
+        _docId: d.id,
+        uz: data.uz || data.translation || ''
+      }, data);
     });
-    // orderBy o'rniga JS da tartiblaymiz (composite index shart emas)
-    allWords.sort(function(a, b) { return (a.order || 0) - (b.order || 0); });
-    if (!allWords.length) {
-      document.getElementById('wordList').innerHTML =
-        '<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M15 10s1 .5 1 2-1 2-1 2"/></svg><p>So\'zlar hali qo\'shilmagan</p></div>';
-      return;
-    }
-    buildTabs();
-    renderWords(getFiltered());
+    SV_WORDS.sort(function(a, b) { return (a.order || 0) - (b.order || 0); });
+
+    renderTypes();
   }).catch(function(err) {
-    document.getElementById('loader').style.display = 'none';
-    document.getElementById('wordList').innerHTML =
-      '<div class="empty-state"><p>Xatolik yuz berdi. Qayta urinib ko\'ring.</p></div>';
-    console.error('Speaking vocab error:', err);
+    document.getElementById('svBody').innerHTML =
+      '<div class="sv-empty">Xatolik yuz berdi. Qayta urinib ko\'ring.</div>';
+    console.error(err);
   });
 });
 
-function buildTabs() {
-  var types = ['ALL'];
-  allWords.forEach(function(w) {
-    if (w.type && !types.includes(w.type)) types.push(w.type);
-  });
-  if (types.length <= 2) { document.getElementById('tabsWrap').style.display = 'none'; return; }
-  document.getElementById('tabsWrap').innerHTML = types.map(function(t) {
-    return '<button class="tab-btn' + (t === currentTab ? ' is-active' : '') + '" onclick="setTab(\'' + t + '\')">' +
-      (t === 'ALL' ? 'Barchasi' : t) + '</button>';
-  }).join('');
+// ═══ GO BACK ═══
+function svGoBack() {
+  if (svView === 'words') {
+    svView = 'types';
+    svCurrentType = null;
+    renderTypes();
+  } else {
+    history.back();
+  }
 }
 
-function setTab(t) {
-  currentTab = t;
-  document.querySelectorAll('.tab-btn').forEach(function(b) {
-    b.classList.toggle('is-active', b.textContent === (t === 'ALL' ? 'Barchasi' : t));
+// ═══ HELPERS ═══
+function svTypes() {
+  var seen = [];
+  SV_WORDS.forEach(function(w) {
+    var t = w.type || 'Umumiy';
+    if (!seen.includes(t)) seen.push(t);
   });
-  renderWords(getFiltered());
+  return seen;
 }
-
-function getFiltered() {
-  var q = (document.getElementById('searchInput').value || '').toLowerCase();
-  return allWords.filter(function(w) {
-    var matchTab = currentTab === 'ALL' || w.type === currentTab;
-    var matchQ   = !q || w.word.toLowerCase().includes(q) || (w.translation || w.uz || '').toLowerCase().includes(q);
-    return matchTab && matchQ;
+function svWordsOfType(type) {
+  return SV_WORDS.filter(function(w) {
+    return (w.type || 'Umumiy') === type;
   });
 }
 
-function filterWords() { renderWords(getFiltered()); }
+// ═══ VIEW 1: KATEGORIYALAR ═══
+function renderTypes() {
+  svView = 'types';
+  var types   = svTypes();
+  var total   = SV_WORDS.length;
+  var learned = SV_WORDS.filter(function(w) { return svLearned.includes(w._docId); }).length;
+  var pct     = total > 0 ? Math.round(learned / total * 100) : 0;
 
-function renderWords(words) {
-  if (!words.length) {
-    document.getElementById('wordList').innerHTML =
-      '<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><p>So\'z topilmadi</p></div>';
+  document.getElementById('svTitle').textContent = 'Speaking Vocabulary';
+  document.getElementById('svBadge').textContent = learned + " o'rganilgan";
+  document.getElementById('svBackBtn').style.display = 'none';
+
+  if (!total) {
+    document.getElementById('svBody').innerHTML = '<div class="sv-empty">Hali so\'zlar qo\'shilmagan</div>';
     return;
   }
-  var html = '';
-  words.forEach(function(w, i) {
-    var bk = userBookmarks.includes(w.id);
-    var lk = userLikes.includes(w.id);
-    html += '<div class="word-card" id="wc-' + w.id + '">'
-      + '<div class="word-card-header" onclick="location.href=\'word.html?id=' + w.id + '\'">'
-      + '<div><span class="word-card-num">' + (i + 1) + '. </span>'
-      + '<span class="word-card-word">' + escHtml(w.word) + '</span>'
-      + '<span class="word-card-dash"> — </span>'
-      + '<span class="word-card-translation">' + escHtml(w.translation) + '</span></div>'
-      + '<svg class="word-card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>'
-      + '</div>'
-      + (w.example ? '<div class="word-card-example">' + escHtml(w.example) + '</div>' : '')
-      + '<div class="word-card-actions">'
-      + '<button class="word-action-btn" onclick="shareWord(\'' + escHtml(w.word) + '\',\'' + escHtml(w.translation) + '\')">'
-      + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>'
-      + '</button>'
-      + '<button class="word-action-btn" onclick="speak(\'' + escHtml(w.word) + '\')">'
-      + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>'
-      + '</button>'
-      + '<button class="word-action-btn' + (bk ? ' is-active' : '') + '" id="bk-' + w.id + '" onclick="toggleBookmark(\'' + w.id + '\')">'
-      + '<svg width="18" height="18" viewBox="0 0 24 24" fill="' + (bk ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>'
-      + '</button>'
-      + '<button class="word-action-btn' + (lk ? ' is-liked' : '') + '" id="lk-' + w.id + '" onclick="toggleLike(\'' + w.id + '\')">'
-      + '<svg width="18" height="18" viewBox="0 0 24 24" fill="' + (lk ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>'
-      + '</button>'
-      + '</div></div>';
+
+  // Overall progress
+  var overallHtml =
+    '<div class="sv-overall-box">' +
+      '<div class="sv-overall-row">' +
+        '<span class="sv-overall-label">Umumiy progress</span>' +
+        '<span class="sv-overall-nums">' + learned + ' / ' + total + '</span>' +
+      '</div>' +
+      '<div class="sv-overall-track">' +
+        '<div class="sv-overall-fill" style="width:' + pct + '%"></div>' +
+      '</div>' +
+    '</div>';
+
+  // Type cards
+  var cardsHtml = '<div class="sv-section-label">Kategoriya tanlang</div>';
+  types.forEach(function(type, idx) {
+    var words    = svWordsOfType(type);
+    var lrn      = words.filter(function(w) { return svLearned.includes(w._docId); }).length;
+    var tot      = words.length;
+    var p        = tot > 0 ? Math.round(lrn / tot * 100) : 0;
+    var isDone   = lrn === tot && tot > 0;
+    var emoji    = TYPE_EMOJIS[idx % TYPE_EMOJIS.length];
+    var safe     = type.replace(/'/g, "\\'");
+
+    cardsHtml +=
+      '<div class="sv-type-card' + (isDone ? ' completed' : '') + '" onclick="openType(\'' + safe + '\')">' +
+        '<div class="sv-type-icon">' + emoji + '</div>' +
+        '<div class="sv-type-info">' +
+          '<div class="sv-type-name">' + esc(type) + '</div>' +
+          '<div class="sv-type-sub">' + tot + " ta so'z</div>" +
+        '</div>' +
+        '<div class="sv-type-badge">' +
+          (isDone
+            ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Tugallandi'
+            : lrn + '/' + tot) +
+        '</div>' +
+        '<div class="sv-type-bar" style="width:' + p + '%"></div>' +
+      '</div>';
   });
-  document.getElementById('wordList').innerHTML = html;
+
+  document.getElementById('svBody').innerHTML = overallHtml + cardsHtml;
 }
 
-function toggleBookmark(wordId) {
-  if (!currentUser) return;
-  var idx = userBookmarks.indexOf(wordId);
-  if (idx === -1) userBookmarks.push(wordId);
-  else userBookmarks.splice(idx, 1);
-  var bk = idx === -1;
-  var btn = document.getElementById('bk-' + wordId);
-  if (btn) {
-    btn.classList.toggle('is-active', bk);
-    btn.querySelector('svg').setAttribute('fill', bk ? 'currentColor' : 'none');
+// ═══ VIEW 2: SO'ZLAR ═══
+function openType(type) {
+  svCurrentType = type;
+  svView = 'words';
+  document.getElementById('svBackBtn').style.display = '';
+  renderWords();
+}
+
+function renderWords() {
+  var type    = svCurrentType;
+  var words   = svWordsOfType(type);
+  var learned = words.filter(function(w) { return svLearned.includes(w._docId); }).length;
+  var total   = words.length;
+  var pct     = total > 0 ? Math.round(learned / total * 100) : 0;
+  var full    = learned === total && total > 0;
+
+  document.getElementById('svTitle').textContent = type;
+  document.getElementById('svBadge').textContent = learned + '/' + total;
+
+  // Banner
+  var banner = '';
+  if (full) {
+    banner =
+      '<div class="sv-done-box">' +
+        '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="20 6 9 17 4 12"/></svg>' +
+        '<div>' +
+          '<div style="font-size:.88rem;font-weight:800;color:#16A34A">Barcha so\'zlar o\'rganildi! 🎉</div>' +
+          '<div style="font-size:.75rem;color:#16A34A;opacity:.8">Ajoyib natija!</div>' +
+        '</div>' +
+      '</div>';
+  } else {
+    banner =
+      '<div class="sv-progress-box">' +
+        '<div class="sv-progress-row">' +
+          '<span class="sv-progress-label">O\'rganish jarayoni</span>' +
+          '<span class="sv-progress-pct">' + pct + '%</span>' +
+        '</div>' +
+        '<div class="sv-progress-track">' +
+          '<div class="sv-progress-fill" style="width:' + pct + '%"></div>' +
+        '</div>' +
+      '</div>';
   }
-  db.collection('users').doc(currentUser.uid).update({ bookmarks: userBookmarks });
-  showToast(bk ? 'Saqlandi' : 'Olib tashlandi');
+
+  // Word cards
+  var wordsHtml = words.map(function(w, i) {
+    var isLearned = svLearned.includes(w._docId);
+    var safe = w._docId.replace(/'/g, "\\'");
+    return (
+      '<div class="sv-word-card' + (isLearned ? ' learned' : '') + '" id="svcard-' + w._docId + '">' +
+        '<div class="sv-word-head">' +
+          '<span class="sv-word-num">' + (i + 1) + '.</span>' +
+          '<span class="sv-word-en">' + esc(w.word || '') + '</span>' +
+          '<span class="sv-word-dash"> – </span>' +
+          '<span class="sv-word-uz">' + esc(w.uz || '') + '</span>' +
+          (w.type ? '<span class="sv-type-pill">' + esc(w.type) + '</span>' : '') +
+        '</div>' +
+        (w.example ? '<div class="sv-word-example">' + esc(w.example) + '</div>' : '') +
+        '<div class="sv-word-actions">' +
+          '<button class="sv-btn-learned' + (isLearned ? ' done' : '') + '" id="svlrn-' + w._docId + '" onclick="svMarkLearned(\'' + safe + '\')">' +
+            (isLearned
+              ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> O\'rgandim'
+              : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> O\'rgandim') +
+          '</button>' +
+          '<button class="sv-btn-icon" onclick="svSpeak(\'' + esc(w.word || '') + '\')" title="Talaffuz">' +
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>' +
+          '</button>' +
+        '</div>' +
+      '</div>'
+    );
+  }).join('');
+
+  document.getElementById('svBody').innerHTML = banner + wordsHtml + '<div style="height:30px"></div>';
+  document.getElementById('svBody').scrollTop = 0;
 }
 
-function toggleLike(wordId) {
+// ═══ ACTIONS ═══
+function svMarkLearned(docId) {
   if (!currentUser) return;
-  var idx = userLikes.indexOf(wordId);
-  if (idx === -1) userLikes.push(wordId);
-  else userLikes.splice(idx, 1);
-  var lk = idx === -1;
-  var btn = document.getElementById('lk-' + wordId);
-  if (btn) {
-    btn.classList.toggle('is-liked', lk);
-    btn.querySelector('svg').setAttribute('fill', lk ? 'currentColor' : 'none');
+  var idx = svLearned.indexOf(docId);
+  if (idx === -1) {
+    svLearned.push(docId);
+    svShowToast("O'rgandim! So'z saqlandi!");
+  } else {
+    svLearned.splice(idx, 1);
+    svShowToast("O'rganilganlardan olib tashlandi");
   }
-  db.collection('users').doc(currentUser.uid).update({ likes: userLikes });
+  svSaveLocal();
+  svSaveFirestore();
+  renderWords();
 }
 
-function speak(word) {
+function svSpeak(word) {
   if (!('speechSynthesis' in window)) return;
   var utt = new SpeechSynthesisUtterance(word);
   utt.lang = 'en-US';
@@ -209,24 +453,23 @@ function speak(word) {
   speechSynthesis.speak(utt);
 }
 
-function shareWord(word, trans) {
-  var text = word + ' — ' + trans;
-  if (navigator.share) {
-    navigator.share({ text: text }).catch(function(){});
-  } else {
-    navigator.clipboard.writeText(text).then(function(){ showToast('Nusxalandi'); });
-  }
+// ═══ TOAST ═══
+var svToastTimer;
+function svShowToast(msg) {
+  var el = document.getElementById('svToast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(svToastTimer);
+  svToastTimer = setTimeout(function() { el.classList.remove('show'); }, 2000);
 }
 
-function showToast(msg) {
-  var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('is-show');
-  setTimeout(function(){ t.classList.remove('is-show'); }, 2000);
-}
-
-function escHtml(s) {
-  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+// ═══ ESCAPE HTML ═══
+function esc(s) {
+  return String(s || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 </script>
 </body>
