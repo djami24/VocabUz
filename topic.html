@@ -510,12 +510,18 @@ function renderTopics(){
   document.getElementById('viewWords').style.display  = 'none';
   document.getElementById('viewTopics').style.display = 'block';
 
-  // Faqat shu darajadagi mavzular
+  // Faqat shu darajadagi so'zlar
   const levelWords = ALL_WORDS.filter(function(w){ return (w.level||'').toUpperCase() === currentLevel; });
-  const levelTopics = [];
-  levelWords.forEach(function(w){
-    if(w.topic && levelTopics.indexOf(w.topic) === -1) levelTopics.push(w.topic);
-  });
+
+  // Bu leveldagi mavzular to'plami (set)
+  const levelTopicSet = new Set();
+  levelWords.forEach(function(w){ if(w.topic) levelTopicSet.add(w.topic); });
+
+  // ✅ TOPIC_ORDER tartibida mavzularni chiqaramiz (admin belgilagan tartib)
+  const levelTopics = TOPIC_ORDER.filter(function(t){ return levelTopicSet.has(t); });
+
+  // TOPIC_ORDER'da bo'lmagan yangi mavzularni oxiriga qo'shamiz
+  levelTopicSet.forEach(function(t){ if(levelTopics.indexOf(t) === -1) levelTopics.push(t); });
 
   let html='';
   levelTopics.forEach(function(topic){
