@@ -1522,9 +1522,7 @@ async function loadWords() {
     // 1. Firestore'dan so'zlar
     const snap = await db.collection('words').orderBy('id').get();
     if (!snap.empty) {
-      ALL_WORDS = snap.docs
-        .filter(d => d.id !== '__topicOrder__' && !d.data()._isConfig)
-        .map(d => ({ _id: d.id, ...d.data() }));
+      ALL_WORDS = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
     } else {
       // 2. Firestore bo'sh bo'lsa — topic.html dagi LOCAL so'zlar (import)
       ALL_WORDS = getLocalWords();
@@ -2560,8 +2558,8 @@ async function loadTopicOrderPage() {
       .get();
     const allTopics = [...new Set(snap.docs.map(d => d.data().topic).filter(Boolean))];
 
-    // 2) Saqlangan tartibni yuklash (words/__topicOrder__ hujjatidan)
-    const cfgDoc = await db.collection('words').doc('__topicOrder__').get();
+    // 2) Saqlangan tartibni yuklash (config/topicOrder)
+    const cfgDoc = await db.collection('config').doc('topicOrder').get();
     let savedOrder = (cfgDoc.exists && cfgDoc.data()[level]) ? cfgDoc.data()[level] : [];
 
     // 3) Saqlangan tartibga yangi mavzularni qo'shish (oxiriga)
@@ -2644,8 +2642,8 @@ async function saveTopicOrder() {
   const btn = document.getElementById('saveTopicOrderBtn');
   btn.disabled = true; btn.textContent = 'Saqlanmoqda…';
   try {
-    await db.collection('words').doc('__topicOrder__').set(
-      { [level]: toItems, _isConfig: true },
+    await db.collection('config').doc('topicOrder').set(
+      { [level]: toItems },
       { merge: true }
     );
     showToast('✅ Mavzu tartibi saqlandi!');
