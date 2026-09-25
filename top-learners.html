@@ -550,9 +550,7 @@ function render(top10, myRank, myData, totalUsers) {
 // ── Helpers
 function shortName(name) {
   if (!name) return '?';
-  var parts = name.trim().split(/\s+/);
-  if (parts.length >= 2) return parts[0] + ' ' + parts[1][0] + '.';
-  return parts[0];
+  return name.trim();
 }
 
 function escHtml(str) {
