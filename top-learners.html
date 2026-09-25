@@ -364,6 +364,16 @@ function formatTime(date) {
 firebase.auth().onAuthStateChanged(function(user) {
   if (!user) { location.href = 'login.html'; return; }
   currentUser = user;
+
+  // Firestore'da name yo'q bo'lsa — displayName'dan avtomatik yozamiz
+  if (user.displayName) {
+    db.collection('users').doc(user.uid).get().then(function(doc) {
+      if (doc.exists && !doc.data().name) {
+        db.collection('users').doc(user.uid).update({ name: user.displayName });
+      }
+    });
+  }
+
   loadLeaderboard(false);
 });
 
@@ -400,7 +410,7 @@ function loadLeaderboard(manual) {
       var svCount = (data.svLearned || []).length;
       total += svCount;
 
-      var name = data.name || data.email || 'Foydalanuvchi';
+      var name = data.name || data.displayName || (data.email ? data.email.split('@')[0] : 'Foydalanuvchi');
 
       users.push({ uid: uid, name: name, total: total });
     });
