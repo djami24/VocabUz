@@ -410,8 +410,13 @@ function renderWords() {
   var wordsHtml = words.map(function(w, i) {
     var isLearned = svLearned.includes(w._docId);
     var safe = w._docId.replace(/'/g, "\\'");
-    var wNumId  = (w.id != null && w.id !== '') ? Number(w.id) : w._docId;
-    var safeId  = (typeof wNumId === 'string') ? ('\'' + wNumId + '\'') : wNumId;
+    // Use only numeric w.id for bookmarks/likes (must match mywords.html)
+    var wNumId   = (w.id != null && w.id !== '') ? Number(w.id) : null;
+    var hasNumId = (wNumId !== null && !isNaN(wNumId));
+    var isBm     = hasNumId && svBookmarks.includes(wNumId);
+    var isLk     = hasNumId && svLikes.includes(wNumId);
+    var bmClick  = hasNumId ? ('svToggleBookmark(' + wNumId + ')') : 'svShowToast(\'ID topilmadi\')';
+    var lkClick  = hasNumId ? ('svToggleLike(' + wNumId + ')') : 'svShowToast(\'ID topilmadi\')';
     return (
       '<div class="sv-word-card' + (isLearned ? ' learned' : '') + '" id="svcard-' + w._docId + '">' +
         '<div class="sv-word-head">' +
@@ -428,11 +433,11 @@ function renderWords() {
               ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> O\'rgandim'
               : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> O\'rgandim') +
           '</button>' +
-          '<button class="sv-btn-icon' + (svBookmarks.includes(wNumId) ? ' bookmarked' : '') + '" id="svbm-' + w._docId + '" onclick="svToggleBookmark(' + safeId + ')" title="Bookmark">' +
-            '<svg width="15" height="15" viewBox="0 0 24 24" fill="' + (svBookmarks.includes(wNumId) ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>' +
+          '<button class="sv-btn-icon' + (isBm ? ' bookmarked' : '') + '" id="svbm-' + w._docId + '" onclick="' + bmClick + '" title="Bookmark">' +
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="' + (isBm ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>' +
           '</button>' +
-          '<button class="sv-btn-icon' + (svLikes.includes(wNumId) ? ' liked' : '') + '" id="svlk-' + w._docId + '" onclick="svToggleLike(' + safeId + ')" title="Yoqtirish">' +
-            '<svg width="15" height="15" viewBox="0 0 24 24" fill="' + (svLikes.includes(wNumId) ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>' +
+          '<button class="sv-btn-icon' + (isLk ? ' liked' : '') + '" id="svlk-' + w._docId + '" onclick="' + lkClick + '" title="Yoqtirish">' +
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="' + (isLk ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>' +
           '</button>' +
           '<button class="sv-btn-icon" onclick="svSpeak(\'' + esc(w.word || '') + '\')" title="Talaffuz">' +
             '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>' +
@@ -464,7 +469,11 @@ function svMarkLearned(docId) {
 
 
 function svToggleBookmark(numId) {
-  if (typeof numId === 'string' && isNaN(Number(numId))) { /* _docId */ } else { numId = Number(numId); }
+  if (numId === null || numId === undefined || isNaN(Number(numId))) {
+    svShowToast("Bu so'z uchun bookmark ishlamaydi (ID yo'q)");
+    return;
+  }
+  numId = Number(numId);
   var idx = svBookmarks.indexOf(numId);
   if (idx === -1) {
     svBookmarks.push(numId);
@@ -475,7 +484,7 @@ function svToggleBookmark(numId) {
   }
   svSaveLocal();
   svSaveFirestore();
-  var w = SV_WORDS.find(function(x){ return Number(x.id) === Number(numId) || x._docId === String(numId); });
+  var w = SV_WORDS.find(function(x){ return Number(x.id) === numId; });
   if (w) {
     var btn = document.getElementById('svbm-' + w._docId);
     if (btn) {
@@ -487,7 +496,11 @@ function svToggleBookmark(numId) {
 }
 
 function svToggleLike(numId) {
-  if (typeof numId === 'string' && isNaN(Number(numId))) { /* _docId */ } else { numId = Number(numId); }
+  if (numId === null || numId === undefined || isNaN(Number(numId))) {
+    svShowToast("Bu so'z uchun yoqtirish ishlamaydi (ID yo'q)");
+    return;
+  }
+  numId = Number(numId);
   var idx = svLikes.indexOf(numId);
   if (idx === -1) {
     svLikes.push(numId);
@@ -498,7 +511,7 @@ function svToggleLike(numId) {
   }
   svSaveLocal();
   svSaveFirestore();
-  var w = SV_WORDS.find(function(x){ return Number(x.id) === Number(numId) || x._docId === String(numId); });
+  var w = SV_WORDS.find(function(x){ return Number(x.id) === numId; });
   if (w) {
     var btn = document.getElementById('svlk-' + w._docId);
     if (btn) {
