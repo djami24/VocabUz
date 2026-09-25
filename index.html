@@ -228,13 +228,9 @@ document.addEventListener('DOMContentLoaded', function () {
   firebase.auth().onAuthStateChanged(function (user) {
     if (!user) { location.href = 'login.html'; return; }
     var name = user.displayName || user.email || 'Foydalanuvchi';
-    var parts = name.trim().split(/\s+/);
-    var initials = parts.length >= 2
-      ? (parts[0][0] + parts[1][0]).toUpperCase()
-      : name[0].toUpperCase();
-    document.getElementById('homeAvatar').textContent = initials;
     document.getElementById('homeUserName').textContent = name;
     document.getElementById('homeUserSub').textContent = user.email || '';
+    setAvatarImg('homeAvatar', 44);
   });
 
   // ═══ O'RGANILGAN SO'ZLAR SONI (Ko'k kartochka) ═══
