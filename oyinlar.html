@@ -1060,6 +1060,7 @@ const GAME_ICONS = {
   gameSpeed:       `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
   gameQuiz:        `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
   gameTF:          `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>`,
+  gameFlashcard:   `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>`,
 };
 
 const GAMES = [
@@ -1073,6 +1074,7 @@ const GAMES = [
   { id:'gameSpeed',       iconKey:'gameSpeed',       color:'#F1F8E9', iconColor:'#33691E', name:'Tez yozish',             desc:'Vaqt tugashidan oldin yozing',      fn:'startSpeed' },
   { id:'gameChoose',      iconKey:'gameQuiz',        color:'#EDE9FE', iconColor:'#4527A0', name:'So\'z Kviz',             desc:'Savollarga to\'g\'ri javob bering', fn:'startQuiz' },
   { id:'gameTF',          iconKey:'gameTF',          color:'#FEF3C7', iconColor:'#E65100', name:'To\'g\'ri yoki Noto\'g\'ri', desc:'Tarjimani tekshiring',          fn:'startTF' },
+  { id:'gameFlashcard',   iconKey:'gameFlashcard',   color:'#EDE7F6', iconColor:'#6A1B9A', name:'Flashcard',                  desc:'Kartochkalar bilan so\'z yod oling', fn:'startFlashcard' },
 ];
 
 function renderDashboard() {
@@ -1973,6 +1975,13 @@ function tfAnswer(btn, userChoice, isCorrect) {
   }
   document.getElementById('tfScore').textContent = tfCorrect + '/' + tfWords.length;
   setTimeout(() => { tfIdx++; tfRender(); }, 1100);
+}
+
+/* ════════════════════════════════
+   FLASHCARD — flashcards.html ga yo'naltirish
+════════════════════════════════ */
+function startFlashcard() {
+  location.href = 'flashcards.html';
 }
 </script>
 </body>
