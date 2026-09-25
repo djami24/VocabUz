@@ -2081,17 +2081,17 @@ async function loadTopicsForPicker() {
 let topicToDelete = null;     // { name, category }
 
 function openDeleteTopic(topicName, category) {
-  topicToDelete = { name: topicName, category: category };
+  topicToDelete = { name: topicName, category: category, level: wzLevel };
 
-  // Count how many words are in this topic (from local cache)
+  // Count - faqat shu daraja
   let count = 0;
   if (category === 'topic') {
-    count = ALL_WORDS.filter(w => w.topic === topicName).length;
+    count = ALL_WORDS.filter(w => w.topic === topicName && (!wzLevel || w.level === wzLevel)).length;
   } else {
     count = ALL_WORDS.filter(w => w.category === category && w.type === topicName).length;
   }
 
-  document.getElementById('deleteTopicName').textContent = topicName;
+  document.getElementById('deleteTopicName').textContent = topicName + (wzLevel ? ' (' + wzLevel + ')' : '');
   document.getElementById('deleteTopicCount').textContent = count + ' ta';
   openModal('deleteTopicModal');
 }
@@ -2107,7 +2107,10 @@ async function confirmDeleteTopic() {
     let snap;
 
     if (category === 'topic') {
-      snap = await db.collection('words').where('topic', '==', name).get();
+      // level ham filtrlansin - boshqa darajadagi bir xil nomli topic o'chirilmasin
+      let q = db.collection('words').where('topic', '==', name);
+      if (topicToDelete.level) q = q.where('level', '==', topicToDelete.level);
+      snap = await q.get();
     } else {
       snap = await db.collection('words').where('category', '==', category).where('type', '==', name).get();
     }
@@ -2123,7 +2126,8 @@ async function confirmDeleteTopic() {
 
     // Local cache'dan ham o'chirish
     if (category === 'topic') {
-      ALL_WORDS = ALL_WORDS.filter(w => w.topic !== name);
+      const lvl = topicToDelete.level;
+      ALL_WORDS = ALL_WORDS.filter(w => !(w.topic === name && (!lvl || w.level === lvl)));
     } else {
       ALL_WORDS = ALL_WORDS.filter(w => !(w.category === category && w.type === name));
     }
