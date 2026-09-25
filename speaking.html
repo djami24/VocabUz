@@ -73,7 +73,7 @@ firebase.auth().onAuthStateChanged(function(user) {
 
   Promise.all([
     db.collection('users').doc(user.uid).get(),
-    db.collection('words').where('category', '==', 'speaking').orderBy('order').get()
+    db.collection('words').where('category', '==', 'speaking').get()
   ]).then(function(results) {
     var userDoc   = results[0];
     var wordsSnap = results[1];
@@ -82,7 +82,13 @@ firebase.auth().onAuthStateChanged(function(user) {
       userBookmarks = userDoc.data().bookmarks || [];
       userLikes     = userDoc.data().likes     || [];
     }
-    allWords = wordsSnap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
+    allWords = wordsSnap.docs.map(function(d) {
+      var data = d.data();
+      // "uz" field'ini "translation" sifatida ishlatamiz (admin uz deb saqlaydi)
+      return Object.assign({ id: d.id, translation: data.uz || data.translation || '' }, data);
+    });
+    // orderBy o'rniga JS da tartiblaymiz (composite index shart emas)
+    allWords.sort(function(a, b) { return (a.order || 0) - (b.order || 0); });
     if (!allWords.length) {
       document.getElementById('wordList').innerHTML =
         '<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M15 10s1 .5 1 2-1 2-1 2"/></svg><p>So\'zlar hali qo\'shilmagan</p></div>';
@@ -90,8 +96,11 @@ firebase.auth().onAuthStateChanged(function(user) {
     }
     buildTabs();
     renderWords(getFiltered());
-  }).catch(function() {
+  }).catch(function(err) {
     document.getElementById('loader').style.display = 'none';
+    document.getElementById('wordList').innerHTML =
+      '<div class="empty-state"><p>Xatolik yuz berdi. Qayta urinib ko\'ring.</p></div>';
+    console.error('Speaking vocab error:', err);
   });
 });
 
@@ -119,7 +128,7 @@ function getFiltered() {
   var q = (document.getElementById('searchInput').value || '').toLowerCase();
   return allWords.filter(function(w) {
     var matchTab = currentTab === 'ALL' || w.type === currentTab;
-    var matchQ   = !q || w.word.toLowerCase().includes(q) || (w.translation || '').toLowerCase().includes(q);
+    var matchQ   = !q || w.word.toLowerCase().includes(q) || (w.translation || w.uz || '').toLowerCase().includes(q);
     return matchTab && matchQ;
   });
 }
