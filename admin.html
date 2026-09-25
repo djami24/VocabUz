@@ -454,6 +454,28 @@ textarea.form-input {
 /* ── PAGE visibility ── */
 .tab-page { display: none; }
 .tab-page.active { display: block; }
+/* ── Topic Order ── */
+.to-item {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--white); border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm); padding: 12px 14px;
+  cursor: grab; user-select: none; transition: box-shadow .15s, border-color .15s;
+}
+.to-item:active { cursor: grabbing; }
+.to-item.drag-over { border-color: var(--blue); background: var(--blue-soft); }
+.to-item.dragging  { opacity: .45; }
+.to-drag-handle { color: var(--ink-soft); flex-shrink: 0; cursor: grab; }
+.to-num { font-size:.78rem; font-weight:700; color:var(--ink-soft); width:22px; text-align:center; flex-shrink:0; }
+.to-name { flex: 1; font-weight: 700; font-size:.92rem; color: var(--ink); }
+.to-btns { display: flex; gap: 4px; flex-shrink: 0; }
+.to-btn {
+  width:30px; height:30px; border-radius:8px; border:1.5px solid var(--line);
+  background:var(--bg); color:var(--ink-mid); cursor:pointer;
+  display:flex; align-items:center; justify-content:center; font-size:.85rem;
+  transition: background .12s, border-color .12s;
+}
+.to-btn:hover:not(:disabled) { background:var(--blue-soft); border-color:var(--blue); color:var(--blue); }
+.to-btn:disabled { opacity:.3; cursor:default; }
 
 /* ── SO'Z QO'SHISH WIZARD ── */
 .wizard-steps {
@@ -693,6 +715,10 @@ textarea.form-input {
       <div class="nav-item" onclick="showPage('visits')">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         Kirish tarixi
+      </div>
+      <div class="nav-item" onclick="showPage('topicorder')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Mavzu tartibi
       </div>
     </nav>
 
@@ -1204,6 +1230,38 @@ textarea.form-input {
         </div>
       </div>
     </div>
+
+    <!-- ══ MAVZU TARTIBI PAGE ══ -->
+    <div class="tab-page" id="page-topicorder">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Mavzu tartibi</div>
+          <div class="page-sub">Mavzularni yuqoriga-pastga suring — talabalar ham xuddi shunday tartibda ko'radi</div>
+        </div>
+        <select class="filter-select" id="toLevelFilter" onchange="loadTopicOrderPage()" style="min-width:90px">
+          <option value="A1">A1</option>
+          <option value="A2">A2</option>
+          <option value="B1">B1</option>
+          <option value="B2">B2</option>
+          <option value="C1">C1</option>
+        </select>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <p style="font-size:.82rem;color:var(--ink-soft);margin-bottom:14px;">
+            ☝️ Mavzuni suring yoki ▲▼ tugmalarini bosing. So'ng <strong>Saqlash</strong> tugmasini bosing.
+          </p>
+          <div id="topicOrderList" style="display:flex;flex-direction:column;gap:8px;min-height:60px;">
+            <div class="loading"><div class="spinner"></div>Yuklanmoqda…</div>
+          </div>
+          <div style="margin-top:18px;display:flex;gap:10px;justify-content:flex-end;">
+            <button class="btn-secondary" onclick="loadTopicOrderPage()">Bekor qilish</button>
+            <button class="btn-save" id="saveTopicOrderBtn" onclick="saveTopicOrder()">💾 Saqlash</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </main>
 </div>
 
@@ -1851,11 +1909,12 @@ function showPage(name) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   const navKeywords = {
-    dashboard: 'dashboard',
-    words:     "so'zlar",
-    addword:   "so'z qo'shish",
-    users:     'barcha foydalanuvchilar',
-    visits:    'kirish tarixi'
+    dashboard:  'dashboard',
+    words:      "so'zlar",
+    addword:    "so'z qo'shish",
+    users:      'barcha foydalanuvchilar',
+    visits:     'kirish tarixi',
+    topicorder: 'mavzu tartibi'
   };
   const kw = navKeywords[name] || name;
   document.querySelectorAll('.nav-item').forEach(n => {
@@ -1863,6 +1922,8 @@ function showPage(name) {
   });
   // Reset wizard when navigating to addword
   if(name === 'addword') goToStep(1);
+  // Load topic order page data
+  if(name === 'topicorder') loadTopicOrderPage();
   closeSidebar();
 }
 
@@ -2478,6 +2539,119 @@ async function addCategoryWord({ word, uz, type, example }) {
     addedByAdmin: true,
     addedAt:      firebase.firestore.FieldValue.serverTimestamp()
   });
+}
+
+// ══════════ MAVZU TARTIBI ══════════
+let toItems = [];       // joriy tartibdagi mavzu nomlari
+let toDragSrc = null;   // drag manba index
+
+async function loadTopicOrderPage() {
+  const level = document.getElementById('toLevelFilter').value;
+  const listEl = document.getElementById('topicOrderList');
+  listEl.innerHTML = '<div class="loading"><div class="spinner"></div>Yuklanmoqda…</div>';
+
+  try {
+    // 1) Firestore'dan shu darajadagi barcha mavzu nomlarini yig'ish
+    const snap = await db.collection('words')
+      .where('vocabType','==','topic')
+      .where('level','==', level)
+      .get();
+    const allTopics = [...new Set(snap.docs.map(d => d.data().topic).filter(Boolean))];
+
+    // 2) Saqlangan tartibni yuklash (config/topicOrder)
+    const cfgDoc = await db.collection('config').doc('topicOrder').get();
+    let savedOrder = (cfgDoc.exists && cfgDoc.data()[level]) ? cfgDoc.data()[level] : [];
+
+    // 3) Saqlangan tartibga yangi mavzularni qo'shish (oxiriga)
+    const known = new Set(savedOrder);
+    allTopics.forEach(t => { if(!known.has(t)) savedOrder.push(t); });
+    // Firestore'da yo'q bo'lib qolgan mavzularni olib tashlash
+    toItems = savedOrder.filter(t => allTopics.includes(t));
+
+    renderTopicOrderList();
+  } catch(e) {
+    listEl.innerHTML = '<div class="form-error">Yuklab bo\'lmadi: ' + esc(e.message) + '</div>';
+  }
+}
+
+function renderTopicOrderList() {
+  const listEl = document.getElementById('topicOrderList');
+  if(!toItems.length) {
+    listEl.innerHTML = '<p style="color:var(--ink-soft);font-size:.85rem;">Bu darajada hali mavzular yo\'q.</p>';
+    return;
+  }
+  listEl.innerHTML = toItems.map((name, i) => `
+    <div class="to-item" draggable="true"
+         data-idx="${i}"
+         ondragstart="toDragStart(event,${i})"
+         ondragover="toDragOver(event,${i})"
+         ondrop="toDrop(event,${i})"
+         ondragend="toDragEnd()">
+      <span class="to-drag-handle">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="18" x2="16" y2="18"/>
+        </svg>
+      </span>
+      <span class="to-num">${i+1}</span>
+      <span class="to-name">${esc(name)}</span>
+      <div class="to-btns">
+        <button class="to-btn" onclick="toMove(${i},-1)" ${i===0?'disabled':''} title="Yuqoriga">▲</button>
+        <button class="to-btn" onclick="toMove(${i},+1)" ${i===toItems.length-1?'disabled':''} title="Pastga">▼</button>
+      </div>
+    </div>`).join('');
+}
+
+function toMove(idx, dir) {
+  const newIdx = idx + dir;
+  if(newIdx < 0 || newIdx >= toItems.length) return;
+  [toItems[idx], toItems[newIdx]] = [toItems[newIdx], toItems[idx]];
+  renderTopicOrderList();
+}
+
+function toDragStart(e, idx) {
+  toDragSrc = idx;
+  e.dataTransfer.effectAllowed = 'move';
+  setTimeout(() => {
+    const el = document.querySelector(`.to-item[data-idx="${idx}"]`);
+    if(el) el.classList.add('dragging');
+  }, 0);
+}
+function toDragOver(e, idx) {
+  e.preventDefault();
+  document.querySelectorAll('.to-item').forEach(el => el.classList.remove('drag-over'));
+  const el = document.querySelector(`.to-item[data-idx="${idx}"]`);
+  if(el) el.classList.add('drag-over');
+}
+function toDrop(e, idx) {
+  e.preventDefault();
+  if(toDragSrc === null || toDragSrc === idx) return;
+  const moved = toItems.splice(toDragSrc, 1)[0];
+  toItems.splice(idx, 0, moved);
+  toDragSrc = null;
+  renderTopicOrderList();
+}
+function toDragEnd() {
+  toDragSrc = null;
+  document.querySelectorAll('.to-item').forEach(el => {
+    el.classList.remove('dragging','drag-over');
+  });
+}
+
+async function saveTopicOrder() {
+  const level = document.getElementById('toLevelFilter').value;
+  const btn = document.getElementById('saveTopicOrderBtn');
+  btn.disabled = true; btn.textContent = 'Saqlanmoqda…';
+  try {
+    await db.collection('config').doc('topicOrder').set(
+      { [level]: toItems },
+      { merge: true }
+    );
+    showToast('✅ Mavzu tartibi saqlandi!');
+  } catch(e) {
+    showToast('❌ Xato: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = '💾 Saqlash';
+  }
 }
 
 // ══════════ LOCAL WORDS SEED ══════════
