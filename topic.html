@@ -367,8 +367,6 @@ firebase.auth().onAuthStateChanged(function(user){
     });
 
     sortedDocs.forEach(function(d){
-      // Meta hujjatni o'tkazib yuboramiz
-      if(d.id === '__topicOrder__' || d.data()._isConfig) return;
       var w = Object.assign({ _id: d.id }, d.data());
       ALL_WORDS.push(w);
       if(w.topic && TOPIC_ORDER.indexOf(w.topic) === -1){
@@ -381,7 +379,7 @@ firebase.auth().onAuthStateChanged(function(user){
     // ─── Admin tomonidan saqlangan mavzu tartibini yuklash ───
     // config/topicOrder hujjatida har bir level uchun tartib saqlanadi.
     // Agar saqlangan tartib bo'lsa, TOPIC_ORDER qayta tartiblanadi.
-    db.collection('words').doc('__topicOrder__').get().then(function(cfgDoc) {
+    db.collection('config').doc('topicOrder').get().then(function(cfgDoc) {
       if(cfgDoc.exists) {
         var data = cfgDoc.data();
         // Har bir level uchun tartibni qo'llash
