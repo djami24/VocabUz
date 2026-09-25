@@ -376,8 +376,52 @@ firebase.auth().onAuthStateChanged(function(user){
       }
     });
 
-    saveState();
-    renderLevels();
+    // ─── Admin tomonidan saqlangan mavzu tartibini yuklash ───
+    // config/topicOrder hujjatida har bir level uchun tartib saqlanadi.
+    // Agar saqlangan tartib bo'lsa, TOPIC_ORDER qayta tartiblanadi.
+    db.collection('config').doc('topicOrder').get().then(function(cfgDoc) {
+      if(cfgDoc.exists) {
+        var data = cfgDoc.data();
+        // Har bir level uchun tartibni qo'llash
+        var levelsInData = Object.keys(data);
+        levelsInData.forEach(function(lvl) {
+          var savedOrder = data[lvl];
+          if(!Array.isArray(savedOrder)) return;
+          // TOPIC_ORDER ichidan bu leveldagi mavzularni olib, savedOrder bo'yicha tartiblash
+          var topicsInLevel = TOPIC_ORDER.filter(function(t) {
+            return ALL_WORDS.some(function(w){ return w.topic === t && w.level === lvl; });
+          });
+          // savedOrder bo'yicha mavjud mavzularni tartibga solamiz
+          var ordered = savedOrder.filter(function(t){ return topicsInLevel.includes(t); });
+          // savedOrder'da bo'lmagan yangi mavzularni oxiriga qo'shamiz
+          topicsInLevel.forEach(function(t){ if(!ordered.includes(t)) ordered.push(t); });
+          // TOPIC_ORDER ni yangilash: bu leveldagi mavzularni ordered bilan almashtirish
+          var otherTopics = TOPIC_ORDER.filter(function(t){
+            return !topicsInLevel.includes(t);
+          });
+          // Barcha topiclarni birlashtiramiz: boshqa levellar + bu level (ordered)
+          // Mavjud tartibda boshqa levellar qayerda kelgan bo'lsa, o'sha joyni saqlaymiz
+          var newOrder = [];
+          var orderedIdx = 0;
+          TOPIC_ORDER.forEach(function(t) {
+            if(topicsInLevel.includes(t)) {
+              if(orderedIdx < ordered.length) {
+                newOrder.push(ordered[orderedIdx++]);
+              }
+            } else {
+              newOrder.push(t);
+            }
+          });
+          TOPIC_ORDER = newOrder;
+        });
+      }
+      saveState();
+      renderLevels();
+    }).catch(function() {
+      // Config yo'q bo'lsa, word id tartibida davom etamiz
+      saveState();
+      renderLevels();
+    });
   }).catch(function(e){
     console.error('Yuklash xatosi:', e);
     renderLevels();
