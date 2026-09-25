@@ -608,8 +608,8 @@ let ALL_WORDS = [];
 // ═══════════════════════════════════════════════════════════
 //  STATE
 // ═══════════════════════════════════════════════════════════
-let bookmarks = JSON.parse(localStorage.getItem('vz_bookmarks') || '[]').map(Number);
-let likes     = JSON.parse(localStorage.getItem('vz_likes')     || '[]').map(Number);
+let bookmarks = JSON.parse(localStorage.getItem('vz_bookmarks') || '[]');
+let likes     = JSON.parse(localStorage.getItem('vz_likes')     || '[]');
 let learned   = JSON.parse(localStorage.getItem('vz_learned')   || '[]').map(Number);
 let activeTab = 'bookmark';
 let searchQ   = '';
@@ -648,8 +648,8 @@ document.addEventListener('DOMContentLoaded', function(){
       // Foydalanuvchi ma'lumotlari
       if(userDoc.exists){
         var data = userDoc.data();
-        if(data.bookmarks){ bookmarks = data.bookmarks.map(Number); saveBookmarks(); }
-        if(data.likes)    { likes     = data.likes.map(Number);     saveLikes(); }
+        if(data.bookmarks){ bookmarks = data.bookmarks; saveBookmarks(); }
+        if(data.likes)    { likes     = data.likes;             saveLikes(); }
         if(data.learned)  { learned   = data.learned.map(Number);   saveLearned(); }
       }
 
@@ -724,7 +724,7 @@ function switchTab(t){
 // ═══════════════════════════════════════════════════════════
 function getList(){
   const ids = activeTab === 'bookmark' ? bookmarks : likes;
-  let list = ALL_WORDS.filter(w => ids.includes(w.id));
+  let list = ALL_WORDS.filter(w => ids.includes(w.id) || ids.includes(w._docId));
   if(searchQ){
     const q = searchQ.toLowerCase();
     list = list.filter(w => w.word.toLowerCase().includes(q) || w.uz.toLowerCase().includes(q));
