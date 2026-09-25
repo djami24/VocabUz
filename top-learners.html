@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Top Learners — VocabUZ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --blue:#2196F3;--blue-deep:#1565C0;--blue-light:#E3F2FD;--blue-mid:#BBDEFB;
+  --green:#22C55E;--green-light:#DCFCE7;
+  --gold:#F59E0B;--gold-light:#FEF3C7;
+  --silver:#94A3B8;--silver-light:#F1F5F9;
+  --bronze:#B45309;--bronze-light:#FEF3C7;
+  --ink:#1A1A2E;--ink-mid:#5A6070;--ink-soft:#9AA0AD;
+  --white:#FFFFFF;--bg:#F0F6FF;
+  --shadow-sm:0 1px 4px rgba(33,150,243,.10);
+  --shadow-md:0 4px 16px rgba(33,150,243,.15);
+  --radius:16px;--radius-sm:12px;--bottom-nav-h:66px;
+}
+
+html,body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:var(--ink);}
+
+/* ── TOP BAR ── */
+.topbar{
+  position:sticky;top:0;z-index:100;
+  background:var(--bg);
+  padding:14px 16px 10px;
+  display:flex;align-items:center;gap:10px;
+}
+.back-btn{
+  width:38px;height:38px;border-radius:50%;
+  background:var(--white);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--shadow-sm);color:var(--ink-mid);flex-shrink:0;
+}
+.topbar-title{font-size:1.1rem;font-weight:800;flex:1;}
+.refresh-btn{
+  width:38px;height:38px;border-radius:50%;
+  background:var(--white);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--shadow-sm);color:var(--blue);flex-shrink:0;
+  transition:transform .4s;
+}
+.refresh-btn.spinning{transform:rotate(360deg);}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  height:var(--bottom-nav-h);
+  background:var(--white);
+  display:flex;
+  box-shadow:0 -1px 0 #e8eff8,0 -4px 16px rgba(33,150,243,.07);
+  z-index:200;
+}
+.bottom-nav-item{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:3px;
+  color:var(--ink-soft);font-size:.65rem;font-weight:600;
+  text-decoration:none;-webkit-tap-highlight-color:transparent;
+}
+.bottom-nav-item.is-active{color:var(--blue);}
+
+/* ── HERO BANNER ── */
+.hero-banner{
+  margin:0 16px 20px;
+  background:linear-gradient(135deg,#1565C0 0%,#42A5F5 100%);
+  border-radius:22px;
+  padding:24px 22px;
+  color:#fff;
+  position:relative;
+  overflow:hidden;
+}
+.hero-banner::before{
+  content:'';position:absolute;top:-40px;right:-30px;
+  width:140px;height:140px;border-radius:50%;
+  background:rgba(255,255,255,.08);pointer-events:none;
+}
+.hero-banner::after{
+  content:'';position:absolute;bottom:-20px;right:20px;
+  width:90px;height:90px;border-radius:50%;
+  background:rgba(255,255,255,.05);pointer-events:none;
+}
+.hero-label{font-size:.7rem;font-weight:700;opacity:.7;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;}
+.hero-title{font-size:1.5rem;font-weight:900;margin-bottom:4px;}
+.hero-sub{font-size:.82rem;opacity:.75;line-height:1.5;}
+.hero-trophy{
+  position:absolute;right:22px;top:50%;transform:translateY(-50%);
+  font-size:3.5rem;opacity:.25;
+}
+
+/* ── LAST UPDATED ── */
+.last-updated{
+  text-align:center;font-size:.72rem;color:var(--ink-soft);
+  margin-bottom:12px;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+}
+.live-dot{
+  width:7px;height:7px;border-radius:50%;background:#22C55E;
+  animation:pulse 1.8s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+
+/* ── SPINNER ── */
+.spinner-wrap{display:flex;align-items:center;justify-content:center;padding:60px 0;}
+.spinner{
+  width:36px;height:36px;
+  border:3px solid var(--blue-mid);border-top-color:var(--blue);
+  border-radius:50%;animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── TOP 3 PODIUM ── */
+.podium-wrap{
+  display:flex;align-items:flex-end;justify-content:center;
+  gap:10px;padding:0 16px 24px;
+}
+.podium-item{
+  display:flex;flex-direction:column;align-items:center;
+  flex:1;max-width:120px;
+}
+.podium-avatar{
+  width:56px;height:56px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;font-weight:900;color:#fff;
+  margin-bottom:8px;position:relative;flex-shrink:0;
+}
+.podium-avatar.rank-1{
+  width:68px;height:68px;font-size:1.3rem;
+  background:linear-gradient(135deg,#F59E0B,#FBBF24);
+  box-shadow:0 4px 16px rgba(245,158,11,.4);
+}
+.podium-avatar.rank-2{
+  background:linear-gradient(135deg,#64748B,#94A3B8);
+  box-shadow:0 4px 12px rgba(100,116,139,.3);
+}
+.podium-avatar.rank-3{
+  background:linear-gradient(135deg,#B45309,#D97706);
+  box-shadow:0 4px 12px rgba(180,83,9,.3);
+}
+.podium-crown{
+  position:absolute;top:-14px;left:50%;transform:translateX(-50%);
+  font-size:1.2rem;
+}
+.podium-name{
+  font-size:.78rem;font-weight:700;color:var(--ink);
+  text-align:center;max-width:100%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  margin-bottom:3px;
+}
+.podium-count{
+  font-size:.72rem;font-weight:600;color:var(--ink-soft);
+  text-align:center;margin-bottom:6px;
+}
+.podium-base{
+  width:100%;border-radius:12px 12px 0 0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;font-weight:900;color:#fff;
+}
+.podium-base.rank-1{height:80px;background:linear-gradient(180deg,#F59E0B,#D97706);}
+.podium-base.rank-2{height:60px;background:linear-gradient(180deg,#64748B,#475569);}
+.podium-base.rank-3{height:44px;background:linear-gradient(180deg,#B45309,#92400E);}
+
+/* ── LIST (4-10) ── */
+.list-section-label{
+  padding:0 16px 10px;
+  font-size:.72rem;font-weight:700;color:var(--ink-soft);
+  letter-spacing:.3px;text-transform:uppercase;
+}
+.learner-list{display:flex;flex-direction:column;gap:8px;padding:0 16px;}
+.learner-row{
+  background:var(--white);border-radius:var(--radius);
+  padding:14px 16px;box-shadow:var(--shadow-sm);
+  display:flex;align-items:center;gap:14px;
+  position:relative;overflow:hidden;
+}
+.learner-row.is-me{
+  border:2px solid var(--blue);
+}
+.learner-row.is-me::after{
+  content:'Siz';
+  position:absolute;right:12px;top:10px;
+  font-size:.65rem;font-weight:700;
+  background:var(--blue);color:#fff;
+  padding:2px 8px;border-radius:99px;
+}
+.rank-num{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.85rem;font-weight:800;color:var(--ink-mid);
+  flex-shrink:0;
+}
+.learner-avatar{
+  width:42px;height:42px;border-radius:50%;
+  background:linear-gradient(135deg,var(--blue),var(--blue-deep));
+  display:flex;align-items:center;justify-content:center;
+  font-size:.95rem;font-weight:800;color:#fff;
+  flex-shrink:0;
+}
+.learner-info{flex:1;min-width:0;}
+.learner-name{
+  font-size:.92rem;font-weight:700;color:var(--ink);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.learner-sub{font-size:.74rem;color:var(--ink-soft);margin-top:2px;}
+.learner-badge{
+  font-size:.78rem;font-weight:800;
+  background:var(--blue-light);color:var(--blue);
+  padding:4px 12px;border-radius:99px;flex-shrink:0;
+}
+
+/* ── EMPTY STATE ── */
+.empty-state{
+  display:flex;flex-direction:column;align-items:center;
+  padding:60px 24px;gap:14px;color:var(--ink-soft);text-align:center;
+}
+.empty-icon{
+  width:80px;height:80px;border-radius:50%;
+  background:var(--blue-light);
+  display:flex;align-items:center;justify-content:center;
+}
+.empty-title{font-size:1rem;font-weight:700;color:var(--ink);}
+.empty-sub{font-size:.84rem;line-height:1.5;max-width:240px;}
+
+/* ── MY RANK CARD ── */
+.my-rank-card{
+  margin:20px 16px 8px;
+  background:linear-gradient(135deg,var(--blue),var(--blue-deep));
+  border-radius:var(--radius);padding:16px;
+  display:flex;align-items:center;gap:14px;
+  box-shadow:0 4px 16px rgba(33,150,243,.3);
+}
+.my-rank-label{font-size:.72rem;font-weight:600;opacity:.75;color:#fff;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;}
+.my-rank-name{font-size:.97rem;font-weight:800;color:#fff;}
+.my-rank-num{
+  font-size:1.6rem;font-weight:900;color:#fff;
+  margin-left:auto;flex-shrink:0;
+}
+.my-rank-badge{
+  font-size:.75rem;font-weight:700;
+  background:rgba(255,255,255,.2);color:#fff;
+  padding:3px 10px;border-radius:99px;
+  margin-left:auto;flex-shrink:0;text-align:right;
+}
+
+/* ── PAGE PADDING ── */
+.page-content{padding:0 0 calc(var(--bottom-nav-h)+28px);}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <button class="back-btn" onclick="history.back()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <span class="topbar-title">🏆 Top Learners</span>
+  <button class="refresh-btn" id="refreshBtn" onclick="loadLeaderboard(true)">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.16"/></svg>
+  </button>
+</div>
+
+<div class="page-content">
+
+  <!-- Hero -->
+  <div class="hero-banner">
+    <div class="hero-label">Reyting</div>
+    <div class="hero-title">Top O'quvchilar</div>
+    <div class="hero-sub">Eng ko'p so'z o'rganganlar — real vaqt rejimida</div>
+    <div class="hero-trophy">🏆</div>
+  </div>
+
+  <!-- Spinner -->
+  <div class="spinner-wrap" id="loader">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Main content -->
+  <div id="mainContent" style="display:none;">
+
+    <!-- Live indicator -->
+    <div class="last-updated" id="lastUpdated">
+      <div class="live-dot"></div>
+      <span id="updatedText">Yangilanmoqda…</span>
+    </div>
+
+    <!-- My rank card (if outside top 10) -->
+    <div id="myRankCard" style="display:none;"></div>
+
+    <!-- Podium (top 3) -->
+    <div class="podium-wrap" id="podiumWrap"></div>
+
+    <!-- List (4–10) -->
+    <div class="list-section-label" id="listLabel" style="display:none;">4 – 10 O'RIN</div>
+    <div class="learner-list" id="learnerList"></div>
+
+    <!-- Empty state -->
+    <div class="empty-state" id="emptyState" style="display:none;">
+      <div class="empty-icon">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#2196F3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div class="empty-title">Hali foydalanuvchi yo'q</div>
+      <div class="empty-sub">So'z o'rganing va birinchi bo'lib reyting jadvalida ko'rining!</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <a class="bottom-nav-item is-active" href="index.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    Asosiy
+  </a>
+  <a class="bottom-nav-item" href="mywords.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    So'zlarim
+  </a>
+  <a class="bottom-nav-item" href="topic.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="7" x2="16" y2="7"/><line x1="10" y1="11" x2="16" y2="11"/></svg>
+    Mavzular
+  </a>
+  <a class="bottom-nav-item" href="search.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    Qidirish
+  </a>
+  <a class="bottom-nav-item" href="profile.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Profil
+  </a>
+</nav>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+var currentUser = null;
+var unsubscribe  = null; // real-time listener
+
+// ── Initials helper
+function getInitials(name) {
+  if (!name) return '?';
+  var parts = name.trim().split(/\s+/);
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+  return name[0].toUpperCase();
+}
+
+// ── Format time
+function formatTime(date) {
+  if (!date) return '';
+  var h = date.getHours().toString().padStart(2,'0');
+  var m = date.getMinutes().toString().padStart(2,'0');
+  var s = date.getSeconds().toString().padStart(2,'0');
+  return h + ':' + m + ':' + s;
+}
+
+// ── Auth
+firebase.auth().onAuthStateChanged(function(user) {
+  if (!user) { location.href = 'login.html'; return; }
+  currentUser = user;
+  loadLeaderboard(false);
+});
+
+// ── Load leaderboard
+function loadLeaderboard(manual) {
+  // Spinner animation on refresh button
+  if (manual) {
+    var btn = document.getElementById('refreshBtn');
+    btn.classList.add('spinning');
+    setTimeout(function(){ btn.classList.remove('spinning'); }, 500);
+  }
+
+  // Unsubscribe previous listener
+  if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+
+  document.getElementById('loader').style.display = 'flex';
+  document.getElementById('mainContent').style.display = 'none';
+
+  // Real-time listener on users collection
+  unsubscribe = db.collection('users').onSnapshot(function(snap) {
+    var users = [];
+    snap.forEach(function(doc) {
+      var data = doc.data();
+      var uid  = doc.id;
+
+      // Hisoblash: learned (mywords) + tvLearned (topic vocab) — unikal
+      var vzSet = new Set((data.learned  || []).map(Number));
+      var tvSet = new Set((data.tvLearned|| []).map(Number));
+      // Ikkala set ni birlashtirish
+      tvSet.forEach(function(id){ vzSet.add(id); });
+      var total = vzSet.size;
+
+      // svLearned speaking (string ids, alohida namespace)
+      var svCount = (data.svLearned || []).length;
+      total += svCount;
+
+      var name = data.name || data.email || 'Foydalanuvchi';
+
+      users.push({ uid: uid, name: name, total: total });
+    });
+
+    // Sort by total desc
+    users.sort(function(a, b){ return b.total - a.total; });
+
+    // Top 10
+    var top10 = users.slice(0, 10);
+
+    // Find current user rank
+    var myRank = -1;
+    var myData = null;
+    for (var i = 0; i < users.length; i++) {
+      if (users[i].uid === currentUser.uid) {
+        myRank = i + 1;
+        myData = users[i];
+        break;
+      }
+    }
+
+    render(top10, myRank, myData, users.length);
+
+    // Update timestamp
+    var now = new Date();
+    document.getElementById('updatedText').textContent =
+      'Oxirgi yangilanish: ' + formatTime(now) + ' · ' + users.length + ' ta foydalanuvchi';
+
+    document.getElementById('loader').style.display  = 'none';
+    document.getElementById('mainContent').style.display = 'block';
+  }, function(err) {
+    console.error(err);
+    document.getElementById('loader').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'block';
+    document.getElementById('emptyState').style.display = 'flex';
+  });
+}
+
+// ── Render
+function render(top10, myRank, myData, totalUsers) {
+  var podiumWrap   = document.getElementById('podiumWrap');
+  var learnerList  = document.getElementById('learnerList');
+  var listLabel    = document.getElementById('listLabel');
+  var emptyState   = document.getElementById('emptyState');
+  var myRankCard   = document.getElementById('myRankCard');
+
+  if (top10.length === 0) {
+    emptyState.style.display = 'flex';
+    podiumWrap.innerHTML = '';
+    learnerList.innerHTML = '';
+    listLabel.style.display = 'none';
+    myRankCard.style.display = 'none';
+    return;
+  }
+  emptyState.style.display = 'none';
+
+  // ── My rank card (agar top10 da yo'q bo'lsa)
+  if (myRank > 10 && myData) {
+    myRankCard.style.display = 'block';
+    myRankCard.innerHTML = `
+      <div class="my-rank-card">
+        <div>
+          <div class="my-rank-label">Sizning o'rningiz</div>
+          <div class="my-rank-name">${escHtml(myData.name)}</div>
+        </div>
+        <div style="margin-left:auto;text-align:right;">
+          <div style="font-size:.72rem;opacity:.7;color:#fff;margin-bottom:2px;">${totalUsers} ta ichida</div>
+          <div style="font-size:1.5rem;font-weight:900;color:#fff;">#${myRank}</div>
+          <div style="font-size:.75rem;opacity:.75;color:#fff;">${myData.total} ta so'z</div>
+        </div>
+      </div>`;
+  } else {
+    myRankCard.style.display = 'none';
+  }
+
+  // ── Podium (top 3)
+  var podiumOrder = []; // 2nd, 1st, 3rd display order
+  if (top10.length === 1)      podiumOrder = [null, top10[0], null];
+  else if (top10.length === 2) podiumOrder = [top10[1], top10[0], null];
+  else                         podiumOrder = [top10[1], top10[0], top10[2]];
+
+  var rankLabels = [2, 1, 3];
+  var rankClass  = ['rank-2','rank-1','rank-3'];
+  var medals     = ['🥈','🥇','🥉'];
+  var heights    = ['rank-2','rank-1','rank-3'];
+
+  var podiumHtml = '';
+  for (var i = 0; i < 3; i++) {
+    var u = podiumOrder[i];
+    var rk = rankLabels[i];
+    var isMe = u && u.uid === currentUser.uid;
+    if (!u) {
+      podiumHtml += '<div class="podium-item" style="opacity:0;pointer-events:none;"></div>';
+      continue;
+    }
+    podiumHtml += `
+      <div class="podium-item">
+        <div class="podium-avatar ${rankClass[i]}"${isMe?' style="outline:3px solid rgba(255,255,255,.7);"':''}>
+          ${rk === 1 ? '<div class="podium-crown">👑</div>' : ''}
+          ${getInitials(u.name)}
+        </div>
+        <div class="podium-name"${isMe?' style="color:var(--blue);"':''}>${escHtml(shortName(u.name))}</div>
+        <div class="podium-count">${u.total} so'z</div>
+        <div class="podium-base ${heights[i]}">${medals[i]}</div>
+      </div>`;
+  }
+  podiumWrap.innerHTML = podiumHtml;
+
+  // ── List (4-10)
+  var rest = top10.slice(3);
+  if (rest.length > 0) {
+    listLabel.style.display = 'block';
+    var listHtml = '';
+    rest.forEach(function(u, idx) {
+      var rank   = idx + 4;
+      var isMe   = u.uid === currentUser.uid;
+      var avatar = getInitials(u.name);
+      // Avatar color variety
+      var colors = [
+        'linear-gradient(135deg,#2196F3,#1565C0)',
+        'linear-gradient(135deg,#22C55E,#15803D)',
+        'linear-gradient(135deg,#F59E0B,#D97706)',
+        'linear-gradient(135deg,#8B5CF6,#6D28D9)',
+        'linear-gradient(135deg,#EF4444,#DC2626)',
+        'linear-gradient(135deg,#06B6D4,#0E7490)',
+        'linear-gradient(135deg,#EC4899,#BE185D)',
+      ];
+      var color = colors[(rank - 4) % colors.length];
+      listHtml += `
+        <div class="learner-row${isMe?' is-me':''}">
+          <div class="rank-num">${rank}</div>
+          <div class="learner-avatar" style="background:${color}">${avatar}</div>
+          <div class="learner-info">
+            <div class="learner-name">${escHtml(u.name)}</div>
+            <div class="learner-sub">${u.total} ta so'z o'rganilgan</div>
+          </div>
+          <div class="learner-badge">${u.total} 📚</div>
+        </div>`;
+    });
+    learnerList.innerHTML = listHtml;
+  } else {
+    listLabel.style.display = 'none';
+    learnerList.innerHTML = '';
+  }
+}
+
+// ── Helpers
+function shortName(name) {
+  if (!name) return '?';
+  var parts = name.trim().split(/\s+/);
+  if (parts.length >= 2) return parts[0] + ' ' + parts[1][0] + '.';
+  return parts[0];
+}
+
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
