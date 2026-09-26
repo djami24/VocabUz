@@ -499,12 +499,13 @@ firebase.auth().onAuthStateChanged(function(user){
     });
 
     var data = doc.exists ? doc.data() : {};
-    var learnedIds  = data.learned  || [];
-    var bookmarks   = data.bookmarks || [];
+    var learnedIds  = data.learned    || [];
+    var svLearnedIds = data.svLearned || [];  // speaking vocabulary
+    var bookmarks   = data.bookmarks  || [];
     var activityLog = data.activityLog || {}; // { "2025-01-15": 5, ... }
 
     // ── COMPUTE STATS ──────────────────────────────────────
-    var totalLearned = learnedIds.length;
+    var totalLearned = learnedIds.length + svLearnedIds.length;  // topic + speaking
     var totalWords   = ALL_WORDS.length;
 
     // Bugungi o'rganilganlar
