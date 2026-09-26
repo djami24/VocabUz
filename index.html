@@ -241,6 +241,7 @@ function setAvatarImg(elementId, size) {
 
 document.addEventListener('DOMContentLoaded', function () {
   var GOAL = 1000;
+  var _currentUser = null;
 
   function renderLearnedCount(total) {
     var pct = Math.min(Math.round((total / GOAL) * 100), 100);
@@ -252,40 +253,52 @@ document.addEventListener('DOMContentLoaded', function () {
     if (barEl)   setTimeout(function () { barEl.style.width = pct + '%'; }, 200);
   }
 
-  firebase.auth().onAuthStateChanged(function (user) {
-    if (!user) { location.href = 'login.html'; return; }
-    var name = user.displayName || user.email || 'Foydalanuvchi';
-    document.getElementById('homeUserName').textContent = name;
-    document.getElementById('homeUserSub').textContent = user.email || '';
-    setAvatarImg('homeAvatar', 44);
-
-    // ═══ O'RGANILGAN SO'ZLAR SONI — Firestore'dan o'qish ═══
-    // Dastlab localStorage dan tezkor ko'rsatish
-    var vzLocal  = JSON.parse(localStorage.getItem('vz_learned') || '[]').map(Number);
-    var svLocal  = JSON.parse(localStorage.getItem('sv_learned') || '[]');
+  // Firestore + localStorage'dan o'qib ko'rsatish
+  function loadLearnedCount(user) {
+    // 1) Tezkor: localStorage'dan darhol
+    var vzLocal    = JSON.parse(localStorage.getItem('vz_learned') || '[]').map(Number);
+    var svLocal    = JSON.parse(localStorage.getItem('sv_learned') || '[]');
     var localTotal = new Set(vzLocal).size + new Set(svLocal).size;
-    renderLearnedCount(localTotal);
+    if (localTotal > 0) renderLearnedCount(localTotal);
 
-    // Keyin Firestore'dan aniq ma'lumotni yuklab yangilash
+    // 2) Firestore'dan aniq raqam
     db.collection('users').doc(user.uid).get().then(function (doc) {
-      console.log('[VocabUZ index] doc.exists:', doc.exists, '| UID:', user.uid);
-      var data = doc.exists ? doc.data() : {};
-      // Topic/Writing/mywords learned (numeric ids)
-      var topicLearned = (data.learned || []).map(Number);
-      // Speaking learned (string docIds)
-      var svLearned    = data.svLearned || [];
-      // Unikal hisoblash: numeric ids + speaking string ids (boshqa namespace)
+      var data         = doc.exists ? doc.data() : {};
+      var topicLearned = (data.learned   || []).map(Number);
+      var svLearned    =  data.svLearned || [];
       var numSet = new Set(topicLearned);
       var svSet  = new Set(svLearned);
       var total  = numSet.size + svSet.size;
-      console.log('[VocabUZ index] topicLearned:', topicLearned.length, '| svLearned:', svLearned.length, '| total:', total);
-      // localStorage ni yangilash (boshqa tablar uchun)
       localStorage.setItem('vz_learned', JSON.stringify(Array.from(numSet)));
       localStorage.setItem('sv_learned', JSON.stringify(Array.from(svSet)));
       renderLearnedCount(total);
     }).catch(function (err) {
-      console.error('[VocabUZ index] Firestore read XATO:', err.code, err.message);
+      console.error('[VocabUZ] Firestore read xato:', err.code, err.message);
     });
+  }
+
+  firebase.auth().onAuthStateChanged(function (user) {
+    if (!user) { location.href = 'login.html'; return; }
+    _currentUser = user;
+    var name = user.displayName || user.email || 'Foydalanuvchi';
+    document.getElementById('homeUserName').textContent = name;
+    document.getElementById('homeUserSub').textContent = user.email || '';
+    setAvatarImg('homeAvatar', 44);
+    loadLearnedCount(user);
+  });
+
+  // Sahifaga qaytganda avtomatik yangilash (topic.html -> index.html)
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible' && _currentUser) {
+      loadLearnedCount(_currentUser);
+    }
+  });
+
+  // localStorage o'zgarganda yangilash (boshqa tab/sahifadan)
+  window.addEventListener('storage', function (e) {
+    if ((e.key === 'vz_learned' || e.key === 'sv_learned') && _currentUser) {
+      loadLearnedCount(_currentUser);
+    }
   });
 });
 
