@@ -351,6 +351,9 @@ firebase.auth().onAuthStateChanged(function(user){
       if(userDoc.data().learned)    learnedIds   = userDoc.data().learned.map(Number);
       if(userDoc.data().passed)     passedTopics = userDoc.data().passed;
       if(userDoc.data().bookmarks)  bookmarks    = userDoc.data().bookmarks.map(Number);
+      console.log('[VocabUZ] Firestore\'dan yuklandi. Learned:', learnedIds.length, 'IDs:', learnedIds);
+    } else {
+      console.log('[VocabUZ] Foydalanuvchi hujjati Firestore\'da yo\'q! UID:', user.uid);
     }
 
     // Firestore'dan barcha so'zlarni yuklash
@@ -432,9 +435,14 @@ function saveToFirestore(){
   const ref = db.collection('users').doc(currentUser.uid);
   const data = { learned: learnedIds, passed: passedTopics, bookmarks: bookmarks };
   // Always use set+merge so we never overwrite svLearned or other fields
-  ref.set(data, {merge:true}).catch(function(err){
-    console.warn('saveToFirestore error:', err);
-  });
+  ref.set(data, {merge:true})
+    .then(function(){
+      console.log('[VocabUZ] Firestore saqlandi. Learned:', learnedIds.length);
+    })
+    .catch(function(err){
+      console.error('[VocabUZ] saveToFirestore XATO:', err.code, err.message);
+      showToast('⚠️ Saqlashda xato: ' + (err.code || err.message));
+    });
 }
 
 function logActivityToday(delta){
@@ -675,7 +683,7 @@ function markLearned(id){
   else      { learnedIds.splice(idx,1); showToast("O'rganilganlardan olib tashlandi"); logActivityToday(-1); }
   saveState();
   saveToFirestore();
-  renderWords();
+  renderWords(); // so'zlar ro'yxatini yangilaydi + topbar soni
 }
 
 function toggleBookmark(id){
