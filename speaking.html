@@ -230,9 +230,12 @@ function svSaveLocal() {
 function svSaveFirestore() {
   if (!currentUser) return;
   var ref = db.collection('users').doc(currentUser.uid);
+  // Save svLearned and bookmarks separately using merge so we don't
+  // overwrite data written by other pages (topic.html, mywords.html).
+  // bookmarks is a shared field across all vocab sections — always merge it.
   var data = { svLearned: svLearned, bookmarks: svBookmarks };
-  ref.update(data).catch(function() {
-    ref.set(data, { merge: true });
+  ref.set(data, { merge: true }).catch(function(err) {
+    console.warn('svSaveFirestore error:', err);
   });
 }
 
