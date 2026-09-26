@@ -269,11 +269,21 @@ document.addEventListener('DOMContentLoaded', function () {
       var svLearned    =  data.svLearned || [];
       var numSet = new Set(topicLearned);
       var svSet  = new Set(svLearned);
-      var total  = numSet.size + svSet.size;
-      // UID asosida kalit bilan saqlash (topic.html bilan mos)
-      localStorage.setItem('vz_learned_' + uid, JSON.stringify(Array.from(numSet)));
-      localStorage.setItem('sv_learned_' + uid, JSON.stringify(Array.from(svSet)));
-      renderLearnedCount(total);
+      var fsTotal = numSet.size + svSet.size;
+
+      if (fsTotal > 0) {
+        // Firestore'da ma'lumot bor — localStorage ni yangilab ko'rsat
+        localStorage.setItem('vz_learned_' + uid, JSON.stringify(Array.from(numSet)));
+        localStorage.setItem('sv_learned_' + uid, JSON.stringify(Array.from(svSet)));
+        renderLearnedCount(fsTotal);
+      } else {
+        // Firestore 0 qaytardi — localStorage'dagi so'zlarni ko'rsat
+        // (topic.html Firestore'ga hali yozmagan bo'lishi mumkin)
+        var lsVz  = JSON.parse(localStorage.getItem('vz_learned_' + uid) || '[]').map(Number);
+        var lsSv  = JSON.parse(localStorage.getItem('sv_learned_' + uid) || '[]');
+        var lsTotal = new Set(lsVz).size + new Set(lsSv).size;
+        renderLearnedCount(lsTotal > 0 ? lsTotal : 0);
+      }
     }).catch(function (err) {
       console.error('[VocabUZ] Firestore read xato:', err.code, err.message);
     });
