@@ -323,16 +323,16 @@ function isTopicUnlocked(topic){
 }
 
 function saveState(){
-  localStorage.setItem('vz_learned',    JSON.stringify(learnedIds));
-  localStorage.setItem('vz_passed',     JSON.stringify(passedTopics));
-  localStorage.setItem('vz_bookmarks',  JSON.stringify(bookmarks));
-  localStorage.setItem('vz_likes',      JSON.stringify(likes));
+  lsSet('vz_learned', JSON.stringify(learnedIds));
+  lsSet('vz_passed', JSON.stringify(passedTopics));
+  lsSet('vz_bookmarks', JSON.stringify(bookmarks));
+  lsSet('vz_likes', JSON.stringify(likes));
 }
 function loadLocalState(){
-  learnedIds   = JSON.parse(localStorage.getItem('vz_learned')   || '[]').map(Number);
-  passedTopics = JSON.parse(localStorage.getItem('vz_passed')    || '[]');
-  bookmarks    = JSON.parse(localStorage.getItem('vz_bookmarks') || '[]');
-  likes        = JSON.parse(localStorage.getItem('vz_likes')     || '[]');
+  learnedIds   = JSON.parse(lsGet('vz_learned', '[]')).map(Number);
+  passedTopics = JSON.parse(lsGet('vz_passed', '[]'));
+  bookmarks    = JSON.parse(lsGet('vz_bookmarks', '[]'));
+  likes        = JSON.parse(lsGet('vz_likes', '[]'));
 }
 
 // ─── FIREBASE ────────────────────────────────────────────
@@ -906,8 +906,8 @@ function closeTestGoNext(topic){
 
 // Storage sync
 window.addEventListener('storage', function(e){
-  if(e.key==='vz_learned'){ learnedIds=JSON.parse(e.newValue||'[]').map(Number); }
-  if(e.key==='vz_passed') { passedTopics=JSON.parse(e.newValue||'[]'); }
+  if(e.key===lsKey('vz_learned')){ learnedIds=JSON.parse(e.newValue||'[]').map(Number); }
+  if(e.key===lsKey('vz_passed')) { passedTopics=JSON.parse(e.newValue||'[]'); }
 });
 </script>
 </body>
