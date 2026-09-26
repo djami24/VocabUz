@@ -620,7 +620,8 @@ document.addEventListener('DOMContentLoaded', function(){
     currentUser = user;
 
     // Load from localStorage immediately as a quick start
-    bookmarks        = JSON.parse(lsGet('vz_bookmarks', '[]')).map(Number);
+    function parseId(x){ var n = Number(x); return isNaN(n) ? x : n; }
+    bookmarks        = JSON.parse(lsGet('vz_bookmarks', '[]')).map(parseId);
     learned          = JSON.parse(lsGet('vz_learned', '[]')).map(Number);
     svLearnedMywords = JSON.parse(lsGet('sv_learned', '[]'));
 
@@ -637,7 +638,7 @@ document.addEventListener('DOMContentLoaded', function(){
         var data = userDoc.data();
         // bookmarks: numeric ids shared across all vocab sections
         if(Array.isArray(data.bookmarks)){
-          bookmarks = data.bookmarks.map(Number);
+          bookmarks = data.bookmarks.map(parseId);
           lsSet('vz_bookmarks', JSON.stringify(bookmarks));
         }
         // learned: topic/writing numeric ids
