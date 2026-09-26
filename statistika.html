@@ -479,13 +479,15 @@ function dayName(i){ return ['Du','Se','Ch','Pa','Ju','Sh','Ya'][i]; }
 firebase.auth().onAuthStateChanged(function(user){
   if(!user){ location.href='login.html'; return; }
 
-  // Load user data AND admin-added Firestore topic words in parallel
+  // Load user data + topic words + speaking words in parallel
   Promise.all([
     db.collection('users').doc(user.uid).get(),
-    db.collection('words').where('vocabType','==','topic').get()
+    db.collection('words').where('vocabType','==','topic').get(),
+    db.collection('words').where('category','==','speaking').get()
   ]).then(function(results){
-    var doc       = results[0];
-    var wordsSnap = results[1];
+    var doc          = results[0];
+    var wordsSnap    = results[1];
+    var svWordsSnap  = results[2];
     document.getElementById('loader').style.display='none';
 
     // Merge Firestore-added topic words into ALL_WORDS
@@ -496,6 +498,12 @@ firebase.auth().onAuthStateChanged(function(user){
         ALL_WORDS.push(w);
         existingIds.add(w.id);
       }
+    });
+
+    // Speaking so'zlarini SV_WORDS ga yuklash (topicMap uchun)
+    var SV_WORDS = svWordsSnap.docs.map(function(d){
+      var w = d.data();
+      return Object.assign({ _docId: d.id }, w);
     });
 
     var data = doc.exists ? doc.data() : {};
@@ -554,18 +562,29 @@ firebase.auth().onAuthStateChanged(function(user){
       db.collection('users').doc(user.uid).update({maxStreak: maxStreak}).catch(function(){});
     }
 
-    // Level breakdown
+    // Level breakdown (topic + speaking)
     var levelMap = {A2:0,B1:0,B2:0,C1:0};
     learnedIds.forEach(function(lid){
       var w = ALL_WORDS.find(function(x){ return String(x.id)===String(lid)||x.id===lid; });
       if(w && levelMap[w.level]!==undefined) levelMap[w.level]++;
     });
+    svLearnedIds.forEach(function(docId){
+      var w = SV_WORDS.find(function(x){ return x._docId===docId; });
+      if(w && levelMap[w.level]!==undefined) levelMap[w.level]++;
+    });
 
-    // Topic breakdown
+    // Topic breakdown (topic + speaking)
     var topicMap = {};
     learnedIds.forEach(function(lid){
       var w = ALL_WORDS.find(function(x){ return String(x.id)===String(lid)||x.id===lid; });
       if(w){ topicMap[w.topic] = (topicMap[w.topic]||0)+1; }
+    });
+    svLearnedIds.forEach(function(docId){
+      var w = SV_WORDS.find(function(x){ return x._docId===docId; });
+      if(w){
+        var label = (w.unit || w.type || w.topic || 'Speaking');
+        topicMap[label] = (topicMap[label]||0)+1;
+      }
     });
     var topicArr = Object.keys(topicMap).map(function(k){ return {name:k,count:topicMap[k]}; });
     topicArr.sort(function(a,b){ return b.count-a.count; });
