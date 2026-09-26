@@ -1551,8 +1551,14 @@ async function seedWordsToFirestore() {
 // ── USERS ──
 async function loadUsers() {
   try {
-    const snap = await db.collection('users').orderBy('createdAt', 'desc').get();
+    const snap = await db.collection('users').get();
     allUsers = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+    // createdAt bo'lganlari avval, bo'lmaganlar oxirida
+    allUsers.sort(function(a, b) {
+      var at = a.createdAt ? (a.createdAt.toDate ? a.createdAt.toDate() : new Date(a.createdAt)) : new Date(0);
+      var bt = b.createdAt ? (b.createdAt.toDate ? b.createdAt.toDate() : new Date(b.createdAt)) : new Date(0);
+      return bt - at;
+    });
     filteredUsers = [...allUsers];
     renderUsersTable();
     document.getElementById('statUsers').textContent = allUsers.length;
