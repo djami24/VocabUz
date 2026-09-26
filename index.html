@@ -240,45 +240,52 @@ function setAvatarImg(elementId, size) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+  var GOAL = 1000;
+
+  function renderLearnedCount(total) {
+    var pct = Math.min(Math.round((total / GOAL) * 100), 100);
+    var countEl = document.getElementById('heroLearnedCount');
+    var barEl   = document.getElementById('heroProgressBar');
+    var pctEl   = document.getElementById('heroProgressPct');
+    if (countEl) countEl.textContent = total;
+    if (pctEl)   pctEl.textContent   = pct + '%';
+    if (barEl)   setTimeout(function () { barEl.style.width = pct + '%'; }, 200);
+  }
+
   firebase.auth().onAuthStateChanged(function (user) {
     if (!user) { location.href = 'login.html'; return; }
     var name = user.displayName || user.email || 'Foydalanuvchi';
     document.getElementById('homeUserName').textContent = name;
     document.getElementById('homeUserSub').textContent = user.email || '';
     setAvatarImg('homeAvatar', 44);
+
+    // ═══ O'RGANILGAN SO'ZLAR SONI — Firestore'dan o'qish ═══
+    // Dastlab localStorage dan tezkor ko'rsatish
+    var vzLocal  = JSON.parse(localStorage.getItem('vz_learned') || '[]').map(Number);
+    var svLocal  = JSON.parse(localStorage.getItem('sv_learned') || '[]');
+    var localTotal = new Set(vzLocal).size + new Set(svLocal).size;
+    renderLearnedCount(localTotal);
+
+    // Keyin Firestore'dan aniq ma'lumotni yuklab yangilash
+    db.collection('users').doc(user.uid).get().then(function (doc) {
+      if (!doc.exists) return;
+      var data = doc.data();
+      // Topic/Writing/mywords learned (numeric ids)
+      var topicLearned = (data.learned || []).map(Number);
+      // Speaking learned (string docIds)
+      var svLearned    = data.svLearned || [];
+      // Unikal hisoblash: numeric ids + speaking string ids (boshqa namespace)
+      var numSet = new Set(topicLearned);
+      var svSet  = new Set(svLearned);
+      var total  = numSet.size + svSet.size;
+      // localStorage ni yangilash (boshqa tablar uchun)
+      localStorage.setItem('vz_learned', JSON.stringify(Array.from(numSet)));
+      localStorage.setItem('sv_learned', JSON.stringify(Array.from(svSet)));
+      renderLearnedCount(total);
+    }).catch(function (err) {
+      console.warn('Firestore read error:', err);
+    });
   });
-
-  // ═══ O'RGANILGAN SO'ZLAR SONI (Ko'k kartochka) ═══
-  function updateLearnedCount() {
-    var GOAL = 1000;
-    // vz_learned va tv_learned — numeric id lar (topic + mywords + flashcards)
-    var vzLearned = JSON.parse(localStorage.getItem('vz_learned') || '[]').map(Number);
-    var tvLearned = JSON.parse(localStorage.getItem('tv_learned') || '[]').map(Number);
-    // sv_learned — speaking so'zlari (Firestore docId string lar, alohida namespace)
-    var svLearned = JSON.parse(localStorage.getItem('sv_learned') || '[]');
-
-    // Numeric so'zlarni unikal birlashtirish
-    var numSet = new Set([].concat(vzLearned, tvLearned));
-    // Speaking so'zlari alohida (boshqa namespace)
-    var svSet = new Set(svLearned);
-    var total = numSet.size + svSet.size;
-
-    var pct = Math.min(Math.round((total / GOAL) * 100), 100);
-
-    var countEl = document.getElementById('heroLearnedCount');
-    var barEl   = document.getElementById('heroProgressBar');
-    var pctEl   = document.getElementById('heroProgressPct');
-
-    if (countEl) countEl.textContent = total;
-    if (pctEl)   pctEl.textContent   = pct + '%';
-
-    // Animatsiya bilan progress bar
-    if (barEl) {
-      setTimeout(function () { barEl.style.width = pct + '%'; }, 200);
-    }
-  }
-
-  updateLearnedCount();
 });
 
 // ═══ BANNER CAROUSEL ═══
