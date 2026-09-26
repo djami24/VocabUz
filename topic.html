@@ -431,7 +431,10 @@ function saveToFirestore(){
   if(!currentUser) return;
   const ref = db.collection('users').doc(currentUser.uid);
   const data = { learned: learnedIds, passed: passedTopics, bookmarks: bookmarks };
-  ref.update(data).catch(function(){ ref.set(data, {merge:true}); });
+  // Always use set+merge so we never overwrite svLearned or other fields
+  ref.set(data, {merge:true}).catch(function(err){
+    console.warn('saveToFirestore error:', err);
+  });
 }
 
 function logActivityToday(delta){
