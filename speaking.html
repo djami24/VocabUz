@@ -221,19 +221,18 @@ var TYPE_EMOJIS = ['🗣️','💬','🎯','📢','🧠','✨','🔥','💡','�
 // ═══ PERSIST ═══
 function svLoadLocal() {
   svLearned   = JSON.parse(lsGet('sv_learned', '[]'));
-  svBookmarks = JSON.parse(lsGet('vz_bookmarks', '[]')).map(Number);
+  svBookmarks = JSON.parse(lsGet('sv_bookmarks', '[]')).map(Number);
 }
 function svSaveLocal() {
   lsSet('sv_learned', JSON.stringify(svLearned));
-  lsSet('vz_bookmarks', JSON.stringify(svBookmarks));
+  lsSet('sv_bookmarks', JSON.stringify(svBookmarks));
 }
 function svSaveFirestore() {
   if (!currentUser) return;
   var ref = db.collection('users').doc(currentUser.uid);
-  // Save svLearned and bookmarks separately using merge so we don't
-  // overwrite data written by other pages (topic.html, mywords.html).
-  // bookmarks is a shared field across all vocab sections — always merge it.
-  var data = { svLearned: svLearned, bookmarks: svBookmarks };
+  // Save svLearned and svBookmarks into their own fields so they don't
+  // touch the shared 'bookmarks' field used by topic.html / mywords.html.
+  var data = { svLearned: svLearned, svBookmarks: svBookmarks };
   ref.set(data, { merge: true }).catch(function(err) {
     console.warn('svSaveFirestore error:', err);
   });
@@ -269,7 +268,7 @@ firebase.auth().onAuthStateChanged(function(user) {
     if (userDoc.exists) {
       var ud = userDoc.data();
       (ud.svLearned   || []).forEach(function(id) { if (!svLearned.includes(id))   svLearned.push(id); });
-      svBookmarks = (ud.bookmarks || []).map(Number);
+      svBookmarks = (ud.svBookmarks || []).map(Number);
       svSaveLocal();
     }
 
