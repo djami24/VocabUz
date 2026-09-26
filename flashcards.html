@@ -613,9 +613,9 @@ firebase.auth().onAuthStateChanged(function(user){
     if(userDoc.exists && userDoc.data().learned){
       learnedIds = userDoc.data().learned.map(function(x){ return Number(x); });
     } else {
-      learnedIds = JSON.parse(localStorage.getItem('vz_learned') || '[]').map(Number);
+      learnedIds = JSON.parse(lsGet('vz_learned','[]')).map(Number);
     }
-    localStorage.setItem('vz_learned', JSON.stringify(learnedIds));
+    lsSet('vz_learned', JSON.stringify(learnedIds));
 
     // Firestore'dan haqiqiy so'zlarni yuklash
     ALL_WORDS = wordsSnap.docs
@@ -634,7 +634,7 @@ firebase.auth().onAuthStateChanged(function(user){
   }).catch(function(){
     // Firestore ishlamasa localStorage'dan olamiz
     document.getElementById('loader').style.display = 'none';
-    learnedIds = JSON.parse(localStorage.getItem('vz_learned') || '[]').map(Number);
+    learnedIds = JSON.parse(lsGet('vz_learned','[]')).map(Number);
     renderMain();
   });
 });
@@ -945,7 +945,7 @@ function showToast(msg){
 
 // ── REAL-TIME LISTEN ──────────────────────────────────────
 window.addEventListener('storage', function(e){
-  if(e.key === 'vz_learned'){
+  if(e.key === lsKey('vz_learned')){
     learnedIds = JSON.parse(e.newValue || '[]').map(Number);
     renderMain();
   }
