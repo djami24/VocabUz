@@ -608,27 +608,27 @@ let ALL_WORDS = [];
 // ═══════════════════════════════════════════════════════════
 //  STATE
 // ═══════════════════════════════════════════════════════════
-let bookmarks = JSON.parse(localStorage.getItem('vz_bookmarks') || '[]');
-let likes     = JSON.parse(localStorage.getItem('vz_likes')     || '[]');
-let learned   = JSON.parse(localStorage.getItem('vz_learned')   || '[]').map(Number);
+let bookmarks = [];
+let likes     = [];
+let learned   = [];
 let activeTab = 'bookmark';
 let searchQ   = '';
 let currentModalWord = null;
 let currentUser = null;
 
 function saveBookmarks(){
-  localStorage.setItem('vz_bookmarks', JSON.stringify(bookmarks));
+  lsSet('vz_bookmarks', JSON.stringify(bookmarks));
   if(currentUser && typeof db !== 'undefined'){
     db.collection('users').doc(currentUser.uid).set({ bookmarks: bookmarks }, { merge: true }).catch(function(){});
   }
 }
 function saveLikes(){
-  localStorage.setItem('vz_likes', JSON.stringify(likes));
+  lsSet('vz_likes', JSON.stringify(likes));
   if(currentUser && typeof db !== 'undefined'){
     db.collection('users').doc(currentUser.uid).set({ likes: likes }, { merge: true }).catch(function(){});
   }
 }
-function saveLearned(){   localStorage.setItem('vz_learned',   JSON.stringify(learned));   }
+function saveLearned(){   lsSet('vz_learned', JSON.stringify(learned));   }
 
 // Firebase auth + Firestore so'zlarni yuklash
 // Firebase script teglar <body> oxirida yuklanadi
@@ -651,6 +651,7 @@ document.addEventListener('DOMContentLoaded', function(){
         if(data.bookmarks){ bookmarks = data.bookmarks; saveBookmarks(); }
         if(data.likes)    { likes     = data.likes;             saveLikes(); }
         if(data.learned)  { learned   = data.learned.map(Number);   saveLearned(); }
+        else              { learned   = JSON.parse(lsGet('vz_learned','[]')).map(Number); }
       }
 
       // Barcha so'zlarni yuklash va id bo'yicha tartiblash
