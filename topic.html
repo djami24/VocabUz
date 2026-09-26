@@ -333,8 +333,8 @@ function saveState(){
 function loadLocalState(){
   learnedIds   = JSON.parse(lsGet('vz_learned', '[]')).map(Number);
   passedTopics = JSON.parse(lsGet('vz_passed', '[]'));
-  bookmarks    = JSON.parse(lsGet('vz_bookmarks', '[]'));
-  likes        = JSON.parse(lsGet('vz_likes', '[]'));
+  bookmarks    = JSON.parse(lsGet('vz_bookmarks', '[]')).map(Number);
+  likes        = JSON.parse(lsGet('vz_likes', '[]')).map(Number);
 }
 
 // ─── FIREBASE ────────────────────────────────────────────
@@ -353,8 +353,8 @@ firebase.auth().onAuthStateChanged(function(user){
     if(userDoc.exists){
       if(userDoc.data().learned)    learnedIds   = userDoc.data().learned.map(Number);
       if(userDoc.data().passed)     passedTopics = userDoc.data().passed;
-      if(userDoc.data().bookmarks)  bookmarks    = userDoc.data().bookmarks;
-      if(userDoc.data().likes)      likes        = userDoc.data().likes;
+      if(userDoc.data().bookmarks)  bookmarks    = userDoc.data().bookmarks.map(Number);
+      if(userDoc.data().likes)      likes        = userDoc.data().likes.map(Number);
     }
 
     // Firestore'dan barcha so'zlarni yuklash
@@ -370,6 +370,7 @@ firebase.auth().onAuthStateChanged(function(user){
 
     sortedDocs.forEach(function(d){
       var w = Object.assign({ _id: d.id }, d.data());
+      w.id = Number(w.id); // ID turini har doim Number qilib normalizatsiya qilamiz
       ALL_WORDS.push(w);
       if(w.topic && TOPIC_ORDER.indexOf(w.topic) === -1){
         TOPIC_ORDER.push(w.topic);
