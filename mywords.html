@@ -582,9 +582,13 @@ html,body{
   </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="storage-utils.js"></script>
+<script src="auth-guard.js"></script>
 <script>
-// ═══════════════════════════════════════════════════════════
-//  ALL 200 WORDS (same dataset as topic.html)
 // ═══════════════════════════════════════════════════════════
 //  ALL_WORDS — Firestore'dan dinamik yuklanadi
 // ═══════════════════════════════════════════════════════════
@@ -593,9 +597,10 @@ let ALL_WORDS = [];
 // ═══════════════════════════════════════════════════════════
 //  STATE
 // ═══════════════════════════════════════════════════════════
-let bookmarks = [];
-let learned   = [];
-let searchQ   = '';
+let bookmarks       = [];   // numeric ids — shared across all vocab sections
+let learned         = [];   // numeric ids — topic/writing words
+let svLearnedMywords = [];  // string _docIds — speaking words (mirrors sv_learned localStorage)
+let searchQ         = '';
 let currentModalWord = null;
 let currentUser = null;
 
@@ -614,6 +619,11 @@ document.addEventListener('DOMContentLoaded', function(){
     if(!user){ location.href = 'login.html'; return; }
     currentUser = user;
 
+    // Load from localStorage immediately as a quick start
+    bookmarks        = JSON.parse(lsGet('vz_bookmarks', '[]')).map(Number);
+    learned          = JSON.parse(lsGet('vz_learned', '[]')).map(Number);
+    svLearnedMywords = JSON.parse(lsGet('sv_learned', '[]'));
+
     // Foydalanuvchi ma'lumotlari + barcha so'zlarni parallel yuklash
     Promise.all([
       db.collection('users').doc(user.uid).get(),
@@ -622,22 +632,34 @@ document.addEventListener('DOMContentLoaded', function(){
       var userDoc   = results[0];
       var wordsSnap = results[1];
 
-      // Foydalanuvchi ma'lumotlari
+      // Foydalanuvchi ma'lumotlari — Firestore is authoritative
       if(userDoc.exists){
         var data = userDoc.data();
-        if(data.bookmarks){ bookmarks = data.bookmarks.map(Number); saveBookmarks(); }
-        if(data.learned)  { learned   = data.learned.map(Number);   saveLearned(); }
-        else              { learned   = JSON.parse(lsGet('vz_learned','[]')).map(Number); }
+        // bookmarks: numeric ids shared across all vocab sections
+        if(Array.isArray(data.bookmarks)){
+          bookmarks = data.bookmarks.map(Number);
+          lsSet('vz_bookmarks', JSON.stringify(bookmarks));
+        }
+        // learned: topic/writing numeric ids
+        if(Array.isArray(data.learned)){
+          learned = data.learned.map(Number);
+          lsSet('vz_learned', JSON.stringify(learned));
+        }
+        // svLearned: speaking word _docId strings
+        if(Array.isArray(data.svLearned)){
+          svLearnedMywords = data.svLearned;
+          lsSet('sv_learned', JSON.stringify(svLearnedMywords));
+        }
       }
 
       // Barcha so'zlarni yuklash va id bo'yicha tartiblash
       // id yo'q bo'lsa _docId ni id sifatida ishlatamiz (speaking so'zlari uchun)
       ALL_WORDS = wordsSnap.docs
         .map(function(d){
-          var data = d.data();
-          var wId = (data.id != null && data.id !== '') ? data.id : d.id;
+          var wdata = d.data();
+          var wId = (wdata.id != null && wdata.id !== '') ? wdata.id : d.id;
           var wIdNum = Number(wId);
-          return Object.assign({}, data, { _docId: d.id, id: isNaN(wIdNum) ? wId : wIdNum });
+          return Object.assign({}, wdata, { _docId: d.id, id: isNaN(wIdNum) ? wId : wIdNum });
         })
         .sort(function(a,b){
           var an = Number(a.id), bn = Number(b.id);
@@ -654,6 +676,8 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 
 // Save learned word to Firestore + update activity log
+// Speaking words (category='speaking') are stored in svLearned by _docId.
+// Topic/writing words (numeric id) are stored in learned by numeric id.
 function markLearned(id){
   var fdb = (typeof db !== 'undefined') ? db : null;
   var d = new Date();
@@ -661,29 +685,60 @@ function markLearned(id){
     (d.getMonth()+1).toString().padStart(2,'0')+'-'+
     d.getDate().toString().padStart(2,'0');
 
-  if(learned.includes(id)){
-    learned = learned.filter(function(x){ return x!==id; });
-    saveLearned();
-    if(currentUser && fdb){
-      var updDec = { learned: learned };
-      updDec[todayKey] = firebase.firestore.FieldValue.increment(-1);
-      fdb.collection('users').doc(currentUser.uid).set(updDec,{merge:true}).catch(function(){});
-    }
-    showToast('So\'z o\'rganilganlardan olib tashlandi');
-    render();
-    return;
-  }
+  // Find the word to determine if it's a speaking word
+  var word = ALL_WORDS.find(function(w){ return w.id === id || w._docId === id; });
+  var isSpeaking = word && (word.category === 'speaking' || (typeof id === 'string' && isNaN(Number(id))));
 
-  learned.push(id);
-  saveLearned();
-  if(currentUser && fdb){
-    var updInc = { learned: learned };
-    updInc[todayKey] = firebase.firestore.FieldValue.increment(1);
-    fdb.collection('users').doc(currentUser.uid).set(updInc,{merge:true}).catch(function(err){
-      console.warn('Firestore write error:', err);
-    });
+  if(isSpeaking){
+    // Speaking word — use _docId string, saved to svLearned
+    var docId = word._docId;
+    var svIdx = svLearnedMywords.indexOf(docId);
+    if(svIdx !== -1){
+      svLearnedMywords.splice(svIdx, 1);
+      lsSet('sv_learned', JSON.stringify(svLearnedMywords));
+      if(currentUser && fdb){
+        var updDec = { svLearned: svLearnedMywords };
+        updDec[todayKey] = firebase.firestore.FieldValue.increment(-1);
+        fdb.collection('users').doc(currentUser.uid).set(updDec,{merge:true}).catch(function(){});
+      }
+      showToast('So\'z o\'rganilganlardan olib tashlandi');
+    } else {
+      svLearnedMywords.push(docId);
+      lsSet('sv_learned', JSON.stringify(svLearnedMywords));
+      if(currentUser && fdb){
+        var updInc = { svLearned: svLearnedMywords };
+        updInc[todayKey] = firebase.firestore.FieldValue.increment(1);
+        fdb.collection('users').doc(currentUser.uid).set(updInc,{merge:true}).catch(function(err){
+          console.warn('Firestore write error (svLearned):', err);
+        });
+      }
+      showToast('🎉 Barakalla! So\'z o\'rganildi!');
+    }
+  } else {
+    // Topic/writing word — numeric id, saved to learned
+    var numId = Number(id);
+    if(learned.includes(numId)){
+      learned = learned.filter(function(x){ return x!==numId; });
+      saveLearned();
+      if(currentUser && fdb){
+        var updDec2 = { learned: learned };
+        updDec2[todayKey] = firebase.firestore.FieldValue.increment(-1);
+        fdb.collection('users').doc(currentUser.uid).set(updDec2,{merge:true}).catch(function(){});
+      }
+      showToast('So\'z o\'rganilganlardan olib tashlandi');
+    } else {
+      learned.push(numId);
+      saveLearned();
+      if(currentUser && fdb){
+        var updInc2 = { learned: learned };
+        updInc2[todayKey] = firebase.firestore.FieldValue.increment(1);
+        fdb.collection('users').doc(currentUser.uid).set(updInc2,{merge:true}).catch(function(err){
+          console.warn('Firestore write error (learned):', err);
+        });
+      }
+      showToast('🎉 Barakalla! So\'z o\'rganildi!');
+    }
   }
-  showToast('🎉 Barakalla! So\'z o\'rganildi!');
   render();
 }
 
@@ -693,7 +748,12 @@ function markLearned(id){
 //  RENDER
 // ═══════════════════════════════════════════════════════════
 function getList(){
-  let list = ALL_WORDS.filter(function(w){ return bookmarks.includes(w.id) || bookmarks.includes(w._docId); });
+  // bookmarks stores numeric ids; match against Number(w.id) for numeric words,
+  // or w.id/_docId for speaking words that may have numeric ids too
+  let list = ALL_WORDS.filter(function(w){
+    var numId = Number(w.id);
+    return bookmarks.includes(numId) || bookmarks.includes(w._docId);
+  });
   if(searchQ){
     const q = searchQ.toLowerCase();
     list = list.filter(function(w){ return w.word.toLowerCase().includes(q) || w.uz.toLowerCase().includes(q); });
@@ -737,8 +797,10 @@ function render(){
 
   // Word cards
   html += list.map(function(w, i){
-    const isB = bookmarks.includes(w.id);
-    const isLrn = learned.includes(w.id);
+    const isB = bookmarks.includes(Number(w.id)) || bookmarks.includes(w._docId);
+    // Check learned state for topic (numeric id) vs speaking (string _docId)
+    const isSpeaking = w.category === 'speaking' || (typeof w.id === 'string' && isNaN(Number(w.id)));
+    const isLrn = isSpeaking ? svLearnedMywords.includes(w._docId) : learned.includes(Number(w.id));
     const lrnStyle = isLrn
       ? 'background:#DCFCE7;color:#16A34A;flex:1.5;font-size:.75rem;font-weight:700;gap:4px;'
       : 'flex:1.5;font-size:.75rem;font-weight:700;gap:4px;color:var(--ink-soft);background:var(--bg);';
@@ -779,15 +841,17 @@ function render(){
 //  ACTIONS
 // ═══════════════════════════════════════════════════════════
 function toggleBookmark(id){
-  const idx = bookmarks.indexOf(id);
-  if(idx===-1){ bookmarks.push(id); showToast('📚 Yodlash ro\'yxatiga qo\'shildi!'); }
+  var numId = Number(id);
+  const idx = bookmarks.indexOf(numId);
+  if(idx===-1){ bookmarks.push(numId); showToast('📚 Yodlash ro\'yxatiga qo\'shildi!'); }
   else { bookmarks.splice(idx,1); showToast('Bookmark olib tashlandi'); }
   saveBookmarks();
   render();
 }
 
 function removeWord(id){
-  bookmarks = bookmarks.filter(function(x){ return x!==id; });
+  var numId = Number(id);
+  bookmarks = bookmarks.filter(function(x){ return x!==numId; });
   saveBookmarks();
   showToast('🗑️ Yodlash ro\'yxatidan olib tashlandi');
   render();
@@ -959,12 +1023,5 @@ function closeFlashcards(){
 
 
 </script>
-
-<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
-<script src="storage-utils.js"></script>
-<script src="auth-guard.js"></script>
 </body>
 </html>
