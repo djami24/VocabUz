@@ -76,10 +76,6 @@ html,body{
   background:var(--blue);color:#fff;
   box-shadow:0 2px 8px rgba(33,150,243,.28);
 }
-.seg-tab.active-lk{
-  background:var(--red);color:#fff;
-  box-shadow:0 2px 8px rgba(229,57,53,.28);
-}
 
 /* ── SEARCH ── */
 .search-wrap{
@@ -167,7 +163,6 @@ html,body{
 }
 .action-btn:active{background:var(--blue-light);}
 .action-btn.bookmarked{color:var(--blue);}
-.action-btn.liked{color:var(--red);}
 .action-btn.remove-btn{color:#EF5350;background:#FFF5F5;}
 .action-btn.remove-btn:active{background:#FFCDD2;}
 
@@ -459,17 +454,7 @@ html,body{
     <span class="topbar-count" id="topbarCount">0 ta</span>
   </div>
 
-  <!-- Segment tabs -->
-  <div class="seg-tabs">
-    <button class="seg-tab active-bm" id="tabBm" onclick="switchTab('bookmark')">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-      Yodlash
-    </button>
-    <button class="seg-tab" id="tabLk" onclick="switchTab('like')">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-      Yoqtirganlari
-    </button>
-  </div>
+  <!-- Segment tabs removed — bookmark only -->
 
   <!-- Search -->
   <div class="search-wrap" style="padding-bottom:12px;">
@@ -609,9 +594,7 @@ let ALL_WORDS = [];
 //  STATE
 // ═══════════════════════════════════════════════════════════
 let bookmarks = [];
-let likes     = [];
 let learned   = [];
-let activeTab = 'bookmark';
 let searchQ   = '';
 let currentModalWord = null;
 let currentUser = null;
@@ -622,13 +605,7 @@ function saveBookmarks(){
     db.collection('users').doc(currentUser.uid).set({ bookmarks: bookmarks }, { merge: true }).catch(function(){});
   }
 }
-function saveLikes(){
-  lsSet('vz_likes', JSON.stringify(likes));
-  if(currentUser && typeof db !== 'undefined'){
-    db.collection('users').doc(currentUser.uid).set({ likes: likes }, { merge: true }).catch(function(){});
-  }
-}
-function saveLearned(){   lsSet('vz_learned', JSON.stringify(learned));   }
+function saveLearned(){ lsSet('vz_learned', JSON.stringify(learned)); }
 
 // Firebase auth + Firestore so'zlarni yuklash
 // Firebase script teglar <body> oxirida yuklanadi
@@ -649,7 +626,6 @@ document.addEventListener('DOMContentLoaded', function(){
       if(userDoc.exists){
         var data = userDoc.data();
         if(data.bookmarks){ bookmarks = data.bookmarks.map(Number); saveBookmarks(); }
-        if(data.likes)    { likes     = data.likes.map(Number);     saveLikes(); }
         if(data.learned)  { learned   = data.learned.map(Number);   saveLearned(); }
         else              { learned   = JSON.parse(lsGet('vz_learned','[]')).map(Number); }
       }
@@ -689,9 +665,9 @@ function markLearned(id){
     learned = learned.filter(function(x){ return x!==id; });
     saveLearned();
     if(currentUser && fdb){
-      var upd = { learned: learned };
-      upd[todayKey] = firebase.firestore.FieldValue.increment(-1);
-      fdb.collection('users').doc(currentUser.uid).set(upd,{merge:true}).catch(function(){});
+      var updDec = { learned: learned };
+      updDec[todayKey] = firebase.firestore.FieldValue.increment(-1);
+      fdb.collection('users').doc(currentUser.uid).set(updDec,{merge:true}).catch(function(){});
     }
     showToast('So\'z o\'rganilganlardan olib tashlandi');
     render();
@@ -701,9 +677,9 @@ function markLearned(id){
   learned.push(id);
   saveLearned();
   if(currentUser && fdb){
-    var upd = { learned: learned };
-    upd[todayKey] = firebase.firestore.FieldValue.increment(1);
-    fdb.collection('users').doc(currentUser.uid).set(upd,{merge:true}).catch(function(err){
+    var updInc = { learned: learned };
+    updInc[todayKey] = firebase.firestore.FieldValue.increment(1);
+    fdb.collection('users').doc(currentUser.uid).set(updInc,{merge:true}).catch(function(err){
       console.warn('Firestore write error:', err);
     });
   }
@@ -711,116 +687,89 @@ function markLearned(id){
   render();
 }
 
-// ═══════════════════════════════════════════════════════════
-//  TAB SWITCH
-// ═══════════════════════════════════════════════════════════
-function switchTab(t){
-  activeTab = t;
-  document.getElementById('tabBm').className = 'seg-tab' + (t==='bookmark' ? ' active-bm' : '');
-  document.getElementById('tabLk').className = 'seg-tab' + (t==='like'     ? ' active-lk' : '');
-  const count = document.getElementById('topbarCount');
-  if(t==='bookmark'){
-    count.className='topbar-count';
-  } else {
-    count.className='topbar-count red';
-  }
-  searchQ = '';
-  document.getElementById('searchInput').value = '';
-  render();
-}
+
 
 // ═══════════════════════════════════════════════════════════
 //  RENDER
 // ═══════════════════════════════════════════════════════════
 function getList(){
-  const ids = activeTab === 'bookmark' ? bookmarks : likes;
-  let list = ALL_WORDS.filter(w => ids.includes(w.id) || ids.includes(w._docId));
+  let list = ALL_WORDS.filter(function(w){ return bookmarks.includes(w.id) || bookmarks.includes(w._docId); });
   if(searchQ){
     const q = searchQ.toLowerCase();
-    list = list.filter(w => w.word.toLowerCase().includes(q) || w.uz.toLowerCase().includes(q));
+    list = list.filter(function(w){ return w.word.toLowerCase().includes(q) || w.uz.toLowerCase().includes(q); });
   }
   return list;
 }
 
 function render(){
   const list = getList();
-  const totalIds = (activeTab==='bookmark' ? bookmarks : likes).length;
+  const totalBm = bookmarks.length;
   document.getElementById('topbarCount').textContent = list.length + ' ta so\'z';
 
   const el = document.getElementById('content');
 
-  if(totalIds === 0){
-    // Empty state
-    const isB = activeTab === 'bookmark';
-    el.innerHTML = `
-      <div class="empty">
-        <div class="empty-icon ${isB?'bm':'lk'}">
-          ${isB
-            ? '<svg width="32" height="32" viewBox="0 0 24 24" fill="#2196F3"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>'
-            : '<svg width="32" height="32" viewBox="0 0 24 24" fill="#E53935"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>'}
-        </div>
-        <div class="empty-title">${isB ? 'Yodlash ro\'yxati bo\'sh' : 'Yoqtirganlari bo\'sh'}</div>
-        <div class="empty-sub">${isB
-          ? 'Topic vocabulary sahifasida so\'zlar yonidagi 🔖 tugmani bosing'
-          : 'Topic vocabulary sahifasida so\'zlar yonidagi ❤️ tugmani bosing'}</div>
-        <button class="empty-btn" onclick="location.href='topic.html'">So'zlarga o'tish →</button>
-      </div>`;
+  if(totalBm === 0){
+    el.innerHTML =
+      '<div class="empty">' +
+        '<div class="empty-icon bm">' +
+          '<svg width="32" height="32" viewBox="0 0 24 24" fill="#2196F3"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>' +
+        '</div>' +
+        '<div class="empty-title">Yodlash ro\'yxati bo\'sh</div>' +
+        '<div class="empty-sub">Topic yoki Speaking vocabulary sahifasida so\'zlar yonidagi 🔖 tugmani bosing</div>' +
+        '<button class="empty-btn" onclick="location.href=\'topic.html\'">So\'zlarga o\'tish →</button>' +
+      '</div>';
     return;
   }
 
-  // Progress bar
-  const learnedInList = list.filter(w => learned.includes(w.id)).length;
-  const pct = totalIds > 0 ? Math.round(learnedInList/totalIds*100) : 0;
-
+  // Flashcard banner
   let html = '';
-
-  // Quiz banner — only for bookmarks
-  if(activeTab === 'bookmark' && list.length > 0){
-    html += `
-    <div class="quiz-banner" onclick="openFlashcards()">
-      <div class="quiz-banner-icon">🧠</div>
-      <div>
-        <div class="quiz-banner-title">Flashcard bilan yodla</div>
-        <div class="quiz-banner-sub">${list.length} ta so'z • Bosing va boshlang!</div>
-      </div>
-      <svg class="quiz-banner-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-    </div>`;
+  if(list.length > 0){
+    html +=
+      '<div class="quiz-banner" onclick="openFlashcards()">' +
+        '<div class="quiz-banner-icon">🧠</div>' +
+        '<div>' +
+          '<div class="quiz-banner-title">Flashcard bilan yodla</div>' +
+          '<div class="quiz-banner-sub">' + list.length + ' ta so\'z • Bosing va boshlang!</div>' +
+        '</div>' +
+        '<svg class="quiz-banner-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>' +
+      '</div>';
   }
 
-  // Cards
-  html += list.map((w, i) => {
+  // Word cards
+  html += list.map(function(w, i){
     const isB = bookmarks.includes(w.id);
-    const isL = likes.includes(w.id);
-    return `
-    <div class="word-card" onclick="openModal(${w.id})">
-      <div class="word-header">
-        <span class="word-num">${i+1}.</span>
-        <span class="word-en">${w.word}</span>
-        <span class="word-dash"> – </span>
-        <span class="word-uz">${w.uz}</span>
-        <span class="level-badge">${w.level}</span>
-        <span class="word-topic">${w.topic}</span>
-      </div>
-      ${w.example ? `<div class="word-example">${w.example}</div>` : ''}
-      <div class="word-actions" onclick="event.stopPropagation()">
-        <button class="action-btn" onclick="speakWord('${w.word.replace(/'/g,"\\'")}')">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
-        </button>
-        <button class="action-btn${isB?' bookmarked':''}" id="bm-${w.id}" onclick="toggleBookmark(${w.id})">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="${isB?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-        </button>
-        <button class="action-btn${isL?' liked':''}" id="lk-${w.id}" onclick="toggleLike(${w.id})">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="${isL?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-        </button>
-        <button class="action-btn${learned.includes(w.id)?' action-btn-learned':''}" id="lrn-${w.id}" onclick="markLearned(${w.id})" title="Urgandim" style="${learned.includes(w.id)?'background:#DCFCE7;color:#16A34A;flex:1.5;font-size:.75rem;font-weight:700;gap:4px;':'flex:1.5;font-size:.75rem;font-weight:700;gap:4px;color:var(--ink-soft);background:var(--bg);'}">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="${learned.includes(w.id)?'currentColor':'none'}" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          ${learned.includes(w.id)?'Urgandim ✓':'Urgandim'}
-        </button>
-        <button class="action-btn remove-btn" onclick="removeWord(${w.id})" title="Olib tashlash">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-        </button>
-      </div>
-    </div>`;
+    const isLrn = learned.includes(w.id);
+    const lrnStyle = isLrn
+      ? 'background:#DCFCE7;color:#16A34A;flex:1.5;font-size:.75rem;font-weight:700;gap:4px;'
+      : 'flex:1.5;font-size:.75rem;font-weight:700;gap:4px;color:var(--ink-soft);background:var(--bg);';
+    return (
+      '<div class="word-card" onclick="openModal(' + w.id + ')">' +
+        '<div class="word-header">' +
+          '<span class="word-num">' + (i+1) + '.</span>' +
+          '<span class="word-en">' + w.word + '</span>' +
+          '<span class="word-dash"> – </span>' +
+          '<span class="word-uz">' + w.uz + '</span>' +
+          '<span class="level-badge">' + w.level + '</span>' +
+          '<span class="word-topic">' + (w.topic||'') + '</span>' +
+        '</div>' +
+        (w.example ? '<div class="word-example">' + w.example + '</div>' : '') +
+        '<div class="word-actions" onclick="event.stopPropagation()">' +
+          '<button class="action-btn" onclick="speakWord(\'' + w.word.replace(/'/g,"\\'") + '\')">' +
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>' +
+          '</button>' +
+          '<button class="action-btn' + (isB?' bookmarked':'') + '" id="bm-' + w.id + '" onclick="toggleBookmark(' + w.id + ')">' +
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="' + (isB?'currentColor':'none') + '" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>' +
+          '</button>' +
+          '<button class="action-btn" id="lrn-' + w.id + '" onclick="markLearned(' + w.id + ')" title="O\'rgandim" style="' + lrnStyle + '">' +
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="' + (isLrn?'currentColor':'none') + '" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' +
+            (isLrn ? 'O\'rgandim ✓' : 'O\'rgandim') +
+          '</button>' +
+          '<button class="action-btn remove-btn" onclick="removeWord(' + w.id + ')" title="Olib tashlash">' +
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>' +
+          '</button>' +
+        '</div>' +
+      '</div>'
+    );
   }).join('');
 
   el.innerHTML = html;
@@ -837,24 +786,10 @@ function toggleBookmark(id){
   render();
 }
 
-function toggleLike(id){
-  const idx = likes.indexOf(id);
-  if(idx===-1){ likes.push(id); showToast('❤️ Yoqtirganlarga qo\'shildi!'); }
-  else { likes.splice(idx,1); showToast('Yoqtirganlardan olib tashlandi'); }
-  saveLikes();
-  render();
-}
-
 function removeWord(id){
-  if(activeTab==='bookmark'){
-    bookmarks = bookmarks.filter(x=>x!==id);
-    saveBookmarks();
-    showToast('🗑️ Yodlash ro\'yxatidan olib tashlandi');
-  } else {
-    likes = likes.filter(x=>x!==id);
-    saveLikes();
-    showToast('🗑️ Yoqtirganlardan olib tashlandi');
-  }
+  bookmarks = bookmarks.filter(function(x){ return x!==id; });
+  saveBookmarks();
+  showToast('🗑️ Yodlash ro\'yxatidan olib tashlandi');
   render();
 }
 
@@ -1022,11 +957,7 @@ function closeFlashcards(){
   document.getElementById('fcScreen').classList.remove('open');
 }
 
-// ═══════════════════════════════════════════════════════════
-//  INIT — check URL param (tab holati Firebase yuklanishidan oldin belgilanadi)
-// ═══════════════════════════════════════════════════════════
-const urlTab = new URLSearchParams(location.search).get('tab');
-if(urlTab === 'like') activeTab = 'like';
+
 </script>
 
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
