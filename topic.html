@@ -3,261 +3,200 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Topic Vocabulary — VocabUZ</title>
+<title>VocaabUZ — Ingliz tili lug'ati</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --blue:#2196F3; --blue-deep:#1565C0; --blue-light:#E3F2FD; --blue-mid:#BBDEFB;
-  --green:#22C55E; --green-light:#DCFCE7; --green-deep:#16A34A;
-  --red:#EF4444; --red-light:#FEE2E2;
-  --amber:#F59E0B; --amber-light:#FEF3C7;
-  --ink:#1A1A2E; --ink-mid:#5A6070; --ink-soft:#9AA0AD;
-  --white:#FFFFFF; --bg:#F0F6FF;
-  --shadow-sm:0 1px 4px rgba(33,150,243,.10);
-  --shadow-md:0 4px 16px rgba(33,150,243,.15);
-  --radius:16px; --radius-sm:12px; --bottom-nav-h:66px;
+.home-user-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0 12px;
 }
-html{min-height:100%;}
-body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:var(--ink);overflow-y:auto;}
-
-/* ── TOP BAR ── */
-.topbar{position:sticky;top:0;z-index:100;background:var(--bg);padding:14px 16px 10px;display:flex;align-items:center;gap:10px;}
-.back-btn{width:38px;height:38px;border-radius:50%;background:var(--white);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm);color:var(--ink-mid);flex-shrink:0;}
-.topbar-title{font-size:1.05rem;font-weight:700;flex:1;}
-.topbar-count{font-size:.78rem;font-weight:600;background:var(--blue-light);color:var(--blue);padding:4px 10px;border-radius:20px;}
-
-/* ── BOTTOM NAV ── */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--bottom-nav-h);background:var(--white);display:flex;box-shadow:0 -1px 0 #e8eff8,0 -4px 16px rgba(33,150,243,.07);z-index:200;}
-.bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink-soft);font-size:.65rem;font-weight:600;text-decoration:none;-webkit-tap-highlight-color:transparent;}
-.bottom-nav-item.is-active{color:var(--blue);}
-
-/* ── TOAST ── */
-.toast{position:fixed;bottom:calc(var(--bottom-nav-h)+16px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 20px;border-radius:24px;font-size:.83rem;font-weight:600;pointer-events:none;opacity:0;transition:opacity .25s,transform .25s;white-space:nowrap;z-index:500;}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
-/* ══════════════════════════
-   VIEW 1: MAVZU KARTOCHKALARI
-══════════════════════════ */
-#viewTopics{padding:0 0 calc(var(--bottom-nav-h)+20px);}
-.topics-grid{display:flex;flex-direction:column;gap:12px;padding:0 16px;}
-.topic-card{
-  background:var(--white);border-radius:var(--radius);
-  padding:18px 16px;box-shadow:var(--shadow-sm);
-  cursor:pointer;transition:box-shadow .15s,transform .12s;
-  -webkit-tap-highlight-color:transparent;
-  display:flex;align-items:center;gap:14px;
-  position:relative;overflow:hidden;
+.home-user-avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), #0D47A1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
 }
-.topic-card:active{transform:scale(.98);box-shadow:var(--shadow-md);}
-.topic-card.locked{opacity:.55;cursor:default;}
-.topic-card.completed{border-left:4px solid var(--green);}
-.topic-card-progress-bar{
-  position:absolute;bottom:0;left:0;height:3px;
-  background:linear-gradient(90deg,var(--blue),var(--blue-deep));
-  transition:width .4s ease;
+.home-user-info { flex: 1; }
+.home-user-name {
+  font-size: .97rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
 }
-.topic-icon{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;}
-.topic-info{flex:1;}
-.topic-name{font-size:1rem;font-weight:800;color:var(--ink);margin-bottom:3px;}
-.topic-meta{font-size:.78rem;color:var(--ink-soft);display:flex;align-items:center;gap:8px;}
-.topic-badge{
-  font-size:.72rem;font-weight:700;
-  padding:3px 9px;border-radius:20px;
-  background:var(--blue-light);color:var(--blue);
+.home-user-sub {
+  font-size: .78rem;
+  color: var(--ink-soft);
 }
-.topic-badge.done{background:var(--green-light);color:var(--green-deep);}
-.topic-badge.locked{background:#F1F5F9;color:var(--ink-soft);}
-.lock-icon{color:var(--ink-soft);}
-
-/* ══════════════════════════
-   VIEW 2: SO'ZLAR RO'YXATI
-══════════════════════════ */
-#viewWords{display:none;padding-bottom:calc(var(--bottom-nav-h)+80px);}
-.words-list{padding:0 16px;display:flex;flex-direction:column;gap:10px;}
-.word-card{background:var(--white);border-radius:var(--radius);padding:14px 16px 12px;box-shadow:var(--shadow-sm);transition:box-shadow .15s;}
-.word-card.learned-card{border-left:3px solid var(--green);}
-.word-header{display:flex;align-items:baseline;gap:6px;margin-bottom:4px;}
-.word-num{font-size:.82rem;font-weight:700;color:var(--blue);flex-shrink:0;min-width:22px;}
-.word-en{font-size:.97rem;font-weight:700;color:var(--ink);}
-.word-dash{color:var(--ink-mid);font-size:.92rem;font-weight:400;}
-.word-uz{font-size:.9rem;font-weight:500;color:var(--ink-mid);flex:1;}
-.level-badge{display:inline-flex;align-items:center;background:var(--blue-light);color:var(--blue);font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:8px;margin-left:4px;vertical-align:middle;}
-
-/* ── DARAJA KARTOCHKALARI ── */
-.level-select-card{
-  background:var(--white);border-radius:var(--radius);
-  padding:18px 20px;box-shadow:var(--shadow-sm);
-  cursor:pointer;transition:box-shadow .15s,transform .12s,border-color .12s;
-  display:flex;align-items:center;gap:16px;
-  border:2px solid transparent;
-  -webkit-tap-highlight-color:transparent;
-  position:relative;overflow:hidden;
+.premium-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: linear-gradient(135deg, #1565C0, #1DA1F2);
+  color: #fff;
+  font-size: .75rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  flex-shrink: 0;
 }
-.level-select-card:active{transform:scale(.98);box-shadow:var(--shadow-md);}
-.level-select-icon{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;}
-.level-select-info{flex:1;}
-.level-select-name{font-size:1.15rem;font-weight:800;color:var(--ink);}
-.level-select-sub{font-size:.78rem;color:var(--ink-soft);margin-top:2px;}
-.level-select-meta{font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:20px;background:var(--blue-light);color:var(--blue);white-space:nowrap;}
-.level-select-card-bar{position:absolute;bottom:0;left:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--blue-deep));}
-.word-example{font-size:.84rem;color:var(--ink-mid);font-style:italic;line-height:1.5;padding:6px 0 8px;border-bottom:1px solid var(--blue-light);margin-bottom:8px;}
-.word-example::before{content:'• ';}
-.word-actions{display:flex;gap:8px;align-items:center;}
-.btn-learned{flex:1;height:38px;border-radius:var(--radius-sm);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;font-size:.82rem;font-weight:700;font-family:inherit;background:var(--green-light);color:var(--green-deep);transition:background .15s,color .15s;-webkit-tap-highlight-color:transparent;}
-.btn-learned.done{background:var(--green);color:#fff;}
-.btn-icon{width:38px;height:38px;border-radius:var(--radius-sm);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;background:var(--blue-light);color:var(--ink-soft);transition:background .15s,color .15s;-webkit-tap-highlight-color:transparent;flex-shrink:0;}
-.btn-icon.bookmarked{background:#EFF6FF;color:var(--blue);}
-.btn-icon.liked{background:var(--red-light);color:var(--red);}
-
-/* Progress banner */
-.progress-banner{margin:0 16px 14px;background:var(--white);border-radius:var(--radius-sm);padding:14px 16px;box-shadow:var(--shadow-sm);}
-.progress-banner-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
-.progress-banner-title{font-size:.85rem;font-weight:700;}
-.progress-banner-pct{font-size:.85rem;font-weight:800;color:var(--blue);}
-.progress-track{height:8px;background:var(--blue-light);border-radius:8px;overflow:hidden;}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--blue-deep));border-radius:8px;transition:width .4s ease;}
-.test-ready-banner{
-  margin:0 16px 14px;
-  background:linear-gradient(135deg,var(--green-deep),var(--green));
-  border-radius:var(--radius-sm);padding:14px 16px;
-  display:flex;align-items:center;justify-content:space-between;gap:12px;
-  cursor:pointer;-webkit-tap-highlight-color:transparent;
-  box-shadow:0 4px 14px rgba(34,197,94,.3);
+.notif-btn {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--white);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  color: var(--ink-mid);
+  flex-shrink: 0;
+  transition: background .15s;
 }
-.test-ready-txt{color:#fff;}
-.test-ready-title{font-size:.95rem;font-weight:800;margin-bottom:2px;}
-.test-ready-sub{font-size:.78rem;opacity:.85;}
-.test-ready-btn{background:rgba(255,255,255,.25);color:#fff;border:none;border-radius:10px;padding:8px 14px;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;white-space:nowrap;}
-
-/* ══════════════════════════
-   VIEW 3: TEST
-══════════════════════════ */
-#viewTest{display:none;position:fixed;inset:0;z-index:400;background:var(--bg);flex-direction:column;}
-#viewTest.open{display:flex;}
-
-.test-topbar{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--white);box-shadow:var(--shadow-sm);flex-shrink:0;}
-.test-close{width:36px;height:36px;border-radius:50%;background:var(--bg);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink-mid);}
-.test-topbar-title{font-size:.95rem;font-weight:700;flex:1;}
-.test-counter{font-size:.82rem;font-weight:700;color:var(--blue);}
-.test-progress-bar{height:4px;background:var(--blue-mid);flex-shrink:0;}
-.test-progress-fill{height:100%;background:var(--blue);transition:width .3s ease;}
-
-.test-body{flex:1;overflow-y:auto;padding:24px 16px 32px;display:flex;flex-direction:column;align-items:center;}
-.test-question{
-  width:100%;max-width:420px;
-  background:linear-gradient(135deg,var(--blue-deep),var(--blue));
-  border-radius:20px;padding:28px 22px;
-  text-align:center;color:#fff;margin-bottom:24px;
-}
-.test-q-label{font-size:.75rem;font-weight:700;opacity:.7;letter-spacing:.5px;text-transform:uppercase;margin-bottom:14px;}
-.test-q-word{font-size:2rem;font-weight:900;letter-spacing:-.5px;margin-bottom:6px;}
-.test-q-topic{font-size:.78rem;opacity:.7;}
-
-.test-error-info{
-  width:100%;max-width:420px;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  margin-bottom:16px;
-  font-size:.82rem;font-weight:600;
-  color:var(--red);
-}
-.test-error-dot{width:10px;height:10px;border-radius:50%;background:var(--red);}
-.test-error-dot.empty{background:var(--red-light);border:2px solid var(--red);}
-
-.test-options{width:100%;max-width:420px;display:flex;flex-direction:column;gap:10px;}
-.test-opt{
-  width:100%;padding:15px 18px;border-radius:var(--radius-sm);
-  border:2px solid var(--blue-light);background:var(--white);
-  font-family:inherit;font-size:.9rem;font-weight:600;color:var(--ink);
-  cursor:pointer;text-align:left;transition:all .15s;
-  -webkit-tap-highlight-color:transparent;
-}
-.test-opt:active:not([disabled]){background:var(--blue-light);}
-.test-opt.correct{background:var(--green-light)!important;border-color:var(--green)!important;color:var(--green-deep)!important;}
-.test-opt.wrong{background:var(--red-light)!important;border-color:var(--red)!important;color:var(--red)!important;}
-.test-opt.show-correct{background:var(--green-light)!important;border-color:var(--green)!important;}
-.test-opt[disabled]{cursor:default;}
-
-.test-next-btn{
-  width:100%;max-width:420px;
-  height:52px;margin-top:18px;
-  border-radius:var(--radius);border:none;cursor:pointer;
-  font-family:inherit;font-size:.97rem;font-weight:700;color:#fff;
-  background:linear-gradient(135deg,var(--blue-deep),var(--blue));
-  box-shadow:0 4px 14px rgba(33,150,243,.3);
-  display:none;
-}
-
-/* ── TEST RESULT ── */
-.test-result{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center;gap:14px;}
-.test-result-emoji{font-size:4.5rem;}
-.test-result-title{font-size:1.4rem;font-weight:900;color:var(--ink);}
-.test-result-sub{font-size:.9rem;color:var(--ink-mid);line-height:1.6;max-width:280px;}
-.test-result-stats{display:flex;gap:10px;width:100%;max-width:340px;margin:8px 0;}
-.trs{flex:1;background:var(--white);border-radius:14px;padding:14px 8px;box-shadow:var(--shadow-sm);text-align:center;}
-.trs-val{font-size:1.6rem;font-weight:900;}
-.trs-val.green{color:var(--green);}
-.trs-val.red{color:var(--red);}
-.trs-lbl{font-size:.72rem;color:var(--ink-soft);margin-top:3px;}
-.test-result-btns{display:flex;flex-direction:column;gap:10px;width:100%;max-width:340px;margin-top:6px;}
-.trb{width:100%;height:52px;border-radius:var(--radius);border:none;cursor:pointer;font-family:inherit;font-size:.97rem;font-weight:700;-webkit-tap-highlight-color:transparent;}
-.trb.primary{color:#fff;background:linear-gradient(135deg,var(--blue-deep),var(--blue));box-shadow:0 4px 14px rgba(33,150,243,.3);}
-.trb.secondary{background:#F1F5F9;color:var(--ink-mid);}
-.trb.green{color:#fff;background:linear-gradient(135deg,var(--green-deep),var(--green));box-shadow:0 4px 14px rgba(34,197,94,.3);}
-
-/* Spinner */
-.spinner-wrap{display:flex;align-items:center;justify-content:center;padding:48px 0;}
-.spinner{width:36px;height:36px;border:3px solid var(--blue-mid);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg)}}
+.notif-btn:active { background: var(--sky-mid); }
 </style>
 </head>
 <body>
 
-<!-- TOP BAR -->
-<div class="topbar">
-  <button class="back-btn" id="backBtn" onclick="goBack()">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-  </button>
-  <span class="topbar-title" id="topbarTitle">Topic Vocabulary</span>
-  <span class="topbar-count" id="topbarCount">—</span>
-</div>
+<div class="page" id="mainPage">
 
-<!-- VIEW 0: DARAJA TANLASH -->
-<div id="viewLevels" style="display:none;padding:0 16px calc(var(--bottom-nav-h)+24px);">
-  <div style="padding:18px 0 14px;font-size:.82rem;color:var(--ink-soft);font-weight:500;">Qaysi darajadan o'rganmoqchisiz?</div>
-  <div id="levelsGrid" style="display:flex;flex-direction:column;gap:12px;"></div>
-</div>
-
-<!-- VIEW 1: MAVZULAR -->
-<div id="viewTopics" style="display:none;">
-  <div class="topics-grid" id="topicsGrid">
-    <div class="spinner-wrap"><div class="spinner"></div></div>
-  </div>
-</div>
-
-<!-- VIEW 2: SO'ZLAR -->
-<div id="viewWords" style="display:none;">
-  <div id="progressBanner"></div>
-  <div class="words-list" id="wordsList"></div>
-</div>
-
-<!-- VIEW 3: TEST (fullscreen) -->
-<div id="viewTest">
-  <div class="test-topbar">
-    <button class="test-close" onclick="closeTest()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  <!-- User row -->
+  <div class="home-user-row">
+    <div class="home-user-avatar" id="homeAvatar">?</div>
+    <div class="home-user-info">
+      <div class="home-user-name" id="homeUserName">Yuklanmoqda…</div>
+      <div class="home-user-sub" id="homeUserSub"></div>
+    </div>
+    <button class="premium-badge" onclick="location.href='profile.html'">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
+      Premium
     </button>
-    <span class="test-topbar-title" id="testTitle">Test</span>
-    <span class="test-counter" id="testCounter">1/10</span>
+    <button class="notif-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    </button>
   </div>
-  <div class="test-progress-bar"><div class="test-progress-fill" id="testFill" style="width:0%"></div></div>
-  <div class="test-body" id="testBody"></div>
+
+  <!-- Hero Cards Carousel -->
+  <div class="banner-wrap" id="bannerWrap">
+    <div class="banner-track" id="bannerTrack">
+
+      <!-- Slide 1: Ko'k — O'rganilgan so'zlar -->
+      <div class="banner-slide" style="background:linear-gradient(135deg,#0D47A1 0%,#1DA1F2 100%); position:relative; overflow:hidden;">
+        <!-- decorative circles -->
+        <div style="position:absolute;top:-30px;right:-30px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.08);pointer-events:none;"></div>
+        <div style="position:absolute;bottom:-20px;right:30px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.06);pointer-events:none;"></div>
+        <div>
+          <div style="font-size:.72rem;font-weight:600;opacity:.7;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">O'rganilgan so'zlar</div>
+          <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:2px;">
+            <div id="heroLearnedCount" style="font-size:2.6rem;font-weight:900;line-height:1;color:#fff;">—</div>
+            <div style="font-size:.85rem;font-weight:600;opacity:.75;color:#fff;">ta so'z</div>
+          </div>
+          <div style="font-size:.78rem;opacity:.65;color:#fff;">Davom eting, zo'r ketayapsiz! 💪</div>
+        </div>
+        <!-- progress bar -->
+        <div style="margin-top:14px;">
+          <div style="display:flex;justify-content:space-between;font-size:.7rem;opacity:.7;color:#fff;margin-bottom:5px;">
+            <span>Maqsad: 1000 ta so'z</span>
+            <span id="heroProgressPct">0%</span>
+          </div>
+          <div style="background:rgba(255,255,255,.22);border-radius:99px;height:6px;overflow:hidden;">
+            <div id="heroProgressBar" style="height:100%;background:#fff;border-radius:99px;width:0%;transition:width .6s ease;"></div>
+          </div>
+        </div>
+        <div class="banner-dots" id="bannerDots" style="margin-top:12px;"></div>
+      </div>
+
+      <!-- Slide 2: Zangori — Bugungi streak -->
+      <div class="banner-slide" style="background:linear-gradient(135deg,#006064 0%,#00BCD4 100%); position:relative; overflow:hidden;">
+        <div style="position:absolute;top:-40px;right:-20px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.07);pointer-events:none;"></div>
+        <div style="position:absolute;bottom:-10px;right:40px;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.05);pointer-events:none;"></div>
+        <div>
+          <div style="font-size:.72rem;font-weight:600;opacity:.7;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">Bugungi natija</div>
+          <div style="font-size:1.15rem;font-weight:800;color:#fff;line-height:1.25;max-width:75%;">IELTS va CEFR lug'atingizni boyiting</div>
+          <div style="font-size:.78rem;opacity:.7;color:#fff;margin-top:5px;">Talaffuz · Mashqlar · Test</div>
+        </div>
+        <div style="margin-top:14px;">
+          <button onclick="location.href='speaking.html'" style="background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.35);color:#fff;font-size:.82rem;font-weight:700;padding:8px 18px;border-radius:99px;cursor:pointer;-webkit-tap-highlight-color:transparent;">Boshlash</button>
+        </div>
+      </div>
+
+      <!-- Slide 3: Binafsha — Flashcard -->
+      <div class="banner-slide" style="background:linear-gradient(135deg,#4A148C 0%,#AB47BC 100%); position:relative; overflow:hidden;">
+        <div style="position:absolute;top:-35px;right:-25px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.07);pointer-events:none;"></div>
+        <div style="position:absolute;bottom:-15px;right:35px;width:75px;height:75px;border-radius:50%;background:rgba(255,255,255,.05);pointer-events:none;"></div>
+        <div>
+          <div style="font-size:.72rem;font-weight:600;opacity:.7;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">Kunlik mashq</div>
+          <div style="font-size:1.15rem;font-weight:800;color:#fff;line-height:1.25;max-width:75%;">Har kuni yangi so'zlar</div>
+          <div style="font-size:.78rem;opacity:.7;color:#fff;margin-top:5px;">Flashcard · Statistika · Streak</div>
+        </div>
+        <div style="margin-top:14px;">
+          <button onclick="location.href='oyinlar.html'" style="background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.35);color:#fff;font-size:.82rem;font-weight:700;padding:8px 18px;border-radius:99px;cursor:pointer;-webkit-tap-highlight-color:transparent;">O'yinlar</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Cards grid -->
+  <div class="home-grid">
+
+    <div class="home-card" onclick="location.href='topic.html'">
+      <div class="home-card-title">Topic vocabulary</div>
+      <div class="home-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="home-card" onclick="location.href='speaking.html'">
+      <div class="home-card-title">Speaking vocabulary</div>
+      <div class="home-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M15 10s1 .5 1 2-1 2-1 2"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="home-card" onclick="location.href='top-learners.html'">
+      <div class="home-card-title">Top Learners</div>
+      <div class="home-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="home-card" onclick="location.href='oyinlar.html'">
+      <div class="home-card-title">O'yinlar</div>
+      <div class="home-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/><line x1="12" y1="12" x2="12" y2="17"/><line x1="9.5" y1="14.5" x2="14.5" y2="14.5"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="home-card home-grid-full" onclick="location.href='writing.html'">
+      <div class="home-card-title">Writing vocabulary</div>
+      <div class="home-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="7" x2="16" y2="7"/><line x1="10" y1="11" x2="16" y2="11"/><line x1="10" y1="15" x2="14" y2="15"/>
+        </svg>
+      </div>
+    </div>
+
+  </div>
 </div>
 
-<!-- BOTTOM NAV -->
+<!-- Bottom nav -->
 <nav class="bottom-nav">
-  <a class="bottom-nav-item" href="index.html">
+  <a class="bottom-nav-item is-active" href="index.html">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
     Asosiy
   </a>
@@ -265,7 +204,7 @@ body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:v
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
     So'zlarim
   </a>
-  <a class="bottom-nav-item is-active" href="topic.html">
+  <a class="bottom-nav-item" href="topic.html">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="7" x2="16" y2="7"/><line x1="10" y1="11" x2="16" y2="11"/></svg>
     Mavzular
   </a>
@@ -279,629 +218,159 @@ body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:v
   </a>
 </nav>
 
-<div class="toast" id="toast"></div>
-
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
-<script src="storage-utils.js"></script>
 <script src="auth-guard.js"></script>
 <script>
-// ═══════════════════════════════════════════════════════════
-//  SO'ZLAR — Faqat Firestore'dan o'qiladi
-// ═══════════════════════════════════════════════════════════
-let ALL_WORDS = [];
 
-// ─── MAVZULAR TARTIBI — Firestore'dan dinamik yuklanadi ───
-let TOPIC_ORDER = [];
-const TOPIC_EMOJI = {};
-let TOPIC_COLOR = {};
-
-const DEFAULT_COLORS = [
-  '#E3F2FD','#FCE4EC','#E8F5E9','#FFF8E1',
-  '#F3E5F5','#E0F7FA','#F1F8E9','#FBE9E7',
-  '#EDE7F6','#FFF3E0','#E8EAF6','#F9FBE7'
-];
-
-// ─── STATE ────────────────────────────────────────────────
-let learnedIds   = [];
-let passedTopics = [];   // testdan o'tgan mavzular (localStorage)
-let bookmarks    = [];   // yodlash ro'yxati
-let currentUser  = null;
-let currentTopic = null; // Ochiq mavzu
-let currentLevel = null; // Tanlangan daraja
-
-// ─── YORDAMCHI FUNKSIYALAR ────────────────────────────────
-function topicWords(topic){ return ALL_WORDS.filter(w=>w.topic===topic); }
-function topicLearnedCount(topic){ return topicWords(topic).filter(w=>learnedIds.includes(w.id)).length; }
-function isTopicFull(topic){ return topicLearnedCount(topic)===topicWords(topic).length; }
-function isTopicPassed(topic){ return passedTopics.includes(topic); }
-function isTopicUnlocked(topic){
-  const idx = TOPIC_ORDER.indexOf(topic);
-  if(idx===0) return true;
-  return isTopicPassed(TOPIC_ORDER[idx-1]);
+var DEFAULT_AVATAR_SRC = 'data:image/jpeg;base64,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';
+function setAvatarImg(elementId, size) {
+  var el = document.getElementById(elementId);
+  if (!el) return;
+  el.innerHTML = '';
+  el.style.background = 'none';
+  el.style.padding = '0';
+  var img = document.createElement('img');
+  img.src = DEFAULT_AVATAR_SRC;
+  img.alt = 'Avatar';
+  img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;';
+  el.appendChild(img);
 }
 
-function saveState(){
-  lsSet('vz_learned', JSON.stringify(learnedIds));
-  lsSet('vz_passed', JSON.stringify(passedTopics));
-  lsSet('vz_bookmarks', JSON.stringify(bookmarks));
-}
-function loadLocalState(){
-  learnedIds   = JSON.parse(lsGet('vz_learned', '[]')).map(Number);
-  passedTopics = JSON.parse(lsGet('vz_passed', '[]'));
-  bookmarks    = JSON.parse(lsGet('vz_bookmarks', '[]')).map(Number);
-}
+document.addEventListener('DOMContentLoaded', function () {
+  var GOAL = 1000;
+  var _currentUser = null;
 
-// ─── FIREBASE ────────────────────────────────────────────
-firebase.auth().onAuthStateChanged(function(user){
-  if(!user){ location.href='login.html'; return; }
-  currentUser = user;
-  _currentUID = user.uid;  // storage-utils lsKey() uchun
-  loadLocalState();
-  // To'liq Firestore'dan yuklash
-  Promise.all([
-    db.collection('users').doc(user.uid).get(),
-    db.collection('words').where('vocabType','==','topic').get()
-  ]).then(function(results){
-    var userDoc   = results[0];
-    var wordsSnap = results[1];
+  function renderLearnedCount(total) {
+    var pct = Math.min(Math.round((total / GOAL) * 100), 100);
+    var countEl = document.getElementById('heroLearnedCount');
+    var barEl   = document.getElementById('heroProgressBar');
+    var pctEl   = document.getElementById('heroProgressPct');
+    if (countEl) countEl.textContent = total;
+    if (pctEl)   pctEl.textContent   = pct + '%';
+    if (barEl)   setTimeout(function () { barEl.style.width = pct + '%'; }, 200);
+  }
 
-    if(userDoc.exists){
-      if(userDoc.data().learned)    learnedIds   = userDoc.data().learned.map(Number);
-      if(userDoc.data().passed)     passedTopics = userDoc.data().passed;
-      if(userDoc.data().bookmarks)  bookmarks    = userDoc.data().bookmarks.map(Number);
-      console.log('[VocabUZ] Firestore\'dan yuklandi. Learned:', learnedIds.length, 'IDs:', learnedIds);
-    } else {
-      console.log('[VocabUZ] Foydalanuvchi hujjati Firestore\'da yo\'q! UID:', user.uid);
+  // Firestore + localStorage'dan o'qib ko'rsatish
+  function loadLearnedCount(user) {
+    var uid = user.uid;
+    // 1) Tezkor: localStorage'dan darhol (UID asosida kalit)
+    var vzLocal    = JSON.parse(localStorage.getItem('vz_learned_' + uid) || '[]').map(Number);
+    var svLocal    = JSON.parse(localStorage.getItem('sv_learned_' + uid) || '[]');
+    var localTotal = new Set(vzLocal).size + new Set(svLocal).size;
+    if (localTotal > 0) renderLearnedCount(localTotal);
+
+    // 2) Firestore'dan aniq raqam
+    db.collection('users').doc(uid).get().then(function (doc) {
+      var data         = doc.exists ? doc.data() : {};
+      var topicLearned = (data.learned   || []).map(Number);
+      var svLearned    =  data.svLearned || [];
+      var numSet = new Set(topicLearned);
+      var svSet  = new Set(svLearned);
+      var fsTotal = numSet.size + svSet.size;
+
+      if (fsTotal > 0) {
+        // Firestore'da ma'lumot bor — localStorage ni yangilab ko'rsat
+        localStorage.setItem('vz_learned_' + uid, JSON.stringify(Array.from(numSet)));
+        localStorage.setItem('sv_learned_' + uid, JSON.stringify(Array.from(svSet)));
+        renderLearnedCount(fsTotal);
+      } else {
+        // Firestore 0 qaytardi — localStorage'dagi so'zlarni ko'rsat
+        // (topic.html Firestore'ga hali yozmagan bo'lishi mumkin)
+        var lsVz  = JSON.parse(localStorage.getItem('vz_learned_' + uid) || '[]').map(Number);
+        var lsSv  = JSON.parse(localStorage.getItem('sv_learned_' + uid) || '[]');
+        var lsTotal = new Set(lsVz).size + new Set(lsSv).size;
+        renderLearnedCount(lsTotal > 0 ? lsTotal : 0);
+      }
+    }).catch(function (err) {
+      console.error('[VocabUZ] Firestore read xato:', err.code, err.message);
+    });
+  }
+
+  firebase.auth().onAuthStateChanged(function (user) {
+    if (!user) { location.href = 'login.html'; return; }
+    _currentUser = user;
+    var name = user.displayName || user.email || 'Foydalanuvchi';
+    document.getElementById('homeUserName').textContent = name;
+    document.getElementById('homeUserSub').textContent = user.email || '';
+    setAvatarImg('homeAvatar', 44);
+    loadLearnedCount(user);
+  });
+
+  // Sahifaga qaytganda avtomatik yangilash (topic.html -> index.html)
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible' && _currentUser) {
+      loadLearnedCount(_currentUser);
     }
+  });
 
-    // Firestore'dan barcha so'zlarni yuklash
-    ALL_WORDS = [];
-    TOPIC_ORDER = [];
-    TOPIC_COLOR = {};
-    var colorIdx = 0;
-
-    // id bo'yicha tartiblash (composite index kerak bo'lmasin)
-    var sortedDocs = wordsSnap.docs.slice().sort(function(a, b){
-      return (Number(a.data().id) || 0) - (Number(b.data().id) || 0);
-    });
-
-    sortedDocs.forEach(function(d){
-      var w = Object.assign({ _id: d.id }, d.data());
-      w.id = Number(w.id); // Har doim Number bo'lsin — type mismatch oldini olish
-      ALL_WORDS.push(w);
-      if(w.topic && TOPIC_ORDER.indexOf(w.topic) === -1){
-        TOPIC_ORDER.push(w.topic);
-        TOPIC_COLOR[w.topic] = DEFAULT_COLORS[colorIdx % DEFAULT_COLORS.length];
-        colorIdx++;
-      }
-    });
-
-    // ─── Admin tomonidan saqlangan mavzu tartibini yuklash ───
-    // config/topicOrder hujjatida har bir level uchun tartib saqlanadi.
-    // Agar saqlangan tartib bo'lsa, TOPIC_ORDER qayta tartiblanadi.
-    db.collection('config').doc('topicOrder').get().then(function(cfgDoc) {
-      if(cfgDoc.exists) {
-        var data = cfgDoc.data();
-        // Har bir level uchun tartibni qo'llash
-        var levelsInData = Object.keys(data);
-        levelsInData.forEach(function(lvl) {
-          var savedOrder = data[lvl];
-          if(!Array.isArray(savedOrder)) return;
-          // TOPIC_ORDER ichidan bu leveldagi mavzularni olib, savedOrder bo'yicha tartiblash
-          var topicsInLevel = TOPIC_ORDER.filter(function(t) {
-            return ALL_WORDS.some(function(w){ return w.topic === t && w.level === lvl; });
-          });
-          // savedOrder bo'yicha mavjud mavzularni tartibga solamiz
-          var ordered = savedOrder.filter(function(t){ return topicsInLevel.includes(t); });
-          // savedOrder'da bo'lmagan yangi mavzularni oxiriga qo'shamiz
-          topicsInLevel.forEach(function(t){ if(!ordered.includes(t)) ordered.push(t); });
-          // TOPIC_ORDER ni yangilash: bu leveldagi mavzularni ordered bilan almashtirish
-          var otherTopics = TOPIC_ORDER.filter(function(t){
-            return !topicsInLevel.includes(t);
-          });
-          // Barcha topiclarni birlashtiramiz: boshqa levellar + bu level (ordered)
-          // Mavjud tartibda boshqa levellar qayerda kelgan bo'lsa, o'sha joyni saqlaymiz
-          var newOrder = [];
-          var orderedIdx = 0;
-          TOPIC_ORDER.forEach(function(t) {
-            if(topicsInLevel.includes(t)) {
-              if(orderedIdx < ordered.length) {
-                newOrder.push(ordered[orderedIdx++]);
-              }
-            } else {
-              newOrder.push(t);
-            }
-          });
-          TOPIC_ORDER = newOrder;
-        });
-      }
-      saveState();
-      renderLevels();
-    }).catch(function() {
-      // Config yo'q bo'lsa, word id tartibida davom etamiz
-      saveState();
-      renderLevels();
-    });
-  }).catch(function(e){
-    console.error('Yuklash xatosi:', e);
-    renderLevels();
+  // localStorage o'zgarganda yangilash (boshqa tab/sahifadan)
+  window.addEventListener('storage', function (e) {
+    if (!_currentUser) return;
+    var uid = _currentUser.uid;
+    if (e.key === 'vz_learned_' + uid || e.key === 'sv_learned_' + uid) {
+      loadLearnedCount(_currentUser);
+    }
   });
 });
 
-function saveToFirestore(){
-  if(!currentUser) return;
-  const ref = db.collection('users').doc(currentUser.uid);
-  const data = { learned: learnedIds, passed: passedTopics, bookmarks: bookmarks };
-  // Always use set+merge so we never overwrite svLearned or other fields
-  ref.set(data, {merge:true})
-    .then(function(){
-      console.log('[VocabUZ] Firestore saqlandi. Learned:', learnedIds.length);
-    })
-    .catch(function(err){
-      console.error('[VocabUZ] saveToFirestore XATO:', err.code, err.message);
-      showToast('⚠️ Saqlashda xato: ' + (err.code || err.message));
-    });
-}
+// ═══ BANNER CAROUSEL ═══
+(function(){
+  var track     = document.getElementById('bannerTrack');
+  var wrap      = document.getElementById('bannerWrap');
+  var dotsWrap  = document.getElementById('bannerDots');
+  var slides    = track.querySelectorAll('.banner-slide');
+  var total     = slides.length;
+  var current   = 0;
+  var startX    = 0;
+  var startY    = 0;
+  var isDrag    = false;
+  var autoTimer;
 
-function logActivityToday(delta){
-  if(!currentUser) return;
-  if(delta === 0) return;
-  const d = new Date();
-  const key = 'activityLog.' + d.getFullYear()+'-'+
-    (d.getMonth()+1).toString().padStart(2,'0')+'-'+
-    d.getDate().toString().padStart(2,'0');
-  const upd = {};
-  upd[key] = firebase.firestore.FieldValue.increment(delta);
-  db.collection('users').doc(currentUser.uid).set(upd,{merge:true}).catch(function(){});
-}
-
-// ─── TOAST ───────────────────────────────────────────────
-let toastTimer;
-function showToast(msg){
-  const el=document.getElementById('toast');
-  el.textContent=msg;el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(function(){el.classList.remove('show');},2200);
-}
-
-// ════════════════════════════════════════
-//  VIEW 0: DARAJALAR
-// ════════════════════════════════════════
-const LEVEL_CONFIG = {
-  'A1': { emoji:'🌱', label:'Boshlang\'ich',      color:'#E8F5E9', textColor:'#2E7D32' },
-  'A2': { emoji:'🌿', label:'Boshlang\'ich-o\'rta', color:'#F1F8E9', textColor:'#558B2F' },
-  'B1': { emoji:'⭐', label:'O\'rta daraja',       color:'#E3F2FD', textColor:'#1565C0' },
-  'B2': { emoji:'⭐⭐',label:'O\'rta-yuqori',       color:'#E8EAF6', textColor:'#283593' },
-  'C1': { emoji:'🏆', label:'Ilg\'or daraja',      color:'#FFF8E1', textColor:'#F57F17' },
-  'C2': { emoji:'🎓', label:'Mukammal daraja',     color:'#FCE4EC', textColor:'#880E4F' },
-};
-const LEVEL_ORDER = ['A1','A2','B1','B2','C1','C2'];
-
-function renderLevels(){
-  currentLevel = null;
-  document.getElementById('topbarTitle').textContent = 'Topic Vocabulary';
-  document.getElementById('topbarCount').textContent = learnedIds.length + " ta o'rganilgan";
-  document.getElementById('viewLevels').style.display = 'block';
-  document.getElementById('viewTopics').style.display = 'none';
-  document.getElementById('viewWords').style.display  = 'none';
-  document.getElementById('viewTest').classList.remove('open');
-
-  let html = '';
-  LEVEL_ORDER.forEach(function(lvl){
-    const cfg       = LEVEL_CONFIG[lvl];
-    // words in this level
-    const lvlWords  = ALL_WORDS.filter(function(w){ return (w.level||'').toUpperCase() === lvl; });
-    const count     = lvlWords.length;
-    if(count === 0) return; // bu darajada so'z yo'q — ko'rsatma
-    // distinct topics
-    const topicsInLevel = [...new Set(lvlWords.map(function(w){ return w.topic; }).filter(Boolean))];
-    const learnedInLvl  = lvlWords.filter(function(w){ return learnedIds.includes(w.id); }).length;
-    const pct           = count > 0 ? Math.round(learnedInLvl / count * 100) : 0;
-
-    html += '<div class="level-select-card" onclick="openLevel(\''+lvl+'\')" style="border-color:'+(pct===100?'var(--green)':'transparent')+'">' +
-      '<div class="level-select-icon" style="background:'+cfg.color+';">'+cfg.emoji+'</div>' +
-      '<div class="level-select-info">' +
-        '<div class="level-select-name" style="color:'+cfg.textColor+'">'+lvl+' <span style="font-size:.82rem;font-weight:600;color:var(--ink-mid)">— '+cfg.label+'</span></div>' +
-        '<div class="level-select-sub">'+topicsInLevel.length+' ta mavzu · '+count+' ta so\'z</div>' +
-      '</div>' +
-      '<div class="level-select-meta" style="background:'+cfg.color+';color:'+cfg.textColor+'">'+learnedInLvl+'/'+count+'</div>' +
-      '<div class="level-select-card-bar" style="width:'+pct+'%;background:'+cfg.textColor+'"></div>' +
-    '</div>';
-  });
-
-  if(!html) html = '<div style="text-align:center;padding:40px;color:var(--ink-soft);font-size:.88rem;">Hali so\'zlar qo\'shilmagan</div>';
-  document.getElementById('levelsGrid').innerHTML = html;
-}
-
-function openLevel(level){
-  currentLevel = level;
-  document.getElementById('viewLevels').style.display = 'none';
-  renderTopics();
-}
-
-// ════════════════════════════════════════
-//  VIEW 1: MAVZULAR (daraja bo'yicha filtered)
-// ════════════════════════════════════════
-function renderTopics(){
-  const cfg = LEVEL_CONFIG[currentLevel] || { emoji:'📚', label:currentLevel, color:'#E3F2FD', textColor:'#1565C0' };
-  document.getElementById('topbarTitle').textContent = currentLevel + ' — Mavzular';
-  document.getElementById('topbarCount').textContent = currentLevel;
-  document.getElementById('viewLevels').style.display = 'none';
-  document.getElementById('viewWords').style.display  = 'none';
-  document.getElementById('viewTopics').style.display = 'block';
-
-  // Faqat shu darajadagi so'zlar
-  const levelWords = ALL_WORDS.filter(function(w){ return (w.level||'').toUpperCase() === currentLevel; });
-
-  // Bu leveldagi mavzular to'plami (set)
-  const levelTopicSet = new Set();
-  levelWords.forEach(function(w){ if(w.topic) levelTopicSet.add(w.topic); });
-
-  // ✅ TOPIC_ORDER tartibida mavzularni chiqaramiz (admin belgilagan tartib)
-  const levelTopics = TOPIC_ORDER.filter(function(t){ return levelTopicSet.has(t); });
-
-  // TOPIC_ORDER'da bo'lmagan yangi mavzularni oxiriga qo'shamiz
-  levelTopicSet.forEach(function(t){ if(levelTopics.indexOf(t) === -1) levelTopics.push(t); });
-
-  let html='';
-  levelTopics.forEach(function(topic){
-    const words    = levelWords.filter(function(w){ return w.topic === topic; });
-    const learned  = words.filter(function(w){ return learnedIds.includes(w.id); }).length;
-    const total    = words.length;
-    const pct      = total > 0 ? Math.round(learned/total*100) : 0;
-    const full     = learned === total && total > 0;
-    const color    = TOPIC_COLOR[topic]||'#E3F2FD';
-
-    let badgeHtml, rightHtml;
-    if(full){
-      badgeHtml=`<span class="topic-badge done">✓ Tugallandi</span>`;
-      rightHtml=`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
-    } else {
-      badgeHtml=`<span class="topic-badge">${learned}/${total}</span>`;
-      rightHtml=`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink-soft)" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>`;
-    }
-
-    const cardClass = 'topic-card'+(full?' completed':'');
-    const safeT = topic.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-
-    html += '<div class="'+cardClass+'" onclick="openTopic(\''+safeT+'\',\''+currentLevel+'\')">' +
-      '<div class="topic-info">' +
-        '<div class="topic-name">'+topic+'</div>' +
-        '<div class="topic-meta">'+total+' ta so\'z &bull; '+pct+'% '+badgeHtml+'</div>' +
-      '</div>' +
-      rightHtml +
-      '<div class="topic-card-progress-bar" style="width:'+pct+'%"></div>' +
-    '</div>';
-  });
-  if(!html) html = '<div style="text-align:center;padding:40px;color:var(--ink-soft);font-size:.88rem;">Bu darajada mavzular mavjud emas</div>';
-  document.getElementById('topicsGrid').innerHTML = html +
-    '<div style="height:120px;flex-shrink:0;display:block;"></div>';
-}
-
-// ════════════════════════════════════════
-//  VIEW 2: SO'ZLAR
-// ════════════════════════════════════════
-function openTopic(topic, level){
-  currentTopic = topic;
-  if(level) currentLevel = level;
-  document.getElementById('viewTopics').style.display='none';
-  const vw = document.getElementById('viewWords');
-  vw.style.display='block';
-  vw.scrollTop = 0;
-  document.getElementById('topbarTitle').textContent = topic;
-  renderWords();
-}
-
-function goBack(){
-  if(document.getElementById('viewWords').style.display==='block'){
-    // So'zlar → Mavzular (shu daraja)
-    document.getElementById('viewWords').style.display='none';
-    currentTopic=null;
-    renderTopics();
-  } else if(document.getElementById('viewTopics').style.display==='block'){
-    // Mavzular → Darajalar
-    document.getElementById('viewTopics').style.display='none';
-    currentLevel=null;
-    renderLevels();
-  } else {
-    history.back();
-  }
-}
-
-function renderWords(){
-  const topic   = currentTopic;
-  const words   = topicWords(topic);
-  const learned = topicLearnedCount(topic);
-  const total   = words.length;
-  const pct     = Math.round(learned/total*100);
-  const full    = isTopicFull(topic);
-  const passed  = isTopicPassed(topic);
-
-  document.getElementById('topbarCount').textContent = learned+'/'+total;
-
-  // Progress banner
-  var bannerHtml;
-  if(passed){
-    bannerHtml='<div style="margin:0 16px 14px;background:var(--green-light);border-radius:var(--radius-sm);padding:14px 16px;display:flex;align-items:center;gap:12px;">' +
-      '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--green-deep)" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="20 6 9 17 4 12"/></svg>' +
-      '<div><div style="font-size:.92rem;font-weight:800;color:var(--green-deep)">Mavzu o\'tildi! \u2713</div>' +
-      '<div style="font-size:.78rem;color:var(--green-deep);opacity:.8">Barcha so\'zlarni yaxshi bilasiz</div></div>' +
-    '</div>';
-  } else if(full){
-    bannerHtml='<div class="test-ready-banner" onclick="startTest()">' +
-      '<div class="test-ready-txt"><div class="test-ready-title">Test boshlashga tayyor!</div>' +
-      '<div class="test-ready-sub">Barcha '+total+' ta so\'zni o\'rgandingiz</div></div>' +
-      '<button class="test-ready-btn">Testni boshlash</button>' +
-    '</div>';
-  } else {
-    bannerHtml='<div class="progress-banner">' +
-      '<div class="progress-banner-row"><span class="progress-banner-title">O\'rganish jarayoni</span><span class="progress-banner-pct">'+pct+'%</span></div>' +
-      '<div class="progress-track"><div class="progress-fill" style="width:'+pct+'%"></div></div>' +
-    '</div>';
-  }
-  document.getElementById('progressBanner').innerHTML=bannerHtml;
-
-  // So'zlar
-  let html=words.map(function(w,i){
-    var isLearned  = learnedIds.includes(w.id);
-    var isBookmark = bookmarks.includes(w.id);
-    var exampleHtml = w.example ? '<div class="word-example">'+w.example+'</div>' : '';
-    var learnedIcon = isLearned
-      ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
-      : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>';
-    return '<div class="word-card'+(isLearned?' learned-card':'')+'" id="card-'+w.id+'">' +
-      '<div class="word-header">' +
-        '<span class="word-num">'+(i+1)+'.</span>' +
-        '<span class="word-en">'+(w.word||'')+'</span>' +
-        '<span class="word-dash"> \u2013 </span>' +
-        '<span class="word-uz">'+(w.uz||'')+'</span>' +
-        '<span class="level-badge">'+(w.level||'')+'</span>' +
-      '</div>' +
-      exampleHtml +
-      '<div class="word-actions">' +
-        '<button class="btn-learned'+(isLearned?' done':'')+'" id="lrn-'+w.id+'" onclick="markLearned('+w.id+')">' +
-          learnedIcon+" O'rgandim" +
-        '</button>' +
-        '<button class="btn-icon'+(isBookmark?' bookmarked':'')+'" id="bm-'+w.id+'" onclick="toggleBookmark('+w.id+')" title="Yodlash">' +
-          '<svg width="16" height="16" viewBox="0 0 24 24" fill="'+(isBookmark?'currentColor':'none')+'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>' +
-        '</button>' +
-      '</div>' +
-    '</div>';
-  }).join('');
-  document.getElementById('wordsList').innerHTML = html +
-    '<div style="height:120px;flex-shrink:0;display:block;"></div>';
-}
-
-function markLearned(id){
-  if(!currentUser) return;
-  const numId=Number(id);
-  const idx=learnedIds.indexOf(numId);
-  const isNew=idx===-1;
-  if(isNew){ learnedIds.push(numId); showToast("O'rgandim! So'z saqlandi!"); logActivityToday(1); }
-  else      { learnedIds.splice(idx,1); showToast("O'rganilganlardan olib tashlandi"); logActivityToday(-1); }
-  saveState();
-  saveToFirestore();
-  renderWords(); // so'zlar ro'yxatini yangilaydi + topbar soni
-}
-
-function toggleBookmark(id){
-  const numId=Number(id);
-  const idx=bookmarks.indexOf(numId);
-  if(idx===-1){ bookmarks.push(numId); showToast("Yodlash ro'yxatiga qo'shildi!"); }
-  else        { bookmarks.splice(idx,1); showToast("Yodlashdan olib tashlandi"); }
-  saveState();
-  saveToFirestore();
-  // Faqat shu kartochkani yangilash
-  const bm=document.getElementById('bm-'+numId);
-  if(bm){
-    const active=bookmarks.includes(numId);
-    bm.className='btn-icon'+(active?' bookmarked':'');
-    bm.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="'+(active?'currentColor':'none')+'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
-  }
-}
-
-// ════════════════════════════════════════
-//  VIEW 3: TEST
-// ════════════════════════════════════════
-// Test qoidasi: 10 savol, har savol 4 variant (bittasi to'g'ri),
-// 2 ta xato qilsa → failed (qayta boshlash), 0-1 xato → passed
-const MAX_ERRORS = 1;  // shu yoki kamroq xato = o'tdi
-
-let testWords   = [];
-let testIdx     = 0;
-let testErrors  = 0;
-let testCorrect = 0;
-let testAnswered= false;
-
-function startTest(){
-  const topic = currentTopic;
-  const words  = topicWords(topic).slice();
-  // 10 ta savol olish (yoki mavzuda kamroq bo'lsa hammasi)
-  const shuffled = words.sort(function(){return Math.random()-.5;}).slice(0,Math.min(10,words.length));
-  testWords   = shuffled;
-  testIdx     = 0;
-  testErrors  = 0;
-  testCorrect = 0;
-  testAnswered= false;
-
-  document.getElementById('testTitle').textContent = topic+' testi';
-  document.getElementById('viewTest').classList.add('open');
-  renderTestQuestion();
-}
-
-function closeTest(){
-  document.getElementById('viewTest').classList.remove('open');
-}
-
-function renderTestQuestion(){
-  if(testIdx>=testWords.length){
-    renderTestResult();
-    return;
-  }
-  const w      = testWords[testIdx];
-  const total  = testWords.length;
-  const cur    = testIdx+1;
-  testAnswered = false;
-
-  document.getElementById('testCounter').textContent = cur+'/'+total;
-  document.getElementById('testFill').style.width    = (cur/total*100)+'%';
-
-  // To'g'ri javob + 3 ta noto'g'ri
-  const pool    = ALL_WORDS.filter(function(x){return x.id!==w.id;});
-  const wrong3  = pool.sort(function(){return Math.random()-.5;}).slice(0,3);
-  const options = [w,...wrong3].sort(function(){return Math.random()-.5;});
-
-  // Xato indikatorlari
-  var errDots='';
-  for(var i=0;i<2;i++){
-    errDots+='<div class="test-error-dot'+(i<testErrors?'':' empty')+'"></div>';
+  // Dots yasash
+  for(var i=0;i<total;i++){
+    var d = document.createElement('div');
+    d.className = 'banner-dot' + (i===0?' is-active':'');
+    d.dataset.i = i;
+    d.addEventListener('click', function(){ goTo(Number(this.dataset.i)); });
+    dotsWrap.appendChild(d);
   }
 
-  var optsHtml=options.map(function(opt){
-    return '<button class="test-opt" onclick="checkAnswer('+opt.id+','+w.id+',this)">'+(opt.uz||'')+'</button>';
-  }).join('');
-
-  document.getElementById('testBody').innerHTML=
-    '<div class="test-question">' +
-      '<div class="test-q-label">Tarjimasini tanlang</div>' +
-      '<div class="test-q-word">'+(w.word||'')+'</div>' +
-      '<div class="test-q-topic">'+(w.topic||'')+' \u00b7 '+(w.level||'')+'</div>' +
-    '</div>' +
-    '<div class="test-error-info">Xato: '+errDots+
-      '<span style="margin-left:4px;color:var(--ink-soft)">(2 ta xatoda test o\'tkazib yuboriladi)</span>' +
-    '</div>' +
-    '<div class="test-options">'+optsHtml+'</div>' +
-    '<button class="test-next-btn" id="testNextBtn" onclick="nextQuestion()">' +
-      (testIdx+1<testWords.length ? 'Keyingi savol' : "Natijani ko'rish") +
-    '</button>';
-}
-
-function checkAnswer(selectedId, correctId, btn){
-  if(testAnswered) return;
-  testAnswered=true;
-  const isCorrect = selectedId===correctId;
-
-  // Barcha tugmalarni o'chirish
-  document.querySelectorAll('.test-opt').forEach(function(b){ b.disabled=true; });
-
-  if(isCorrect){
-    btn.classList.add('correct');
-    testCorrect++;
-  } else {
-    btn.classList.add('wrong');
-    testErrors++;
-    // To'g'ri javobni ko'rsatish
-    document.querySelectorAll('.test-opt').forEach(function(b){
-      if(parseInt(b.getAttribute('onclick').match(/checkAnswer\((\d+)/)[1])===correctId){
-        b.classList.add('show-correct');
-      }
+  function goTo(n){
+    current = (n + total) % total;
+    track.style.transform = 'translateX(-' + (current * 100) + '%)';
+    dotsWrap.querySelectorAll('.banner-dot').forEach(function(d,i){
+      d.className = 'banner-dot' + (i===current?' is-active':'');
     });
   }
 
-  // 2 ta xato bo'lsa — darhol fail
-  if(testErrors>=2){
-    setTimeout(function(){renderTestFail();},800);
-    return;
-  }
+  // Auto-play
+  function startAuto(){ autoTimer = setInterval(function(){ goTo(current+1); }, 3500); }
+  function stopAuto(){ clearInterval(autoTimer); }
+  startAuto();
 
-  // Xato indikatorini yangilash
-  const errDots=document.querySelector('.test-error-info');
-  if(errDots){
-    var dots='';
-    for(var i=0;i<2;i++){
-      dots+='<div class="test-error-dot'+(i<testErrors?'':' empty')+'"></div>';
-    }
-    errDots.innerHTML='Xato: '+dots+'<span style="margin-left:4px;color:var(--ink-soft)">(2 ta xatoda test o\'tkazib yuboriladi)</span>';
-  }
-
-  document.getElementById('testNextBtn').style.display='block';
-}
-
-function nextQuestion(){
-  testIdx++;
-  if(testIdx>=testWords.length){
-    renderTestResult();
-  } else {
-    renderTestQuestion();
-  }
-}
-
-function renderTestFail(){
-  document.getElementById('testBody').innerHTML=
-    '<div class="test-result">' +
-      '<div class="test-result-title">Test o\'tmadi</div>' +
-      '<div class="test-result-sub">2 ta xato qildingiz. Yana bir bor so\'zlarni yaxshi o\'rganib, qayta urining!</div>' +
-      '<div class="test-result-stats">' +
-        '<div class="trs"><div class="trs-val green">'+testCorrect+'</div><div class="trs-lbl">To\'g\'ri</div></div>' +
-        '<div class="trs"><div class="trs-val red">'+testErrors+'</div><div class="trs-lbl">Xato</div></div>' +
-        '<div class="trs"><div class="trs-val" style="color:var(--ink-mid)">'+(testIdx+1)+'</div><div class="trs-lbl">Savol</div></div>' +
-      '</div>' +
-      '<div class="test-result-btns">' +
-        '<button class="trb primary" onclick="startTest()">Qaytadan boshlash</button>' +
-        '<button class="trb secondary" onclick="closeTest()">So\'zlarni takrorlash</button>' +
-      '</div>' +
-    '</div>';
-}
-
-function renderTestResult(){
-  var total  = testWords.length;
-  var passed = testErrors<=MAX_ERRORS;
-
-  if(passed && !isTopicPassed(currentTopic)){
-    passedTopics.push(currentTopic);
-    saveState();
-    saveToFirestore();
-  }
-
-  var nextTopicIdx = TOPIC_ORDER.indexOf(currentTopic)+1;
-  var nextTopic    = TOPIC_ORDER[nextTopicIdx];
-  var hasNext      = !!nextTopic;
-
-  if(passed){
-    var nextBtn = hasNext
-      ? '<button class="trb green" onclick="closeTestGoNext(\''+nextTopic.replace(/'/g,"\\'")+'\')" >'+nextTopic+" mavzusiga o'tish</button>"
-      : '';
-    var subExtra = hasNext
-      ? '<br><br><strong>'+nextTopic+'</strong> mavzusi ochildi!'
-      : '<br><br>Barcha mavzularni tugatdingiz!';
-
-    document.getElementById('testBody').innerHTML=
-      '<div class="test-result">' +
-        '<div class="test-result-title">Tabriklaymiz!</div>' +
-        '<div class="test-result-sub">' +
-          currentTopic+" mavzusidan testni muvaffaqiyatli o'tdingiz!" + subExtra +
-        '</div>' +
-        '<div class="test-result-stats">' +
-          '<div class="trs"><div class="trs-val green">'+testCorrect+'</div><div class="trs-lbl">To\'g\'ri</div></div>' +
-          '<div class="trs"><div class="trs-val red">'+testErrors+'</div><div class="trs-lbl">Xato</div></div>' +
-          '<div class="trs"><div class="trs-val" style="color:var(--blue)">'+Math.round(testCorrect/total*100)+'%</div><div class="trs-lbl">Natija</div></div>' +
-        '</div>' +
-        '<div class="test-result-btns">' +
-          nextBtn +
-          '<button class="trb secondary" onclick="closeTest();renderTopics()">Mavzular ro\'yxatiga</button>' +
-        '</div>' +
-      '</div>';
-  } else {
-    renderTestFail();
-  }
-}
-
-function closeTestGoNext(topic){
-  closeTest();
-  renderTopics();
-  setTimeout(function(){ openTopic(topic); },200);
-}
-
-// Storage sync
-window.addEventListener('storage', function(e){
-  if(e.key===lsKey('vz_learned'))   { learnedIds=JSON.parse(e.newValue||'[]').map(Number); }
-  if(e.key===lsKey('vz_passed'))    { passedTopics=JSON.parse(e.newValue||'[]'); }
-  if(e.key===lsKey('vz_bookmarks')) { bookmarks=JSON.parse(e.newValue||'[]').map(Number); }
-
-});
+  // Touch swipe
+  track.addEventListener('touchstart', function(e){
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    isDrag = false;
+    stopAuto();
+  }, {passive:true});
+  track.addEventListener('touchmove', function(e){
+    var dx = e.touches[0].clientX - startX;
+    var dy = e.touches[0].clientY - startY;
+    if(Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 8) isDrag = true;
+  }, {passive:true});
+  track.addEventListener('touchend', function(e){
+    if(!isDrag){ startAuto(); return; }
+    var dx = e.changedTouches[0].clientX - startX;
+    if(dx < -40)      goTo(current + 1);
+    else if(dx > 40)  goTo(current - 1);
+    startAuto();
+  });
+})();
 </script>
 </body>
 </html>
