@@ -254,6 +254,7 @@ function svLogActivityToday(delta) {
 firebase.auth().onAuthStateChanged(function(user) {
   if (!user) { location.href = 'login.html'; return; }
   currentUser = user;
+  _currentUID = user.uid;  // storage-utils lsKey() uchun
   svLoadLocal();
 
   // Load Firestore state + words in parallel
