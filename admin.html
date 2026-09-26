@@ -1700,7 +1700,7 @@ function renderUsersTable() {
   wrap.innerHTML = `
     <div class="table-wrap">
       <table>
-        <thead><tr><th>#</th><th>Foydalanuvchi</th><th>Email</th><th>Ro'yxat sanasi</th><th>Saqlangan so'zlar</th></tr></thead>
+        <thead><tr><th>#</th><th>Foydalanuvchi</th><th>Email</th><th>Ro'yxat sanasi</th><th>So'nggi kirish</th><th>Saqlangan so'zlar</th></tr></thead>
         <tbody>${page.map((u, i) => `
           <tr>
             <td style="color:var(--ink-soft);font-size:.8rem">${start+i+1}</td>
@@ -1710,6 +1710,7 @@ function renderUsersTable() {
             </div></td>
             <td style="color:var(--ink-soft);font-size:.82rem">${esc(u.email||'—')}</td>
             <td style="color:var(--ink-soft);font-size:.82rem">${formatTs(u.createdAt)}</td>
+            <td style="color:var(--ink-soft);font-size:.82rem">${u.lastLogin ? formatTs(u.lastLogin) : '—'}</td>
             <td><span class="badge badge-blue">${(u.bookmarks||[]).length} ta</span></td>
           </tr>`).join('')}
         </tbody>
