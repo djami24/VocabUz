@@ -219,14 +219,14 @@ var TYPE_EMOJIS = ['🗣️','💬','🎯','📢','🧠','✨','🔥','💡','�
 
 // ═══ PERSIST ═══
 function svLoadLocal() {
-  svLearned   = JSON.parse(localStorage.getItem('sv_learned')    || '[]');
-  svBookmarks = JSON.parse(localStorage.getItem('vz_bookmarks')  || '[]').map(Number);
-  svLikes     = JSON.parse(localStorage.getItem('vz_likes')      || '[]').map(Number);
+  svLearned   = JSON.parse(lsGet('sv_learned', '[]'));
+  svBookmarks = JSON.parse(lsGet('vz_bookmarks', '[]')).map(Number);
+  svLikes     = JSON.parse(lsGet('vz_likes', '[]')).map(Number);
 }
 function svSaveLocal() {
-  localStorage.setItem('sv_learned',   JSON.stringify(svLearned));
-  localStorage.setItem('vz_bookmarks', JSON.stringify(svBookmarks));
-  localStorage.setItem('vz_likes',     JSON.stringify(svLikes));
+  lsSet('sv_learned', JSON.stringify(svLearned));
+  lsSet('vz_bookmarks', JSON.stringify(svBookmarks));
+  lsSet('vz_likes', JSON.stringify(svLikes));
 }
 function svSaveFirestore() {
   if (!currentUser) return;
