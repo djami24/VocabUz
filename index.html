@@ -255,22 +255,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Firestore + localStorage'dan o'qib ko'rsatish
   function loadLearnedCount(user) {
-    // 1) Tezkor: localStorage'dan darhol
-    var vzLocal    = JSON.parse(localStorage.getItem('vz_learned') || '[]').map(Number);
-    var svLocal    = JSON.parse(localStorage.getItem('sv_learned') || '[]');
+    var uid = user.uid;
+    // 1) Tezkor: localStorage'dan darhol (UID asosida kalit)
+    var vzLocal    = JSON.parse(localStorage.getItem('vz_learned_' + uid) || '[]').map(Number);
+    var svLocal    = JSON.parse(localStorage.getItem('sv_learned_' + uid) || '[]');
     var localTotal = new Set(vzLocal).size + new Set(svLocal).size;
     if (localTotal > 0) renderLearnedCount(localTotal);
 
     // 2) Firestore'dan aniq raqam
-    db.collection('users').doc(user.uid).get().then(function (doc) {
+    db.collection('users').doc(uid).get().then(function (doc) {
       var data         = doc.exists ? doc.data() : {};
       var topicLearned = (data.learned   || []).map(Number);
       var svLearned    =  data.svLearned || [];
       var numSet = new Set(topicLearned);
       var svSet  = new Set(svLearned);
       var total  = numSet.size + svSet.size;
-      localStorage.setItem('vz_learned', JSON.stringify(Array.from(numSet)));
-      localStorage.setItem('sv_learned', JSON.stringify(Array.from(svSet)));
+      // UID asosida kalit bilan saqlash (topic.html bilan mos)
+      localStorage.setItem('vz_learned_' + uid, JSON.stringify(Array.from(numSet)));
+      localStorage.setItem('sv_learned_' + uid, JSON.stringify(Array.from(svSet)));
       renderLearnedCount(total);
     }).catch(function (err) {
       console.error('[VocabUZ] Firestore read xato:', err.code, err.message);
@@ -296,7 +298,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // localStorage o'zgarganda yangilash (boshqa tab/sahifadan)
   window.addEventListener('storage', function (e) {
-    if ((e.key === 'vz_learned' || e.key === 'sv_learned') && _currentUser) {
+    if (!_currentUser) return;
+    var uid = _currentUser.uid;
+    if (e.key === 'vz_learned_' + uid || e.key === 'sv_learned_' + uid) {
       loadLearnedCount(_currentUser);
     }
   });
