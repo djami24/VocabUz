@@ -3,7 +3,6 @@
 // ============================================================
 
 var _visitLogged = false;
-var _currentUID  = null;  // Boshqa fayllar uchun global UID
 
 firebase.auth().onAuthStateChanged(function (user) {
   if (!user) {
@@ -11,6 +10,7 @@ firebase.auth().onAuthStateChanged(function (user) {
     return;
   }
 
+  // storage-utils.js dagi _currentUID ni yangilaymiz
   _currentUID = user.uid;
 
   // Har kirganda email, name, lastLogin ni Firestore ga yozamiz
@@ -32,15 +32,3 @@ firebase.auth().onAuthStateChanged(function (user) {
     }).catch(function(){});
   }
 });
-
-// localStorage kalitlari UID bilan — har profil o'z ma'lumotini saqlaydi
-function lsKey(key) {
-  return _currentUID ? key + '_' + _currentUID : key;
-}
-function lsGet(key, def) {
-  try { var v = localStorage.getItem(lsKey(key)); return v !== null ? v : def; }
-  catch(e) { return def; }
-}
-function lsSet(key, val) {
-  try { localStorage.setItem(lsKey(key), val); } catch(e) {}
-}
