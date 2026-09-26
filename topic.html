@@ -370,7 +370,7 @@ firebase.auth().onAuthStateChanged(function(user){
 
     sortedDocs.forEach(function(d){
       var w = Object.assign({ _id: d.id }, d.data());
-      w.id = Number(w.id); // ID turini har doim Number qilib normalizatsiya qilamiz
+      w.id = Number(w.id); // Har doim Number bo'lsin — type mismatch oldini olish
       ALL_WORDS.push(w);
       if(w.topic && TOPIC_ORDER.indexOf(w.topic) === -1){
         TOPIC_ORDER.push(w.topic);
@@ -909,8 +909,10 @@ function closeTestGoNext(topic){
 
 // Storage sync
 window.addEventListener('storage', function(e){
-  if(e.key===lsKey('vz_learned')){ learnedIds=JSON.parse(e.newValue||'[]').map(Number); }
-  if(e.key===lsKey('vz_passed')) { passedTopics=JSON.parse(e.newValue||'[]'); }
+  if(e.key===lsKey('vz_learned'))   { learnedIds=JSON.parse(e.newValue||'[]').map(Number); }
+  if(e.key===lsKey('vz_passed'))    { passedTopics=JSON.parse(e.newValue||'[]'); }
+  if(e.key===lsKey('vz_bookmarks')) { bookmarks=JSON.parse(e.newValue||'[]').map(Number); }
+  if(e.key===lsKey('vz_likes'))     { likes=JSON.parse(e.newValue||'[]').map(Number); }
 });
 </script>
 </body>
