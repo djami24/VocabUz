@@ -4,7 +4,6 @@
 //  Agar foydalanuvchi login qilmagan bo'lsa — login.htmlga yuboradi.
 // ============================================================
 
-// Faqat login sahifasida visit yozamiz (takrorlanmasin)
 var _visitLogged = false;
 
 firebase.auth().onAuthStateChanged(function (user) {
@@ -13,19 +12,26 @@ firebase.auth().onAuthStateChanged(function (user) {
     return;
   }
 
-  // Har sessiyada bir marta kirish vaqtini yozamiz
-  // localStorage orqali bir sahifadan boshqasiga o'tganda qayta yozilmaydi
+  // Har kirganida users doc ga email, name, lastLogin ni yangilaymiz
+  // (eski foydalanuvchilarda bu maydonlar bo'lmasligi mumkin)
+  var updateData = {
+    lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+  };
+  if (user.email)       updateData.email = user.email;
+  if (user.displayName) updateData.name  = user.displayName;
+
+  db.collection('users').doc(user.uid).set(updateData, { merge: true }).catch(function(){});
+
+  // Har sessiyada bir marta kirish vaqtini visits ga yozamiz
   var sessionKey = 'vz_visit_' + new Date().toDateString();
   if (!_visitLogged && !sessionStorage.getItem(sessionKey)) {
     _visitLogged = true;
     sessionStorage.setItem(sessionKey, '1');
-    try {
-      db.collection('visits').add({
-        uid:       user.uid,
-        name:      user.displayName || '',
-        email:     user.email || '',
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      }).catch(function(){});
-    } catch(e) {}
+    db.collection('visits').add({
+      uid:       user.uid,
+      name:      user.displayName || '',
+      email:     user.email || '',
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).catch(function(){});
   }
 });
