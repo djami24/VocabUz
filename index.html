@@ -268,8 +268,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Keyin Firestore'dan aniq ma'lumotni yuklab yangilash
     db.collection('users').doc(user.uid).get().then(function (doc) {
-      if (!doc.exists) return;
-      var data = doc.data();
+      console.log('[VocabUZ index] doc.exists:', doc.exists, '| UID:', user.uid);
+      var data = doc.exists ? doc.data() : {};
       // Topic/Writing/mywords learned (numeric ids)
       var topicLearned = (data.learned || []).map(Number);
       // Speaking learned (string docIds)
@@ -278,12 +278,13 @@ document.addEventListener('DOMContentLoaded', function () {
       var numSet = new Set(topicLearned);
       var svSet  = new Set(svLearned);
       var total  = numSet.size + svSet.size;
+      console.log('[VocabUZ index] topicLearned:', topicLearned.length, '| svLearned:', svLearned.length, '| total:', total);
       // localStorage ni yangilash (boshqa tablar uchun)
       localStorage.setItem('vz_learned', JSON.stringify(Array.from(numSet)));
       localStorage.setItem('sv_learned', JSON.stringify(Array.from(svSet)));
       renderLearnedCount(total);
     }).catch(function (err) {
-      console.warn('Firestore read error:', err);
+      console.error('[VocabUZ index] Firestore read XATO:', err.code, err.message);
     });
   });
 });
