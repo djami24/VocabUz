@@ -77,10 +77,19 @@ function doRegister(){
       return cred.user.updateProfile({ displayName: name })
         .then(function(){
           // Firestore da user profil yaratish
+          var now = firebase.firestore.FieldValue.serverTimestamp();
+          db.collection('visits').add({
+            uid: cred.user.uid,
+            email: email,
+            name: name,
+            timestamp: now,
+            type: 'register'
+          }).catch(function(){});
           return db.collection('users').doc(cred.user.uid).set({
             name: name,
             email: email,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            createdAt: now,
+            lastLogin: now,
             bookmarks: [],
             likes: []
           });
