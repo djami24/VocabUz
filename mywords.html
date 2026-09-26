@@ -648,8 +648,8 @@ document.addEventListener('DOMContentLoaded', function(){
       // Foydalanuvchi ma'lumotlari
       if(userDoc.exists){
         var data = userDoc.data();
-        if(data.bookmarks){ bookmarks = data.bookmarks; saveBookmarks(); }
-        if(data.likes)    { likes     = data.likes;             saveLikes(); }
+        if(data.bookmarks){ bookmarks = data.bookmarks.map(Number); saveBookmarks(); }
+        if(data.likes)    { likes     = data.likes.map(Number);     saveLikes(); }
         if(data.learned)  { learned   = data.learned.map(Number);   saveLearned(); }
         else              { learned   = JSON.parse(lsGet('vz_learned','[]')).map(Number); }
       }
@@ -660,7 +660,8 @@ document.addEventListener('DOMContentLoaded', function(){
         .map(function(d){
           var data = d.data();
           var wId = (data.id != null && data.id !== '') ? data.id : d.id;
-          return Object.assign({}, data, { _docId: d.id, id: wId });
+          var wIdNum = Number(wId);
+          return Object.assign({}, data, { _docId: d.id, id: isNaN(wIdNum) ? wId : wIdNum });
         })
         .sort(function(a,b){
           var an = Number(a.id), bn = Number(b.id);
