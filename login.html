@@ -66,7 +66,20 @@ function doLogin(){
   btn.textContent = 'Yuklanmoqda…';
 
   firebase.auth().signInWithEmailAndPassword(email, pass)
-    .then(function(){ location.href = 'index.html'; })
+    .then(function(cred){
+      var uid = cred.user.uid;
+      var now = firebase.firestore.FieldValue.serverTimestamp();
+      // lastLogin ni users doc ga yozamiz
+      db.collection('users').doc(uid).set({ lastLogin: now }, { merge: true }).catch(function(){});
+      // visits collection ga kirish vaqtini yozamiz
+      db.collection('visits').add({
+        uid: uid,
+        email: cred.user.email || '',
+        name: cred.user.displayName || '',
+        timestamp: now
+      }).catch(function(){});
+      location.href = 'index.html';
+    })
     .catch(function(err){
       btn.disabled = false;
       btn.textContent = 'Kirish';
