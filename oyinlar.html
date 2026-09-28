@@ -866,6 +866,21 @@ window.addEventListener('storage', function(e) {
   }
 });
 
+// Real-time premium kuzatuvchi — admin o'chirganda darhol chiqaradi
+var _premiumWatcher = null;
+function startPremiumWatcher(uid) {
+  if (_premiumWatcher) return;
+  _premiumWatcher = db.collection('users').doc(uid).onSnapshot(function(doc) {
+    if (!doc.exists) return;
+    var stillPremium = !!(doc.data().isPremium);
+    if (!stillPremium && _isPremium) {
+      _isPremium = false;
+      showToast('Premium bekor qilindi. Asosiy sahifaga qaytilmoqda...');
+      setTimeout(function() { location.href = 'index.html'; }, 2500);
+    }
+  }, function() {});
+}
+
 /* ════════════════════════════════
    DASHBOARD RENDER
 ════════════════════════════════ */
@@ -903,6 +918,9 @@ function renderDashboard() {
   const badge = document.getElementById('topbarBadge');
   badge.textContent = ALL_WORDS.length + " ta so'z";
   badge.className = _isPremium ? 'topbar-badge green' : 'topbar-badge';
+
+  // Premium foydalanuvchi bo'lsa, real-time kuzatuvni ishga tushir
+  if (_isPremium && currentUser) { startPremiumWatcher(currentUser.uid); }
 
   let html;
 
