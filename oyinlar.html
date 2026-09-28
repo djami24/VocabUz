@@ -817,8 +817,7 @@ firebase.auth().onAuthStateChanged(function(user) {
 
   // localStorage'dan tezkor yuklaymiz (lsKey uid bilan ishlaydi)
   var lsVz = JSON.parse(lsGet('vz_learned', '[]')).map(Number);
-  var lsSv = JSON.parse(lsGet('sv_learned', '[]'));
-  learnedIds = Array.from(new Set([].concat(lsVz, lsSv)));
+  learnedIds = Array.from(new Set(lsVz));
 
   // Foydalanuvchi + BARCHA so'zlarni Firestore'dan parallel yuklaymiz
   Promise.all([
@@ -833,13 +832,11 @@ firebase.auth().onAuthStateChanged(function(user) {
       var udata = userDoc.data();
       var vzIds = (udata.learned   || []).map(Number);
       var tvIds = (udata.tvLearned || []).map(Number);
-      var svIds = (udata.svLearned || []);
       // learned + tvLearned birlashtirib unikal set (top-learners bilan bir xil)
       var numSet = new Set(vzIds);
       tvIds.forEach(function(id){ numSet.add(id); });
-      learnedIds = Array.from(numSet).concat(svIds);
-      lsSet('vz_learned', JSON.stringify(Array.from(numSet)));
-      lsSet('sv_learned', JSON.stringify(svIds));
+      learnedIds = Array.from(numSet);
+      lsSet('vz_learned', JSON.stringify(learnedIds));
     }
 
     // Firestore so'zlar massivi — hardcoded emas, haqiqiy ma'lumot
@@ -860,10 +857,9 @@ firebase.auth().onAuthStateChanged(function(user) {
 // keep in sync across tabs
 window.addEventListener('storage', function(e) {
   if (!currentUser) return;
-  if (e.key === lsKey('vz_learned') || e.key === lsKey('sv_learned')) {
+  if (e.key === lsKey('vz_learned')) {
     var lsVz = JSON.parse(lsGet('vz_learned', '[]')).map(Number);
-    var lsSv = JSON.parse(lsGet('sv_learned', '[]'));
-    learnedIds = Array.from(new Set([].concat(lsVz, lsSv)));
+    learnedIds = Array.from(new Set(lsVz));
     renderDashboard();
   }
 });
