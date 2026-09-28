@@ -239,6 +239,16 @@
 </div>
 
 <!-- ── PREMIUM LOCKED MODAL ── -->
+<!-- Premium bekor qilindi modal -->
+<div id="premiumRevokedModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:1002;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:24px">
+  <div style="background:#fff;border-radius:20px;padding:32px 24px;width:100%;max-width:320px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.2)">
+    <div style="font-size:2.8rem;margin-bottom:14px">😔</div>
+    <div style="font-size:1.05rem;font-weight:800;color:#1A2333;margin-bottom:8px">Premium bekor qilindi</div>
+    <div style="font-size:.85rem;color:#8A9BB0;margin-bottom:24px;line-height:1.5">Admin tomonidan Premium obunangiz o'chirildi. Qayta faollashtirish uchun murojaat qiling.</div>
+    <button onclick="document.getElementById('premiumRevokedModal').style.display='none'" style="width:100%;padding:14px;background:linear-gradient(135deg,#FFB300,#FF8F00);color:#fff;border:none;border-radius:14px;font-size:.95rem;font-weight:800;cursor:pointer">Tushunarli</button>
+  </div>
+</div>
+
 <div id="premiumLockModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:1001;background:rgba(0,0,0,.5);align-items:flex-end;justify-content:center">
   <div style="background:#fff;border-radius:24px 24px 0 0;padding:32px 24px;width:100%;max-width:480px;margin:0 auto">
     <div style="text-align:center;margin-bottom:20px">
@@ -387,6 +397,12 @@ function loadPremiumStatus(uid) {
         badge.style.background = 'linear-gradient(135deg,#1565C0,#1DA1F2)';
         badge.style.boxShadow  = '';
       }
+    }
+
+    // Admin premium o'chirganda xabar ko'rsatish
+    if (wasPremium && !_isPremiumUser) {
+      var revokedModal = document.getElementById('premiumRevokedModal');
+      if (revokedModal) revokedModal.style.display = 'flex';
     }
 
     // Faqat birinchi marta notiflarni yuklash
