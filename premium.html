@@ -583,11 +583,14 @@ function loadUserStatus(user) {
 }
 
 function updateUI() {
+  console.log('[VocabUz Premium] isPremium =', _isPremium, '| hasPending =', _hasPendingPayment);
   var activeCard       = document.getElementById('premiumActiveCard');
   var pendingCard      = document.getElementById('pendingPayCard');
   var paymentSection   = document.getElementById('paymentSection');
   var welcomeSection   = document.getElementById('premiumWelcomeSection');
   var payBtn           = document.getElementById('payBtn');
+
+  console.log('[VocabUz Premium] paymentSection el =', paymentSection, '| welcomeSection el =', welcomeSection);
 
   if (_isPremium) {
     // ── Premium foydalanuvchi ──
