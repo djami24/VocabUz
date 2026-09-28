@@ -2904,42 +2904,45 @@ async function approvePayment(paymentId) {
     'linear-gradient(135deg,var(--green),#16A34A)',
     async () => {
   try {
+    console.log('[approvePayment] START, id:', paymentId);
     const payRef = db.collection('payments').doc(paymentId);
     const paySnap = await payRef.get();
     if (!paySnap.exists) { showToast('❌ To\'lov topilmadi'); return; }
     const pay = paySnap.data();
     const userId = pay.userId;
+    console.log('[approvePayment] userId:', userId);
     if (!userId) { showToast('❌ Foydalanuvchi ID topilmadi'); return; }
 
-    const batch = db.batch();
+    // batch emas, alohida write qilish (debug uchun)
+    console.log('[approvePayment] payment update boshlandi...');
+    await db.collection('payments').doc(paymentId).update({ 
+      status: 'approved', 
+      approvedAt: firebase.firestore.FieldValue.serverTimestamp() 
+    });
+    console.log('[approvePayment] payment updated OK');
 
-    // 1. Update payment status
-    batch.update(payRef, { status: 'approved', approvedAt: firebase.firestore.FieldValue.serverTimestamp() });
-
-    // 2. Activate premium for user
-    batch.update(db.collection('users').doc(userId), {
+    console.log('[approvePayment] user isPremium update boshlandi...');
+    await db.collection('users').doc(userId).update({
       isPremium: true,
       premiumActivatedAt: firebase.firestore.FieldValue.serverTimestamp()
     });
+    console.log('[approvePayment] user isPremium = true OK!');
 
-    // 3. Create approval notification
-    const notifRef = db.collection('users').doc(userId).collection('notifications').doc();
-    batch.set(notifRef, {
+    await db.collection('users').doc(userId).collection('notifications').add({
       message: "VocabUz Premium to'lovingiz tasdiqlandi. Premium imkoniyatlaringiz faollashtirildi.",
       type: 'premium_approved',
       read: false,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
+    console.log('[approvePayment] notification yozildi OK');
 
-    await batch.commit();
-
-    // Update local state
     const idx = allPayments.findIndex(p => p._id === paymentId);
     if (idx !== -1) allPayments[idx].status = 'approved';
     updatePendingBadge();
     renderPaymentsTable();
     showToast('✅ Premium faollashtirildi!');
   } catch(e) {
+    console.error('[approvePayment] XATO:', e.code, e.message, e);
     showToast('❌ Xato: ' + e.message);
   }
   });
