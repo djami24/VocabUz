@@ -127,17 +127,19 @@
         </div>
       </div>
 
-      <!-- Slide 3: Binafsha — Flashcard -->
-      <div class="banner-slide" style="background:linear-gradient(135deg,#4A148C 0%,#AB47BC 100%); position:relative; overflow:hidden;">
+      <!-- Slide 3: Binafsha — Word of the Day -->
+      <div class="banner-slide" style="background:linear-gradient(135deg,#4A148C 0%,#7B1FA2 100%); position:relative; overflow:hidden;">
         <div style="position:absolute;top:-35px;right:-25px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.07);pointer-events:none;"></div>
         <div style="position:absolute;bottom:-15px;right:35px;width:75px;height:75px;border-radius:50%;background:rgba(255,255,255,.05);pointer-events:none;"></div>
         <div>
-          <div style="font-size:.72rem;font-weight:600;opacity:.7;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">Kunlik mashq</div>
-          <div style="font-size:1.15rem;font-weight:800;color:#fff;line-height:1.25;max-width:75%;">Har kuni yangi so'zlar</div>
-          <div style="font-size:.78rem;opacity:.7;color:#fff;margin-top:5px;">Flashcard · Statistika · Streak</div>
-        </div>
-        <div style="margin-top:14px;">
-          <button onclick="location.href='oyinlar.html'" style="background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.35);color:#fff;font-size:.82rem;font-weight:700;padding:8px 18px;border-radius:99px;cursor:pointer;-webkit-tap-highlight-color:transparent;">O'yinlar</button>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span id="wotdDate" style="font-size:.7rem;font-weight:600;opacity:.7;letter-spacing:.06em;text-transform:uppercase;color:#fff;"></span>
+          </div>
+          <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:6px;">Word of the Day</div>
+          <div id="wotdEn" style="font-size:1.5rem;font-weight:900;color:#fff;line-height:1.1;margin-bottom:4px;letter-spacing:-.3px;">—</div>
+          <div id="wotdUz" style="font-size:.88rem;font-weight:500;color:rgba(255,255,255,.75);line-height:1.3;">—</div>
+          <div id="wotdPos" style="margin-top:6px;display:inline-block;background:rgba(255,255,255,.15);border-radius:6px;padding:2px 8px;font-size:.68rem;font-weight:700;color:rgba(255,255,255,.8);letter-spacing:.04em;"></div>
         </div>
       </div>
 
@@ -497,6 +499,102 @@ function markAllRead() {
 function escHtml(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+
+// ═══ WORD OF THE DAY ═══
+(function(){
+  var WORDS = [
+    { en: 'Ambiguous',    uz: 'Noaniq, ikki ma\'noli',       pos: 'adjective' },
+    { en: 'Benevolent',   uz: 'Xayrixoh, mehribon',          pos: 'adjective' },
+    { en: 'Candid',       uz: 'Ochiq, samimiy',              pos: 'adjective' },
+    { en: 'Diligent',     uz: 'Mehnatsevar, tirishqoq',      pos: 'adjective' },
+    { en: 'Eloquent',     uz: 'Notiq, ravon gapiruvchi',     pos: 'adjective' },
+    { en: 'Flourish',     uz: 'Gullab-yashnash, rivojlanish',pos: 'verb' },
+    { en: 'Genuine',      uz: 'Haqiqiy, chin',               pos: 'adjective' },
+    { en: 'Humble',       uz: 'Kamtar, oddiy',               pos: 'adjective' },
+    { en: 'Inevitable',   uz: 'Muqarrar, oldini olib bo\'lmaydigan', pos: 'adjective' },
+    { en: 'Jubilant',     uz: 'Xursand, shod',               pos: 'adjective' },
+    { en: 'Keen',         uz: 'O\'tkir, qiziquvchi',         pos: 'adjective' },
+    { en: 'Lucid',        uz: 'Aniq, tushunarli',            pos: 'adjective' },
+    { en: 'Meticulous',   uz: 'Puxta, sinchkov',             pos: 'adjective' },
+    { en: 'Notorious',    uz: 'Badnom, mashhur (salbiy)',     pos: 'adjective' },
+    { en: 'Optimistic',   uz: 'Optimist, umidvor',           pos: 'adjective' },
+    { en: 'Persevere',    uz: 'Qat\'iy turib olmoq, davom etmoq', pos: 'verb' },
+    { en: 'Quirky',       uz: 'G\'alati, o\'ziga xos',       pos: 'adjective' },
+    { en: 'Resilient',    uz: 'Chidamli, tezda tiklanuvchan',pos: 'adjective' },
+    { en: 'Serene',       uz: 'Tinch, osuda',                pos: 'adjective' },
+    { en: 'Tenacious',    uz: 'Qat\'iyatli, ​​qaysар',      pos: 'adjective' },
+    { en: 'Unanimous',    uz: 'Bir ovozdan, yakdil',         pos: 'adjective' },
+    { en: 'Versatile',    uz: 'Ko\'p qirrali, moslashuvchan',pos: 'adjective' },
+    { en: 'Wisdom',       uz: 'Donolik, aql-idrok',          pos: 'noun' },
+    { en: 'Xenial',       uz: 'Mehmondo\'st, ochiq qo\'lli', pos: 'adjective' },
+    { en: 'Yearning',     uz: 'Intilish, qo\'msash',         pos: 'noun' },
+    { en: 'Zealous',      uz: 'Ishtiyoqli, g\'ayratli',      pos: 'adjective' },
+    { en: 'Accomplish',   uz: 'Erishmoq, bajarmoq',          pos: 'verb' },
+    { en: 'Broad-minded', uz: 'Keng fikrli, toqatli',        pos: 'adjective' },
+    { en: 'Compassion',   uz: 'Rahmdillik, shafqat',         pos: 'noun' },
+    { en: 'Dedicate',     uz: 'Bag\'ishlamoq, sadoqat ko\'rsatmoq', pos: 'verb' },
+    { en: 'Empathy',      uz: 'Hamdardlik, boshqani tushunish', pos: 'noun' },
+    { en: 'Foster',       uz: 'Rivojlantirmoq, parvarish qilmoq', pos: 'verb' },
+    { en: 'Grasp',        uz: 'Anglash, ushlamoq',           pos: 'verb' },
+    { en: 'Harness',      uz: 'Boshqarmoq, ishga solmoq',    pos: 'verb' },
+    { en: 'Insight',      uz: 'Tushuncha, teran idrok',       pos: 'noun' },
+    { en: 'Justify',      uz: 'Asoslamoq, oqlamoq',          pos: 'verb' },
+    { en: 'Linger',       uz: 'Uzoq qolmoq, cho\'zilmoq',    pos: 'verb' },
+    { en: 'Manifest',     uz: 'Namoyon bo\'lmoq, ochiq ko\'rsatmoq', pos: 'verb' },
+    { en: 'Nurture',      uz: 'Tarbiyalamoq, o\'stirmoq',    pos: 'verb' },
+    { en: 'Overcome',     uz: 'Engib o\'tmoq, yengmoq',      pos: 'verb' },
+    { en: 'Perceive',     uz: 'Idrok etmoq, sezmoq',         pos: 'verb' },
+    { en: 'Refine',       uz: 'Takomillashtirmoq, tozalamoq',pos: 'verb' },
+    { en: 'Strive',       uz: 'Intilmoq, harakat qilmoq',    pos: 'verb' },
+    { en: 'Thrive',       uz: 'Gullab-yashnash, muvaffaqiyatga erishmoq', pos: 'verb' },
+    { en: 'Undermine',    uz: 'Zaiflаshtirmoq, putur etkazmoq', pos: 'verb' },
+    { en: 'Vital',        uz: 'Hayotiy zarur, muhim',        pos: 'adjective' },
+    { en: 'Withstand',    uz: 'Bardosh bermoq, qarshilik ko\'rsatmoq', pos: 'verb' },
+    { en: 'Abandon',      uz: 'Tark etmoq, qoldirmoq',       pos: 'verb' },
+    { en: 'Brevity',      uz: 'Qisqalik, lo\'ndalik',        pos: 'noun' },
+    { en: 'Cherish',      uz: 'Qadrlamoq, asramoq',          pos: 'verb' },
+    { en: 'Daunting',     uz: 'Qo\'rqinchli, hayiqtiradigan',pos: 'adjective' },
+    { en: 'Embrace',      uz: 'Qabul qilmoq, bag\'rига bosmoq', pos: 'verb' },
+    { en: 'Foresight',    uz: 'Oldini ko\'ra bilish, uzoqni ko\'rish', pos: 'noun' },
+    { en: 'Gratitude',    uz: 'Minnatdorchilik, shukrona',   pos: 'noun' },
+    { en: 'Harmony',      uz: 'Uyg\'unlik, hamohanglik',     pos: 'noun' },
+    { en: 'Integrity',    uz: 'Halollik, yaxlitlik',         pos: 'noun' },
+    { en: 'Jeopardize',   uz: 'Xavf ostiga qo\'ymoq',        pos: 'verb' },
+    { en: 'Kindle',       uz: 'Yoqmoq, uyg\'otmoq',         pos: 'verb' },
+    { en: 'Legacy',       uz: 'Meros, qoldirilgan narsa',    pos: 'noun' },
+    { en: 'Momentum',     uz: 'Tezlik, harakatga kuch',      pos: 'noun' },
+    { en: 'Navigate',     uz: 'Yo\'l topmoq, boshqarmoq',    pos: 'verb' },
+    { en: 'Oblivious',    uz: 'Xabarsiz, unutqoq',           pos: 'adjective' },
+    { en: 'Profound',     uz: 'Chuqur, teran',               pos: 'adjective' },
+    { en: 'Radiate',      uz: 'Sochmoq, nurlatmoq',          pos: 'verb' },
+    { en: 'Spontaneous',  uz: 'O\'z-o\'zidan, kutilmagan',   pos: 'adjective' },
+    { en: 'Transform',    uz: 'O\'zgartirmoq, aylantirmoq',  pos: 'verb' },
+    { en: 'Unique',       uz: 'Noyob, yagona',               pos: 'adjective' },
+    { en: 'Vague',        uz: 'Noaniq, loyqa',               pos: 'adjective' }
+  ];
+
+  // Bugungi sanaga qarab so'z tanlash (har kun yangi so'z)
+  var now  = new Date();
+  var year = now.getFullYear();
+  var month = now.getMonth();
+  var day  = now.getDate();
+  // Yil boshidan necha kun o'tgani
+  var start = new Date(year, 0, 0);
+  var diff  = now - start;
+  var dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
+  var idx  = dayOfYear % WORDS.length;
+  var word = WORDS[idx];
+
+  // Sana matni
+  var MONTHS_UZ = ['Yanvar','Fevral','Mart','Aprel','May','Iyun',
+                   'Iyul','Avgust','Sentabr','Oktabr','Noyabr','Dekabr'];
+  var dateStr = day + ' ' + MONTHS_UZ[month] + ' ' + year;
+
+  document.getElementById('wotdDate').textContent = dateStr;
+  document.getElementById('wotdEn').textContent   = word.en;
+  document.getElementById('wotdUz').textContent   = word.uz;
+  document.getElementById('wotdPos').textContent  = word.pos;
+})();
 
 // ═══ BANNER CAROUSEL ═══
 (function(){
