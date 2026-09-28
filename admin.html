@@ -2842,8 +2842,8 @@ function renderPaymentsTable() {
         '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
         (p.screenshot ? '<a href="' + esc(p.screenshot) + '" target="_blank" style="padding:6px 12px;background:#E3F2FD;color:#1565C0;border-radius:8px;font-size:.78rem;font-weight:600;text-decoration:none">&#128247; Skreenshot</a>' : '') +
         (st === 'pending' ?
-          '<button onclick="approvePayment('' + safeId + '')" style="padding:6px 14px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:.78rem;font-weight:700;cursor:pointer">&#10003; Tasdiqlash</button>' +
-          '<button onclick="rejectPayment('' + safeId + '')" style="padding:6px 14px;background:var(--red);color:#fff;border:none;border-radius:8px;font-size:.78rem;font-weight:700;cursor:pointer">&#10007; Rad etish</button>'
+          '<button onclick="approvePayment(\'' + safeId + '\')" style="padding:6px 14px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:.78rem;font-weight:700;cursor:pointer">&#10003; Tasdiqlash</button>' +
+          '<button onclick="rejectPayment(\'' + safeId + '\')" style="padding:6px 14px;background:var(--red);color:#fff;border:none;border-radius:8px;font-size:.78rem;font-weight:700;cursor:pointer">&#10007; Rad etish</button>'
           : '') +
         '</div>' +
       '</td>' +
