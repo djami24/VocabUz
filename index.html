@@ -73,12 +73,13 @@
       <div class="home-user-name" id="homeUserName">Yuklanmoqda…</div>
       <div class="home-user-sub" id="homeUserSub"></div>
     </div>
-    <button class="premium-badge" onclick="location.href='profile.html'">
+    <button class="premium-badge" id="premiumBadgeBtn" onclick="location.href='premium.html'">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
       Premium
     </button>
-    <button class="notif-btn">
+    <button class="notif-btn" id="notifBtn" onclick="openNotifPanel()" style="position:relative">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span id="notifDot" style="display:none;position:absolute;top:7px;right:7px;width:8px;height:8px;background:#EF4444;border-radius:50%;border:2px solid #fff"></span>
     </button>
   </div>
 
@@ -122,7 +123,7 @@
           <div style="font-size:.78rem;opacity:.7;color:#fff;margin-top:5px;">Talaffuz · Mashqlar · Test</div>
         </div>
         <div style="margin-top:14px;">
-          <button onclick="location.href='speaking.html'" style="background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.35);color:#fff;font-size:.82rem;font-weight:700;padding:8px 18px;border-radius:99px;cursor:pointer;-webkit-tap-highlight-color:transparent;">Boshlash</button>
+          <button onclick="openIeltsCefr()" style="background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.35);color:#fff;font-size:.82rem;font-weight:700;padding:8px 18px;border-radius:99px;cursor:pointer;-webkit-tap-highlight-color:transparent;">Boshlash</button>
         </div>
       </div>
 
@@ -155,8 +156,8 @@
       </div>
     </div>
 
-    <div class="home-card" onclick="location.href='speaking.html'">
-      <div class="home-card-title">Speaking vocabulary</div>
+    <div class="home-card" onclick="openIeltsCefr()">
+      <div class="home-card-title">Ielts and Cefr Vocabulary</div>
       <div class="home-card-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M15 10s1 .5 1 2-1 2-1 2"/>
@@ -182,7 +183,7 @@
       </div>
     </div>
 
-    <div class="home-card home-grid-full" onclick="location.href='writing.html'">
+    <div class="home-card home-grid-full" onclick="openWritingVocab()">
       <div class="home-card-title">Writing vocabulary</div>
       <div class="home-card-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -217,6 +218,40 @@
     Profil
   </a>
 </nav>
+
+
+<!-- ── NOTIFICATION PANEL ── -->
+<div id="notifPanel" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:1000;background:rgba(0,0,0,.45)" onclick="closeNotifPanel(event)">
+  <div id="notifDrawer" style="position:absolute;top:0;right:0;bottom:0;width:min(340px,100vw);background:#fff;box-shadow:-4px 0 24px rgba(0,0,0,.15);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .28s ease">
+    <div style="display:flex;align-items:center;gap:10px;padding:18px 16px 14px;border-bottom:1px solid #E2ECF5">
+      <span style="font-size:1rem;font-weight:800;color:#1A2333;flex:1">Bildirishnomalar</span>
+      <button onclick="markAllRead()" style="font-size:.75rem;font-weight:600;color:#1DA1F2;background:none;border:none;cursor:pointer">Barchasini o'qildi</button>
+      <button onclick="closeNotifPanel()" style="width:32px;height:32px;border-radius:50%;background:#F0F4F8;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#4A5568">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="notifList" style="flex:1;overflow-y:auto;padding:12px 16px">
+      <div style="text-align:center;padding:40px 0;color:#8A9BB0;font-size:.88rem">Yuklanmoqda...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── PREMIUM LOCKED MODAL ── -->
+<div id="premiumLockModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:1001;background:rgba(0,0,0,.5);align-items:flex-end;justify-content:center">
+  <div style="background:#fff;border-radius:24px 24px 0 0;padding:32px 24px;width:100%;max-width:480px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:2.5rem;margin-bottom:10px">&#128274;</div>
+      <div style="font-size:1.1rem;font-weight:800;color:#1A2333;margin-bottom:8px">Premium kerak</div>
+      <div style="font-size:.88rem;color:#4A5568;line-height:1.5">Avval Premium sotib oling</div>
+    </div>
+    <button onclick="location.href='premium.html'" style="width:100%;padding:15px;background:linear-gradient(135deg,#FFB300,#FF8F00);color:#fff;border:none;border-radius:14px;font-size:1rem;font-weight:800;cursor:pointer;margin-bottom:10px">
+      &#128081; VocabUz Premium
+    </button>
+    <button onclick="document.getElementById('premiumLockModal').style.display='none'" style="width:100%;padding:13px;background:#F0F4F8;color:#4A5568;border:none;border-radius:14px;font-size:.9rem;font-weight:600;cursor:pointer">
+      Bekor qilish
+    </button>
+  </div>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
@@ -297,6 +332,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('homeUserSub').textContent = user.email || '';
     setAvatarImg('homeAvatar', 44);
     loadLearnedCount(user);
+    loadPremiumStatus(user.uid);
   });
 
   // Sahifaga qaytganda avtomatik yangilash (topic.html -> index.html)
@@ -315,6 +351,140 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 });
+
+
+// ═══ PREMIUM & NOTIFICATIONS ═══
+var _isPremiumUser = false;
+
+function loadPremiumStatus(uid) {
+  db.collection('users').doc(uid).get().then(function(doc) {
+    if (doc.exists) {
+      var data = doc.data();
+      _isPremiumUser = !!(data.isPremium);
+      // Update premium badge color
+      var badge = document.getElementById('premiumBadgeBtn');
+      if (badge) {
+        if (_isPremiumUser) {
+          badge.style.background = 'linear-gradient(135deg,#FFB300,#FF8F00)';
+        } else {
+          badge.style.background = 'linear-gradient(135deg,#1565C0,#1DA1F2)';
+        }
+      }
+      // Load notifications
+      loadNotifications(uid);
+    }
+  }).catch(function(){});
+}
+
+function openIeltsCefr() {
+  if (_isPremiumUser) {
+    location.href = 'speaking.html';
+  } else {
+    var modal = document.getElementById('premiumLockModal');
+    modal.style.display = 'flex';
+  }
+}
+
+function openWritingVocab() {
+  if (_isPremiumUser) {
+    location.href = 'writing.html';
+  } else {
+    var modal = document.getElementById('premiumLockModal');
+    modal.style.display = 'flex';
+  }
+}
+
+// ── NOTIFICATIONS ──
+var _notifs = [];
+var _notifPanelOpen = false;
+
+function openNotifPanel() {
+  _notifPanelOpen = true;
+  var panel = document.getElementById('notifPanel');
+  var drawer = document.getElementById('notifDrawer');
+  panel.style.display = 'block';
+  setTimeout(function(){ drawer.style.transform = 'translateX(0)'; }, 10);
+  renderNotifList();
+}
+
+function closeNotifPanel(e) {
+  if (e && e.target !== document.getElementById('notifPanel')) return;
+  var drawer = document.getElementById('notifDrawer');
+  drawer.style.transform = 'translateX(100%)';
+  setTimeout(function(){
+    document.getElementById('notifPanel').style.display = 'none';
+  }, 280);
+  _notifPanelOpen = false;
+}
+
+function loadNotifications(uid) {
+  db.collection('users').doc(uid).collection('notifications')
+    .orderBy('createdAt', 'desc').limit(30).get()
+    .then(function(snap) {
+      _notifs = snap.docs.map(function(d) {
+        return Object.assign({ _id: d.id }, d.data());
+      });
+      updateNotifDot();
+      if (_notifPanelOpen) renderNotifList();
+    }).catch(function(){});
+}
+
+function updateNotifDot() {
+  var dot = document.getElementById('notifDot');
+  if (!dot) return;
+  var hasUnread = _notifs.some(function(n){ return !n.read; });
+  dot.style.display = hasUnread ? 'block' : 'none';
+}
+
+function renderNotifList() {
+  var el = document.getElementById('notifList');
+  if (!el) return;
+  if (!_notifs.length) {
+    el.innerHTML = '<div style="text-align:center;padding:40px 0;color:#8A9BB0;font-size:.88rem">Bildirishnomalar yo\'q</div>';
+    return;
+  }
+  el.innerHTML = _notifs.map(function(n) {
+    var timeStr = '';
+    if (n.createdAt) {
+      try {
+        var d = n.createdAt.toDate ? n.createdAt.toDate() : new Date(n.createdAt);
+        timeStr = d.toLocaleString('uz-UZ');
+      } catch(e){}
+    }
+    var icon = n.type === 'premium_approved' ? '&#127881;' : (n.type === 'premium_rejected' ? '&#10060;' : '&#128276;');
+    var bg = n.read ? '#F8FAFC' : '#EFF6FF';
+    return '<div style="background:' + bg + ';border-radius:12px;padding:12px 14px;margin-bottom:8px;border-left:3px solid ' + (n.read?'#E2ECF5':'#1DA1F2') + '">' +
+      '<div style="display:flex;gap:10px;align-items:flex-start">' +
+        '<span style="font-size:1.2rem">' + icon + '</span>' +
+        '<div style="flex:1">' +
+          '<div style="font-size:.85rem;font-weight:' + (n.read?'500':'700') + ';color:#1A2333;line-height:1.4">' + escHtml(n.message||'') + '</div>' +
+          (timeStr ? '<div style="font-size:.72rem;color:#8A9BB0;margin-top:4px">' + timeStr + '</div>' : '') +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function markAllRead() {
+  if (!_currentUser) return;
+  var batch = db.batch();
+  _notifs.forEach(function(n) {
+    if (!n.read) {
+      batch.update(
+        db.collection('users').doc(_currentUser.uid).collection('notifications').doc(n._id),
+        { read: true }
+      );
+      n.read = true;
+    }
+  });
+  batch.commit().catch(function(){});
+  updateNotifDot();
+  renderNotifList();
+}
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 
 // ═══ BANNER CAROUSEL ═══
 (function(){
