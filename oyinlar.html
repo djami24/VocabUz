@@ -760,6 +760,7 @@ let ALL_WORDS   = [];   // Firestore'dan dinamik yuklanadi
 const MIN_WORDS = 20;
 let learnedIds  = [];
 let currentUser = null;
+let _appLoaded  = false; // bir marta yuklansin
 
 /* ════════════════════════════════
    CORE HELPER
@@ -808,6 +809,8 @@ function showToast(msg) {
 ════════════════════════════════ */
 firebase.auth().onAuthStateChanged(function(user) {
   if (!user) { location.href = 'login.html'; return; }
+  if (_appLoaded) return; // ikkinchi marta ishlamasin
+  _appLoaded = true;
   currentUser = user;
   var uid = user.uid;
   _currentUID = uid; // storage-utils uchun
@@ -894,60 +897,31 @@ const GAMES = [
 
 function renderDashboard() {
   const count = learnedIds.length;
-  const unlocked = count >= MIN_WORDS;
 
-  // update topbar badge
   const badge = document.getElementById('topbarBadge');
-  badge.textContent = count + ' ta o\'rganilgan';
-  badge.className = 'topbar-badge' + (unlocked ? ' green' : '');
+  badge.textContent = count + " ta o'rganilgan";
+  badge.className = 'topbar-badge green';
 
-  let html = '';
-
-  if (!unlocked) {
-    const pct = Math.round((count / MIN_WORDS) * 100);
-    html = `
-      <div class="locked-hero">
-        <span class="locked-icon">
-          <svg aria-label="Qulflangan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        </span>
-        <div class="locked-title">O'yinlar qulflangan</div>
-        <div class="locked-sub">O'yinlarni ochish uchun kamida <strong>${MIN_WORDS} ta so'z</strong> o'rganishingiz kerak.</div>
-        <div class="locked-prog-row">
-          <span class="locked-prog-label">O'rganilgan so'zlar</span>
-          <span class="locked-prog-count">${count} / ${MIN_WORDS}</span>
-        </div>
-        <div class="locked-track">
-          <div class="locked-fill" style="width:${pct}%"></div>
-        </div>
-        <button class="btn-go-learn" onclick="location.href='topic.html'">
-          <span class="btn-go-learn-inner">
-            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-            So'z o'rganishga borish
-          </span>
-        </button>
-      </div>`;
-  } else {
-    html = `
-      <div class="unlocked-hero">
-        <div class="unlocked-icon">
-          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/><line x1="12" y1="12" x2="12" y2="17"/><line x1="9.5" y1="14.5" x2="14.5" y2="14.5"/></svg>
-        </div>
-        <div>
-          <div class="unlocked-title">O'yinlar ochiq!</div>
-          <div class="unlocked-sub">${count} ta so'z o'rganildi · Barcha o'yinlar mavjud</div>
-        </div>
+  const html = `
+    <div class="unlocked-hero">
+      <div class="unlocked-icon">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/><line x1="12" y1="12" x2="12" y2="17"/><line x1="9.5" y1="14.5" x2="14.5" y2="14.5"/></svg>
       </div>
-      <div class="section-hdr">Barcha o'yinlar</div>
-      <div class="games-grid">
-        ${GAMES.map((g, i) => `
-          <div class="game-card" onclick="${g.fn}()" style="--gc:${g.color}">
-            <div class="game-card-icon" style="background:${g.color};color:${g.iconColor}">${GAME_ICONS[g.iconKey]}</div>
-            <div class="game-card-name">${g.name}</div>
-            <div class="game-card-desc">${g.desc}</div>
-            <button class="game-card-start" onclick="event.stopPropagation();${g.fn}()">Boshlash</button>
-          </div>`).join('')}
-      </div>`;
-  }
+      <div>
+        <div class="unlocked-title">O'yinlar ochiq!</div>
+        <div class="unlocked-sub">${count} ta so'z o'rganildi · Barcha o'yinlar mavjud</div>
+      </div>
+    </div>
+    <div class="section-hdr">Barcha o'yinlar</div>
+    <div class="games-grid">
+      ${GAMES.map((g) => `
+        <div class="game-card" onclick="${g.fn}()" style="--gc:${g.color}">
+          <div class="game-card-icon" style="background:${g.color};color:${g.iconColor}">${GAME_ICONS[g.iconKey]}</div>
+          <div class="game-card-name">${g.name}</div>
+          <div class="game-card-desc">${g.desc}</div>
+          <button class="game-card-start" onclick="event.stopPropagation();${g.fn}()">Boshlash</button>
+        </div>`).join('')}
+    </div>`;
 
   document.getElementById('dashContent').innerHTML = html;
 }
