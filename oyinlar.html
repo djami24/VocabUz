@@ -766,7 +766,7 @@ let _appLoaded  = false; // bir marta yuklansin
    CORE HELPER
 ════════════════════════════════ */
 function getLearnedVocabulary() {
-  return ALL_WORDS.filter(w => learnedIds.includes(w.id));
+  return ALL_WORDS;
 }
 
 function shuffle(arr) {
@@ -899,7 +899,7 @@ function renderDashboard() {
   const count = learnedIds.length;
 
   const badge = document.getElementById('topbarBadge');
-  badge.textContent = count + " ta o'rganilgan";
+  badge.textContent = ALL_WORDS.length + " ta so'z";
   badge.className = 'topbar-badge green';
 
   const html = `
@@ -909,7 +909,7 @@ function renderDashboard() {
       </div>
       <div>
         <div class="unlocked-title">O'yinlar ochiq!</div>
-        <div class="unlocked-sub">${count} ta so'z o'rganildi · Barcha o'yinlar mavjud</div>
+        <div class="unlocked-sub">${ALL_WORDS.length} ta so'z mavjud · Barcha o'yinlar ochiq</div>
       </div>
     </div>
     <div class="section-hdr">Barcha o'yinlar</div>
@@ -992,7 +992,7 @@ const HM_MAX = 6;
 
 function startHangman() {
   const pool = getLearnedVocabulary();
-  if (pool.length < 1) { showToast("O'rganilgan so'z yo'q!"); return; }
+  if (pool.length < 1) { showToast("So'zlar topilmadi!"); return; }
   hmWords  = shuffle(pool).slice(0, Math.min(10, pool.length));
   hmIdx    = 0;
   hmScore  = 0;
@@ -1076,7 +1076,7 @@ let trWords, trIdx, trCorrect, trWrong;
 
 function startTranslation() {
   const pool = getLearnedVocabulary();
-  if (pool.length < 4) { showToast("Kamida 4 ta so'z o'rganing!"); return; }
+  if (pool.length < 4) { showToast("Kamida 4 ta so'z kerak!"); return; }
   trWords   = shuffle(pool).slice(0, Math.min(10, pool.length));
   trIdx     = 0; trCorrect = 0; trWrong = 0;
   openGame('gameTranslation');
@@ -1298,7 +1298,7 @@ let mtWords, mtSelected, mtMatched, mtScore;
 
 function startMatch() {
   const pool = getLearnedVocabulary();
-  if (pool.length < 4) { showToast("Kamida 4 ta so'z o'rganing!"); return; }
+  if (pool.length < 4) { showToast("Kamida 4 ta so'z kerak!"); return; }
   mtWords   = shuffle(pool).slice(0, Math.min(6, pool.length));
   mtSelected = null;
   mtMatched  = [];
@@ -1431,7 +1431,7 @@ function startQuiz() {
 
 function _startChooseEngine() {
   const pool = getLearnedVocabulary();
-  if (pool.length < 4) { showToast("Kamida 4 ta so'z o'rganing!"); return; }
+  if (pool.length < 4) { showToast("Kamida 4 ta so'z kerak!"); return; }
   chWords   = shuffle(pool).slice(0, Math.min(10, pool.length));
   chIdx     = 0; chCorrect = 0; chWrong = 0;
   openGame('gameChoose');
@@ -1609,7 +1609,7 @@ const SP_TIME = 10;
 
 function startSpeed() {
   const pool = getLearnedVocabulary();
-  if (pool.length < 1) { showToast("O'rganilgan so'z yo'q!"); return; }
+  if (pool.length < 1) { showToast("So'zlar topilmadi!"); return; }
   spWords   = shuffle(pool).slice(0, Math.min(10, pool.length));
   spIdx     = 0; spCorrect = 0; spWrong = 0;
   openGame('gameSpeed');
@@ -1696,7 +1696,7 @@ let tfWords, tfIdx, tfCorrect, tfWrong;
 
 function startTF() {
   const pool = getLearnedVocabulary();
-  if (pool.length < 2) { showToast("Kamida 2 ta so'z o'rganing!"); return; }
+  if (pool.length < 2) { showToast("Kamida 2 ta so'z kerak!"); return; }
   tfWords   = shuffle(pool).slice(0, Math.min(12, pool.length));
   tfIdx     = 0; tfCorrect = 0; tfWrong = 0;
   openGame('gameTF');
