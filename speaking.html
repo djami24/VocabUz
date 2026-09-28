@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Ielts and Cefr Vocabulary — VocaabUZ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -272,16 +275,36 @@ firebase.auth().onAuthStateChanged(function(user) {
       isPremium2 = !!(udata.isPremium);
     }
     if (!isPremium2) {
-      document.getElementById('svBody').innerHTML =
-        '<div style="text-align:center;padding:60px 20px">' +
-        '<div style="font-size:3rem;margin-bottom:16px">&#128274;</div>' +
-        '<div style="font-size:1.1rem;font-weight:800;color:#1A2333;margin-bottom:8px">Premium kerak</div>' +
-        '<div style="font-size:.88rem;color:#4A5568;margin-bottom:24px">Avval Premium sotib oling</div>' +
-        '<button onclick="location.href=\'premium.html\'" style="padding:14px 32px;background:linear-gradient(135deg,#FFB300,#FF8F00);color:#fff;border:none;border-radius:14px;font-size:.95rem;font-weight:800;cursor:pointer">&#128081; VocabUz Premium</button>' +
-        '</div>';
+      // Bir marta qayta tekshiramiz (auth-guard.js dan keyin kelishi mumkin)
+      db.collection('users').doc(user.uid).get().then(function(freshDoc) {
+        if (freshDoc.exists && freshDoc.data().isPremium) {
+          // Premium tasdiqlandi — sahifani yuklash
+          svLoadContent(freshDoc, wordsSnap, user);
+        } else {
+          document.getElementById('svBody').innerHTML =
+            '<div style="text-align:center;padding:60px 20px">' +
+            '<div style="font-size:3rem;margin-bottom:16px">&#128274;</div>' +
+            '<div style="font-size:1.1rem;font-weight:800;color:#1A2333;margin-bottom:8px">Premium kerak</div>' +
+            '<div style="font-size:.88rem;color:#4A5568;margin-bottom:24px">Avval Premium sotib oling</div>' +
+            '<button onclick="location.href=\'premium.html\'" style="padding:14px 32px;background:linear-gradient(135deg,#FFB300,#FF8F00);color:#fff;border:none;border-radius:14px;font-size:.95rem;font-weight:800;cursor:pointer">&#128081; VocabUz Premium</button>' +
+            '</div>';
+        }
+      }).catch(function() {
+        document.getElementById('svBody').innerHTML =
+          '<div class="sv-empty">Xatolik yuz berdi. Qayta urinib ko\'ring.</div>';
+      });
       return;
     }
 
+    svLoadContent(userDoc, wordsSnap, user);
+  }).catch(function(err) {
+    document.getElementById('svBody').innerHTML =
+      '<div class="sv-empty">Xatolik yuz berdi. Qayta urinib ko\'ring.</div>';
+    console.error(err);
+  });
+});
+
+function svLoadContent(userDoc, wordsSnap, user) {
     // Merge Firestore data into local
     if (userDoc.exists) {
       var ud = userDoc.data();
@@ -301,12 +324,7 @@ firebase.auth().onAuthStateChanged(function(user) {
     SV_WORDS.sort(function(a, b) { return (a.order || 0) - (b.order || 0); });
 
     renderTypes();
-  }).catch(function(err) {
-    document.getElementById('svBody').innerHTML =
-      '<div class="sv-empty">Xatolik yuz berdi. Qayta urinib ko\'ring.</div>';
-    console.error(err);
-  });
-});
+}
 
 // ═══ GO BACK ═══
 function svGoBack() {
