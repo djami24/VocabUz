@@ -561,36 +561,36 @@ function loadCardNumber() {
   });
 }
 
-// ── Load user premium status + pending payment ──
+// ── Load user premium status + pending payment (real-time) ──
+var _premiumListener = null;
 function loadUserStatus(user) {
-  db.collection('users').doc(user.uid).get().then(function(doc) {
+  // Avval pending payment tekshiruvi
+  db.collection('payments')
+    .where('userId', '==', user.uid)
+    .where('status', '==', 'pending')
+    .limit(1).get()
+    .then(function(snap) {
+      _hasPendingPayment = !snap.empty;
+    }).catch(function() {});
+
+  // Real-time listener: isPremium o'zgarsa darhol UI yangilanadi
+  if (_premiumListener) { _premiumListener(); }
+  _premiumListener = db.collection('users').doc(user.uid).onSnapshot(function(doc) {
     if (doc.exists) {
-      var data = doc.data();
-      _isPremium = !!(data.isPremium);
+      _isPremium = !!(doc.data().isPremium);
     }
-    // Check for pending payment
-    return db.collection('payments')
-      .where('userId', '==', user.uid)
-      .where('status', '==', 'pending')
-      .limit(1).get();
-  }).then(function(snap) {
-    _hasPendingPayment = !snap.empty;
     updateUI();
-  }).catch(function(err) {
+  }, function() {
     updateUI();
-    console.warn('loadUserStatus error:', err);
   });
 }
 
 function updateUI() {
-  console.log('[VocabUz Premium] isPremium =', _isPremium, '| hasPending =', _hasPendingPayment);
   var activeCard       = document.getElementById('premiumActiveCard');
   var pendingCard      = document.getElementById('pendingPayCard');
   var paymentSection   = document.getElementById('paymentSection');
   var welcomeSection   = document.getElementById('premiumWelcomeSection');
   var payBtn           = document.getElementById('payBtn');
-
-  console.log('[VocabUz Premium] paymentSection el =', paymentSection, '| welcomeSection el =', welcomeSection);
 
   if (_isPremium) {
     // ── Premium foydalanuvchi ──
