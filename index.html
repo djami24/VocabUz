@@ -302,11 +302,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 2) Firestore'dan aniq raqam
     db.collection('users').doc(uid).get().then(function (doc) {
-      var data         = doc.exists ? doc.data() : {};
-      var topicLearned = (data.learned   || []).map(Number);
-      var svLearned    =  data.svLearned || [];
-      var numSet = new Set(topicLearned);
-      var svSet  = new Set(svLearned);
+      var data  = doc.exists ? doc.data() : {};
+      var vzIds = (data.learned   || []).map(Number);
+      var tvIds = (data.tvLearned || []).map(Number);
+      var svIds =  data.svLearned || [];
+
+      // learned + tvLearned ni birlashtirib unikal set (top-learners bilan bir xil)
+      var numSet = new Set(vzIds);
+      tvIds.forEach(function(id){ numSet.add(id); });
+
+      var svSet   = new Set(svIds);
       var fsTotal = numSet.size + svSet.size;
 
       if (fsTotal > 0) {
