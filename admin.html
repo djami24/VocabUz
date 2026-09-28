@@ -300,6 +300,7 @@ tr:hover td { background: var(--sky); }
 .badge-b1, .badge-b2 { background: #FEF3C7; color: #92400E; }
 .badge-c1, .badge-c2 { background: #FEE2E2; color: #9B1C1C; }
 .badge-blue { background: var(--blue-soft); color: var(--blue); }
+.badge-gold { background: #FFF8E1; color: #B45309; }
 
 .action-btns { display: flex; gap: 6px; }
 .btn-icon {
@@ -1812,7 +1813,7 @@ function renderUsersTable() {
   wrap.innerHTML = `
     <div class="table-wrap">
       <table>
-        <thead><tr><th>#</th><th>Foydalanuvchi</th><th>Email</th><th>Ro'yxat sanasi</th><th>So'nggi kirish</th><th>O'rganilgan so'zlar</th></tr></thead>
+        <thead><tr><th>#</th><th>Foydalanuvchi</th><th>Email</th><th>Ro'yxat sanasi</th><th>So'nggi kirish</th><th>O'rganilgan so'zlar</th><th>Premium</th></tr></thead>
         <tbody>${page.map((u, i) => `
           <tr>
             <td style="color:var(--ink-soft);font-size:.8rem">${start+i+1}</td>
@@ -1824,6 +1825,13 @@ function renderUsersTable() {
             <td style="color:var(--ink-soft);font-size:.82rem">${formatTs(u.createdAt)}</td>
             <td style="color:var(--ink-soft);font-size:.82rem">${u.lastLogin ? formatTs(u.lastLogin) : '—'}</td>
             <td><span class="badge badge-blue">${(u.learned||[]).length + (u.svLearned||[]).length} ta</span></td>
+            <td>${u.isPremium
+              ? `<div style="display:flex;align-items:center;gap:6px">
+                   <span class="badge badge-gold">⭐ Premium</span>
+                   <button onclick="revokePremium('${u._id}','${esc(u.name||u.email||'')}')" style="padding:4px 10px;background:#FEE2E2;color:#B91C1C;border:none;border-radius:7px;font-size:.72rem;font-weight:700;cursor:pointer">Bekor qilish</button>
+                 </div>`
+              : '<span style="color:var(--ink-soft);font-size:.8rem">—</span>'
+            }</td>
           </tr>`).join('')}
         </tbody>
       </table>
@@ -2943,6 +2951,38 @@ async function approvePayment(paymentId) {
     showToast('✅ Premium faollashtirildi!');
   } catch(e) {
     console.error('[approvePayment] XATO:', e.code, e.message, e);
+    showToast('❌ Xato: ' + e.message);
+  }
+  });
+}
+
+async function revokePremium(userId, userName) {
+  showConfirm(
+    `"${userName || userId}" foydalanuvchisining Premiumini bekor qilasizmi?`,
+    "Premiumni bekor qilish",
+    '⭐',
+    'Bekor qilish',
+    'linear-gradient(135deg,#EF4444,#B91C1C)',
+    async () => {
+  try {
+    await db.collection('users').doc(userId).update({
+      isPremium: false,
+      premiumRevokedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    await db.collection('users').doc(userId).collection('notifications').add({
+      message: "Sizning Premium obunangiz admin tomonidan bekor qilindi.",
+      type: 'premium_revoked',
+      read: false,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    // Local cache yangilash
+    const idx = allUsers.findIndex(u => u._id === userId);
+    if (idx !== -1) allUsers[idx].isPremium = false;
+    filterUsers();
+    showToast('✅ Premium bekor qilindi!');
+  } catch(e) {
     showToast('❌ Xato: ' + e.message);
   }
   });
