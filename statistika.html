@@ -213,6 +213,84 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;}
 .empty-state-icon{margin-bottom:16px;display:flex;align-items:center;justify-content:center;}
 .empty-state-title{font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:6px;}
 .empty-state-sub{font-size:.85rem;line-height:1.5;}
+
+/* MONTH NAV */
+.month-nav{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;
+}
+.month-nav-label{font-size:.95rem;font-weight:800;color:var(--ink);}
+.month-nav-btn{
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--bg);border:none;cursor:pointer;
+  color:var(--ink-mid);font-size:.85rem;
+  transition:background .15s;
+}
+.month-nav-btn:hover{background:var(--blue-mid);}
+.month-nav-btn:active{background:var(--blue);color:#fff;}
+.month-nav-btn:disabled{opacity:.3;cursor:default;}
+
+/* CALENDAR (oylik) */
+.cal-cell .cw{font-size:.5rem;font-weight:600;opacity:.8;display:block;line-height:1;}
+.cal-cell.active:hover{transform:scale(1.08);transition:transform .12s;}
+.cal-cell[data-has]{cursor:pointer;}
+
+/* TOOLTIP */
+.cal-tooltip{
+  position:fixed;z-index:999;
+  background:var(--ink);color:#fff;
+  font-size:.73rem;font-weight:600;
+  border-radius:10px;padding:7px 11px;
+  pointer-events:none;opacity:0;
+  transition:opacity .15s;
+  white-space:nowrap;
+  box-shadow:0 4px 16px rgba(0,0,0,.22);
+}
+.cal-tooltip.show{opacity:1;}
+
+/* LOG LIST */
+.log-list-card{
+  background:var(--card);border-radius:var(--radius-md);
+  padding:16px;box-shadow:var(--shadow-sm);
+  margin-bottom:4px;
+}
+.log-list-title{font-size:.9rem;font-weight:700;margin-bottom:12px;}
+.log-item{
+  display:flex;align-items:center;
+  padding:9px 0;border-bottom:1px solid var(--line);
+}
+.log-item:last-child{border-bottom:none;}
+.log-date-badge{
+  min-width:42px;height:42px;
+  background:var(--blue-soft);border-radius:10px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  margin-right:12px;flex-shrink:0;
+}
+.log-date-d{font-size:1.05rem;font-weight:800;color:var(--blue);line-height:1;}
+.log-date-m{font-size:.58rem;font-weight:700;color:var(--blue);opacity:.7;text-transform:uppercase;}
+.log-info{flex:1;}
+.log-words-text{font-size:.85rem;font-weight:700;color:var(--ink);}
+.log-day-name{font-size:.7rem;color:var(--ink-soft);margin-top:2px;}
+.log-pill{
+  font-size:.7rem;font-weight:700;
+  padding:3px 9px;border-radius:20px;
+  background:var(--blue);color:#fff;flex-shrink:0;
+}
+.log-pill.hi{background:var(--green);}
+.log-pill.lo{background:var(--amber);}
+
+/* STREAK BANNER */
+.streak-banner{
+  background:linear-gradient(135deg,#F59E0B 0%,#FB923C 100%);
+  border-radius:var(--radius-md);padding:13px 16px;
+  display:flex;align-items:center;gap:12px;
+  color:#fff;margin-bottom:4px;
+  box-shadow:0 3px 14px rgba(245,158,11,.3);
+}
+.streak-fire{font-size:1.7rem;line-height:1;}
+.streak-val{font-size:1.3rem;font-weight:900;line-height:1;}
+.streak-sub{font-size:.72rem;opacity:.88;margin-top:2px;}
 </style>
 </head>
 <body>
@@ -255,6 +333,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;}
   </a>
 </nav>
 
+<div class="cal-tooltip" id="calTip"></div>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
@@ -660,20 +739,11 @@ firebase.auth().onAuthStateChanged(function(user){
       '<div class="bar-chart">'+barHtml+'</div>'+
     '</div>';
 
-    // CALENDAR
+    // CALENDAR — interaktiv oylik ko'rinish
     html += '<div class="sec-title">Oylik ko\'rinish</div>';
-    html += '<div class="streak-card">'+
-      '<div class="streak-header">'+
-        '<div class="streak-title">Oxirgi 28 kun</div>'+
-        '<div class="streak-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c0 0-5 4.5-5 9a5 5 0 0 0 10 0c0-4.5-5-9-5-9z"/><path d="M12 2c0 0 2 3 2 6.5a2 2 0 0 1-4 0C10 5 12 2 12 2z" fill="#F59E0B" stroke="none"/></svg> '+streak+' kun</div>'+
-      '</div>'+
-      '<div class="cal-grid">'+calHtml+'</div>'+
-      '<div class="cal-legend">'+
-        '<div class="cal-legend-item"><div class="cal-legend-dot" style="background:#1DA1F2"></div>Faol kun</div>'+
-        '<div class="cal-legend-item"><div class="cal-legend-dot" style="background:#1565C0"></div>Bugun</div>'+
-        '<div class="cal-legend-item"><div class="cal-legend-dot" style="background:#F1F5F9"></div>Kirmagan</div>'+
-      '</div>'+
-    '</div>';
+    html += '<div id="calSection"></div>';
+    html += '<div class="sec-title">Kunlik tarix</div>';
+    html += '<div id="logSection"></div>';
 
     // LEVELS
     if(totalLearned > 0){
@@ -713,6 +783,152 @@ firebase.auth().onAuthStateChanged(function(user){
     }
 
     document.getElementById('mainContent').innerHTML = html;
+
+    // ── INTERACTIVE CALENDAR ─────────────────────────────────
+    var UZ_MONTHS = ['Yanvar','Fevral','Mart','Aprel','May','Iyun','Iyul','Avgust','Sentabr','Oktabr','Noyabr','Dekabr'];
+    var UZ_DAYS_S = ['Du','Se','Ch','Pa','Ju','Sh','Ya'];
+    var UZ_DAYS_L = ['Dushanba','Seshanba','Chorshanba','Payshanba','Juma','Shanba','Yakshanba'];
+    var calToday = new Date();
+    var calYear  = calToday.getFullYear();
+    var calMonth = calToday.getMonth();
+
+    function renderCalendar(){
+      var firstOfMonth = new Date(calYear, calMonth, 1);
+      var lastOfMonth  = new Date(calYear, calMonth + 1, 0);
+      var totalDays    = lastOfMonth.getDate();
+      var isCurrentMo  = (calYear===calToday.getFullYear() && calMonth===calToday.getMonth());
+
+      // Stats for this month
+      var moActive=0, moTotal=0;
+      var logEntries=[];
+      for(var d=1;d<=totalDays;d++){
+        var dt=new Date(calYear,calMonth,d);
+        var k=dateStr(dt);
+        var cnt=activityLog[k]||0;
+        if(cnt>0){moActive++;moTotal+=cnt;logEntries.push({day:d,key:k,count:cnt,date:dt});}
+      }
+      logEntries.sort(function(a,b){return b.day-a.day;});
+      var moAvg = moActive>0?Math.round(moTotal/moActive):0;
+
+      // Offset (Monday-first)
+      var startDow = firstOfMonth.getDay();
+      var offset   = startDow===0?6:startDow-1;
+
+      // Build cells
+      var cells='';
+      for(var e=0;e<offset;e++) cells+='<div class="cal-cell empty"></div>';
+      for(var d=1;d<=totalDays;d++){
+        var dt2=new Date(calYear,calMonth,d);
+        var k2=dateStr(dt2);
+        var cnt2=activityLog[k2]||0;
+        var isFuture=dt2>calToday;
+        var isTodayC=k2===dateStr(calToday);
+        var cls='cal-cell ';
+        if(isFuture)       cls+='future';
+        else if(isTodayC&&cnt2>0) cls+='today active';
+        else if(isTodayC)  cls+='today none';
+        else if(cnt2>0)    cls+='active';
+        else               cls+='none';
+        var inner='<span class="cn">'+d+'</span>';
+        if(cnt2>0) inner+='<span class="cw">'+cnt2+'</span>';
+        var tip=cnt2>0?' data-tip="'+d+'-'+UZ_MONTHS[calMonth]+': '+cnt2+' so\'z" data-has="1"':'';
+        cells+='<div class="'+cls+'"'+tip+'>'+inner+'</div>';
+      }
+
+      // Streak banner
+      var sBanner='';
+      if(isCurrentMo&&streak>0){
+        sBanner='<div class="streak-banner">'+
+          '<div class="streak-fire">🔥</div>'+
+          '<div><div class="streak-val">'+streak+' kun</div>'+
+          '<div class="streak-sub">Ketma-ket kirish zanjiri</div></div>'+
+        '</div>';
+      }
+
+      // Calendar card
+      var calCard='<div class="streak-card">'+
+        '<div class="month-nav">'+
+          '<button class="month-nav-btn" id="calPrev">◀</button>'+
+          '<div class="month-nav-label">'+UZ_MONTHS[calMonth]+' '+calYear+'</div>'+
+          (isCurrentMo?'<div style="width:32px"></div>':'<button class="month-nav-btn" id="calNext">▶</button>')+
+        '</div>'+
+        '<div style="display:flex;gap:8px;margin-bottom:14px;">'+
+          '<div style="flex:1;background:var(--blue-soft);border-radius:10px;padding:10px;text-align:center;">'+
+            '<div style="font-size:1.3rem;font-weight:800;color:var(--blue);">'+moActive+'</div>'+
+            '<div style="font-size:.65rem;color:var(--ink-soft);margin-top:2px;">Faol kun</div>'+
+          '</div>'+
+          '<div style="flex:1;background:var(--green-soft);border-radius:10px;padding:10px;text-align:center;">'+
+            '<div style="font-size:1.3rem;font-weight:800;color:var(--green);">'+moTotal+'</div>'+
+            '<div style="font-size:.65rem;color:var(--ink-soft);margin-top:2px;">Jami so\'z</div>'+
+          '</div>'+
+          '<div style="flex:1;background:var(--amber-soft);border-radius:10px;padding:10px;text-align:center;">'+
+            '<div style="font-size:1.3rem;font-weight:800;color:var(--amber);">'+moAvg+'</div>'+
+            '<div style="font-size:.65rem;color:var(--ink-soft);margin-top:2px;">O\'rtacha</div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="cal-grid">'+
+          UZ_DAYS_S.map(function(n){return '<div class="cal-day-name">'+n+'</div>';}).join('')+
+          cells+
+        '</div>'+
+        '<div class="cal-legend">'+
+          '<div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--blue)"></div>Faol kun (so\'z soni)</div>'+
+          '<div class="cal-legend-item"><div class="cal-legend-dot" style="background:#1565C0;outline:1px solid #fff;outline-offset:-1px;border-radius:3px;"></div>Bugun</div>'+
+          '<div class="cal-legend-item"><div class="cal-legend-dot" style="background:#F1F5F9"></div>Kirmagan</div>'+
+        '</div>'+
+      '</div>';
+
+      // Log list
+      var logHtml='';
+      if(logEntries.length===0){
+        logHtml='<div style="text-align:center;padding:28px 16px;color:var(--ink-soft);font-size:.85rem;font-weight:600;">Bu oyda faollik yo\'q</div>';
+      }else{
+        logEntries.forEach(function(e){
+          var dow=e.date.getDay(); var dowMon=dow===0?6:dow-1;
+          var pill=e.count>=10?'log-pill hi':(e.count>=5?'log-pill':'log-pill lo');
+          var mon=UZ_MONTHS[calMonth].substring(0,3).toUpperCase();
+          logHtml+='<div class="log-item">'+
+            '<div class="log-date-badge">'+
+              '<div class="log-date-d">'+e.day+'</div>'+
+              '<div class="log-date-m">'+mon+'</div>'+
+            '</div>'+
+            '<div class="log-info">'+
+              '<div class="log-words-text">'+e.count+' ta so\'z o\'rganildi</div>'+
+              '<div class="log-day-name">'+UZ_DAYS_L[dowMon]+'</div>'+
+            '</div>'+
+            '<div class="'+pill+'">'+e.count+' 📚</div>'+
+          '</div>';
+        });
+      }
+      var logCard='<div class="log-list-card"><div class="log-list-title">Bu oy kirgan kunlar</div>'+logHtml+'</div>';
+
+      document.getElementById('calSection').innerHTML=sBanner+calCard;
+      document.getElementById('logSection').innerHTML=logCard;
+
+      // Nav events
+      document.getElementById('calPrev').addEventListener('click',function(){
+        calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendar();
+      });
+      var nextBtn=document.getElementById('calNext');
+      if(nextBtn) nextBtn.addEventListener('click',function(){
+        calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCalendar();
+      });
+
+      // Tooltip events
+      var tip=document.getElementById('calTip');
+      document.querySelectorAll('.cal-cell[data-has="1"]').forEach(function(cell){
+        cell.addEventListener('mouseenter',function(){tip.textContent=cell.getAttribute('data-tip');tip.classList.add('show');});
+        cell.addEventListener('mousemove',function(ev){tip.style.left=(ev.clientX-tip.offsetWidth/2)+'px';tip.style.top=(ev.clientY-42)+'px';});
+        cell.addEventListener('mouseleave',function(){tip.classList.remove('show');});
+        cell.addEventListener('touchstart',function(ev){
+          ev.preventDefault();var r=cell.getBoundingClientRect();
+          tip.textContent=cell.getAttribute('data-tip');
+          tip.style.left=(r.left+r.width/2-60)+'px';tip.style.top=(r.top-42)+'px';
+          tip.classList.add('show');setTimeout(function(){tip.classList.remove('show');},2000);
+        },{passive:false});
+      });
+    }
+
+    renderCalendar();
 
   }).catch(function(err){
     document.getElementById('loader').style.display='none';
