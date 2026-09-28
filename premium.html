@@ -416,24 +416,36 @@ body { background: #0D1B2A; min-height: 100vh; }
       </div>
     </div>
 
-    <!-- Card number -->
-    <div class="prem-section-title">To'lov kartasi</div>
-    <div class="prem-card-box" id="cardNumberBox">
-      <div class="prem-card-label">&#128179; To'lov qilish uchun karta raqami:</div>
-      <div class="prem-card-number">
-        <span id="cardNumberDisplay">Yuklanmoqda…</span>
-        <button class="prem-card-copy" id="copyCardBtn" onclick="copyCardNumber()">Nusxa olish</button>
+    <!-- Card number + CTA: faqat premium bo'lmagan foydalanuvchilarga -->
+    <div id="paymentSection">
+      <div class="prem-section-title">To'lov kartasi</div>
+      <div class="prem-card-box" id="cardNumberBox">
+        <div class="prem-card-label">&#128179; To'lov qilish uchun karta raqami:</div>
+        <div class="prem-card-number">
+          <span id="cardNumberDisplay">Yuklanmoqda…</span>
+          <button class="prem-card-copy" id="copyCardBtn" onclick="copyCardNumber()">Nusxa olish</button>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div id="ctaArea">
+        <button class="prem-cta" id="payBtn" onclick="openPayModal()">
+          &#128179; To'lov qilish
+        </button>
+        <div style="text-align:center;font-size:.75rem;color:rgba(255,255,255,.3);margin-top:6px">
+          To'lovdan so'ng admin tasdiqlaydi (odatda 1-24 soat ichida)
+        </div>
       </div>
     </div>
 
-    <!-- CTA -->
-    <div id="ctaArea">
-      <button class="prem-cta" id="payBtn" onclick="openPayModal()">
-        &#128179; To'lov qilish
+    <!-- Premium foydalanuvchiga maxsus xabar -->
+    <div id="premiumWelcomeSection" style="display:none;text-align:center;padding:24px 0 8px">
+      <div style="font-size:2.6rem;margin-bottom:10px">🎉</div>
+      <div style="font-size:1.05rem;font-weight:800;color:#FFD700;margin-bottom:6px">Siz allaqachon Premium aʼzosisiz!</div>
+      <div style="font-size:.85rem;color:rgba(255,255,255,.55);line-height:1.6">Barcha premium imkoniyatlardan toʼliq foydalanishingiz mumkin.</div>
+      <button onclick="history.back()" style="margin-top:20px;padding:13px 32px;background:linear-gradient(135deg,#FFD700,#FF8F00);color:#fff;border:none;border-radius:14px;font-size:.95rem;font-weight:800;cursor:pointer;letter-spacing:.3px">
+        ← Orqaga qaytish
       </button>
-      <div style="text-align:center;font-size:.75rem;color:rgba(255,255,255,.3);margin-top:6px">
-        To'lovdan so'ng admin tasdiqlaydi (odatda 1-24 soat ichida)
-      </div>
     </div>
 
   </div>
@@ -571,23 +583,32 @@ function loadUserStatus(user) {
 }
 
 function updateUI() {
-  var activeCard = document.getElementById('premiumActiveCard');
-  var pendingCard = document.getElementById('pendingPayCard');
-  var ctaArea = document.getElementById('ctaArea');
-  var payBtn = document.getElementById('payBtn');
+  var activeCard       = document.getElementById('premiumActiveCard');
+  var pendingCard      = document.getElementById('pendingPayCard');
+  var paymentSection   = document.getElementById('paymentSection');
+  var welcomeSection   = document.getElementById('premiumWelcomeSection');
+  var payBtn           = document.getElementById('payBtn');
 
   if (_isPremium) {
-    activeCard.style.display = 'flex';
-    pendingCard.style.display = 'none';
-    payBtn.style.display = 'none';
-    var ctaNote = ctaArea.querySelector('div');
-    if (ctaNote) ctaNote.style.display = 'none';
+    // ── Premium foydalanuvchi ──
+    activeCard.style.display     = 'flex';   // yashil "Premium faol!" card
+    pendingCard.style.display    = 'none';
+    paymentSection.style.display = 'none';   // karta raqami + to'lov tugmasi yashiriladi
+    welcomeSection.style.display = 'block';  // maxsus tabrik bloki ko'rsatiladi
+
+    // Benefits qulflarini oching
+    document.querySelectorAll('.prem-benefit-lock').forEach(function(el) {
+      el.innerHTML = '&#10003;';
+      el.style.background = 'rgba(255,215,0,.15)';
+      el.style.color = '#FFD700';
+    });
   } else if (_hasPendingPayment) {
-    pendingCard.style.display = 'flex';
-    payBtn.textContent = '&#9201; Kutilmoqda...';
-    payBtn.disabled = true;
-    payBtn.style.opacity = '.5';
-    payBtn.style.cursor = 'not-allowed';
+    // ── To'lov kutilmoqda ──
+    pendingCard.style.display    = 'flex';
+    payBtn.textContent           = '⏱ Kutilmoqda...';
+    payBtn.disabled              = true;
+    payBtn.style.opacity         = '.5';
+    payBtn.style.cursor          = 'not-allowed';
   }
 }
 
