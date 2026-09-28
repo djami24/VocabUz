@@ -324,6 +324,20 @@ function svLoadContent(userDoc, wordsSnap, user) {
     SV_WORDS.sort(function(a, b) { return (a.order || 0) - (b.order || 0); });
 
     renderTypes();
+
+    // Real-time premium kuzatuvchi — admin o'chirganda darhol chiqaradi
+    db.collection('users').doc(user.uid).onSnapshot(function(doc) {
+      if (!doc.exists) return;
+      if (!doc.data().isPremium) {
+        document.getElementById('svBody').innerHTML =
+          '<div style="text-align:center;padding:60px 20px">' +
+          '<div style="font-size:2.8rem;margin-bottom:14px">😔</div>' +
+          '<div style="font-size:1.05rem;font-weight:800;color:#1A2333;margin-bottom:8px">Premium bekor qilindi</div>' +
+          '<div style="font-size:.85rem;color:#8A9BB0;margin-bottom:24px;line-height:1.5">Admin tomonidan Premium obunangiz o\'chirildi.</div>' +
+          '<button onclick="location.href=\'index.html\'" style="padding:14px 32px;background:linear-gradient(135deg,#1565C0,#1DA1F2);color:#fff;border:none;border-radius:14px;font-size:.95rem;font-weight:800;cursor:pointer">Asosiy sahifaga qaytish</button>' +
+          '</div>';
+      }
+    }, function() {});
 }
 
 // ═══ GO BACK ═══
