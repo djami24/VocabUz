@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Profil VocaabUZ</title>
+<title>Profil — VocaabUZ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
@@ -290,7 +290,7 @@
 
   <!-- Premium banner -->
   <div id="profPremiumBanner" onclick="location.href='premium.html'" style="background:linear-gradient(135deg,#1565C0 0%,#1DA1F2 100%);border-radius:var(--radius-md);padding:16px;margin-bottom:16px;display:flex;align-items:center;gap:14px;cursor:pointer">
-    <div style="font-size:1.6rem">👑</div>
+    <div style="width:36px;height:36px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><svg width="32" height="32" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l2.939 6.472L22 9.27l-5.5 5.195 1.439 7.535L12 18.27l-5.939 3.73L7.5 14.465 2 9.27l7.061-.798L12 2z"/></svg></div>
     <div style="flex:1">
       <div id="profPremiumBannerTitle" style="color:#fff;font-weight:800;font-size:.95rem">VocaabUZ Premium</div>
       <div id="profPremiumBannerSub" style="color:rgba(255,255,255,.8);font-size:.78rem;margin-top:2px">2x tezroq va ko'proq o'rganish uchun</div>
@@ -513,7 +513,7 @@ firebase.auth().onAuthStateChanged(function(user){
         // Tillo rang — premium
         if(badge)  { badge.style.background  = 'linear-gradient(135deg,#FFD700,#FF8F00)'; badge.style.boxShadow = '0 2px 8px rgba(255,180,0,0.4)'; }
         if(banner) { banner.style.background = 'linear-gradient(135deg,#B8860B 0%,#FFD700 100%)'; }
-        if(bannerTitle) bannerTitle.textContent = '✨ Siz Premium aʼzosisiz!';
+        if(bannerTitle) bannerTitle.textContent = 'Siz Premium aʼzosisiz!';
         if(bannerSub)   bannerSub.textContent   = 'Barcha imkoniyatlar faol';
       } else {
         // Ko'k rang — premium emas
