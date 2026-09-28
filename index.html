@@ -356,24 +356,36 @@ document.addEventListener('DOMContentLoaded', function () {
 // ═══ PREMIUM & NOTIFICATIONS ═══
 var _isPremiumUser = false;
 
+var _premiumListener = null;
+
 function loadPremiumStatus(uid) {
-  db.collection('users').doc(uid).get().then(function(doc) {
-    if (doc.exists) {
-      var data = doc.data();
-      _isPremiumUser = !!(data.isPremium);
-      // Update premium badge color
-      var badge = document.getElementById('premiumBadgeBtn');
-      if (badge) {
-        if (_isPremiumUser) {
-          badge.style.background = 'linear-gradient(135deg,#FFB300,#FF8F00)';
-        } else {
-          badge.style.background = 'linear-gradient(135deg,#1565C0,#1DA1F2)';
-        }
+  // Oldingi listenerni tozalash (agar bor bo'lsa)
+  if (_premiumListener) { _premiumListener(); _premiumListener = null; }
+
+  // Real-time listener: admin isPremium o'zgartirsa, badge darhol yangilanadi
+  _premiumListener = db.collection('users').doc(uid).onSnapshot(function(doc) {
+    if (!doc.exists) return;
+    var data = doc.data();
+    var wasPremium = _isPremiumUser;
+    _isPremiumUser = !!(data.isPremium);
+
+    // Badge rangini yangilash
+    var badge = document.getElementById('premiumBadgeBtn');
+    if (badge) {
+      if (_isPremiumUser) {
+        badge.style.background = 'linear-gradient(135deg,#FFD700,#FF8F00)';
+        badge.style.boxShadow  = '0 2px 8px rgba(255,180,0,0.45)';
+      } else {
+        badge.style.background = 'linear-gradient(135deg,#1565C0,#1DA1F2)';
+        badge.style.boxShadow  = '';
       }
-      // Load notifications
+    }
+
+    // Faqat birinchi marta notiflarni yuklash
+    if (!wasPremium || wasPremium === _isPremiumUser) {
       loadNotifications(uid);
     }
-  }).catch(function(){});
+  }, function() {});
 }
 
 function openIeltsCefr() {
