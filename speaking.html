@@ -266,19 +266,303 @@ firebase.auth().onAuthStateChanged(function(user) {
     var wordsSnap = results[1];
 
     // ── PREMIUM CHECK ──
+    var isPremium = false;
     if (userDoc.exists) {
       var udata = userDoc.data();
-      if (!udata.isPremium) {
-        // Not premium — show locked screen
-        document.getElementById('svBody').innerHTML =
-          '<div style="text-align:center;padding:60px 20px">' +
-          '<div style="font-size:3rem;margin-bottom:16px">&#128274;</div>' +
-          '<div style="font-size:1.1rem;font-weight:800;color:#1A2333;margin-bottom:8px">Premium kerak</div>' +
-          '<div style="font-size:.88rem;color:#4A5568;margin-bottom:24px">Avval Premium sotib oling</div>' +
-          '<button onclick="location.href='premium.html'" style="padding:14px 32px;background:linear-gradient(135deg,#FFB300,#FF8F00);color:#fff;border:none;border-radius:14px;font-size:.95rem;font-weight:800;cursor:pointer">&#128081; VocabUz Premium</button>' +
-          '</div>';
-        return;
-      }
+      isPremium = !!(udata.isPremium);
+    }
+    if (!isPremium) {
+      document.getElementById('svBody').innerHTML =
+        '<div style="text-align:center;padding:60px 20px">' +
+        '<div style="font-size:3rem;margin-bottom:16px">&#128274;</div>' +
+        '<div style="font-size:1.1rem;font-weight:800;color:#1A2333;margin-bottom:8px">Premium kerak</div>' +
+        '<div style="font-size:.88rem;color:#4A5568;margin-bottom:24px">Avval Premium sotib oling</div>' +
+        '<button onclick="location.href=\'premium.html\'" style="padding:14px 32px;background:linear-gradient(135deg,#FFB300,#FF8F00);color:#fff;border:none;border-radius:14px;font-size:.95rem;font-weight:800;cursor:pointer">&#128081; VocabUz Premium</button>' +
+        '</div>';
+      return;
+    }
+YPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Ielts and Cefr Vocabulary — VocaabUZ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+/* ═══ SPEAKING VOCABULARY PAGE ═══ */
+body { background: #F0FFF4; }
+
+.sv-topbar {
+  display:flex; align-items:center; gap:10px;
+  padding:14px 16px 12px; background:#F0FFF4;
+  position:sticky; top:0; z-index:10;
+  border-bottom:1px solid #D1FAE5;
+}
+.sv-back {
+  width:38px; height:38px; border-radius:50%; background:#fff;
+  border:none; cursor:pointer; display:flex; align-items:center;
+  justify-content:center; box-shadow:0 1px 4px rgba(34,197,94,.15);
+  color:#5A6070; flex-shrink:0;
+}
+.sv-title { font-size:1.05rem; font-weight:700; flex:1; color:#1A1A2E; }
+.sv-badge {
+  font-size:.75rem; font-weight:700; padding:4px 10px; border-radius:20px;
+  background:#DCFCE7; color:#16A34A; white-space:nowrap;
+}
+
+.sv-body { flex:1; overflow-y:auto; padding:0 16px 100px; }
+
+.sv-section-label {
+  padding:18px 0 10px; font-size:.78rem; font-weight:600;
+  color:#9AA0AD; letter-spacing:.3px; text-transform:uppercase;
+}
+
+/* ── Type cards (View 1) ── */
+.sv-type-card {
+  background:#fff; border-radius:16px; padding:16px;
+  box-shadow:0 1px 4px rgba(34,197,94,.12);
+  display:flex; align-items:center; gap:14px;
+  cursor:pointer; margin-bottom:10px;
+  border:2px solid transparent;
+  transition:border-color .15s, transform .12s;
+  -webkit-tap-highlight-color:transparent;
+  position:relative; overflow:hidden;
+}
+.sv-type-card:active { transform:scale(.98); }
+.sv-type-card.completed { border-color:#22C55E; }
+.sv-type-icon {
+  width:48px; height:48px; border-radius:14px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.4rem; flex-shrink:0; background:#DCFCE7;
+}
+.sv-type-info { flex:1; min-width:0; }
+.sv-type-name { font-size:.95rem; font-weight:800; color:#1A1A2E; }
+.sv-type-sub { font-size:.75rem; color:#9AA0AD; margin-top:2px; }
+.sv-type-badge {
+  font-size:.72rem; font-weight:700; padding:3px 9px;
+  border-radius:20px; white-space:nowrap; flex-shrink:0;
+  background:#DCFCE7; color:#16A34A;
+}
+.sv-type-bar {
+  position:absolute; bottom:0; left:0; height:3px;
+  border-radius:0 2px 0 0; background:#22C55E;
+  transition:width .4s ease;
+}
+
+/* ── Word cards (View 2) ── */
+.sv-word-card {
+  background:#fff; border-radius:14px; padding:13px 15px 11px;
+  box-shadow:0 1px 4px rgba(34,197,94,.1); margin-bottom:10px;
+}
+.sv-word-card.learned { border-left:3px solid #22C55E; }
+.sv-word-head {
+  display:flex; align-items:baseline; gap:6px; margin-bottom:4px; flex-wrap:wrap;
+}
+.sv-word-num { font-size:.8rem; font-weight:700; color:#16A34A; flex-shrink:0; min-width:20px; }
+.sv-word-en { font-size:.95rem; font-weight:700; color:#1A1A2E; }
+.sv-word-dash { color:#8A9BB0; }
+.sv-word-uz { font-size:.88rem; font-weight:500; color:#5A6070; flex:1; }
+.sv-type-pill {
+  display:inline-flex; align-items:center;
+  background:#DCFCE7; color:#16A34A;
+  font-size:.65rem; font-weight:700; padding:2px 6px; border-radius:6px;
+  flex-shrink:0;
+}
+.sv-word-example {
+  font-size:.82rem; color:#5A6070; font-style:italic; line-height:1.5;
+  padding:5px 0 8px; border-bottom:1px solid #D1FAE5; margin-bottom:8px;
+}
+.sv-word-example::before { content:'• '; }
+.sv-word-actions { display:flex; gap:8px; }
+.sv-btn-learned {
+  flex:1; height:36px; border-radius:10px; border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:5px;
+  font-size:.8rem; font-weight:700; font-family:inherit;
+  background:#DCFCE7; color:#16A34A;
+  transition:background .15s, color .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.sv-btn-learned.done { background:#22C55E; color:#fff; }
+.sv-btn-icon {
+  width:36px; height:36px; border-radius:10px; border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  background:#F0FFF4; color:#9AA0AD;
+  transition:background .15s, color .15s;
+  -webkit-tap-highlight-color:transparent; flex-shrink:0;
+}
+.sv-btn-icon.speak-active { background:#DCFCE7; color:#16A34A; }
+.sv-btn-icon.bookmarked { background:#EFF6FF; color:#2196F3; }
+.sv-btn-icon.liked { background:#FEE2E2; color:#EF4444; }
+
+/* Progress banner */
+.sv-progress-box {
+  background:#fff; border-radius:12px; padding:13px 15px;
+  box-shadow:0 1px 4px rgba(34,197,94,.1); margin-bottom:12px;
+}
+.sv-progress-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:7px; }
+.sv-progress-label { font-size:.82rem; font-weight:700; color:#1A1A2E; }
+.sv-progress-pct { font-size:.82rem; font-weight:800; color:#16A34A; }
+.sv-progress-track { height:7px; background:#D1FAE5; border-radius:7px; overflow:hidden; }
+.sv-progress-fill { height:100%; background:linear-gradient(90deg,#22C55E,#16A34A); border-radius:7px; transition:width .4s; }
+
+/* Done banner */
+.sv-done-box {
+  background:#DCFCE7; border-radius:12px; padding:13px 15px;
+  display:flex; align-items:center; gap:10px; margin-bottom:12px;
+}
+
+/* Overall progress (top of type list) */
+.sv-overall-box {
+  background:#fff; border-radius:14px; padding:14px 16px;
+  box-shadow:0 1px 4px rgba(34,197,94,.12); margin-bottom:14px;
+}
+.sv-overall-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.sv-overall-label { font-size:.85rem; font-weight:700; color:#1A1A2E; }
+.sv-overall-nums { font-size:.85rem; font-weight:800; color:#16A34A; }
+.sv-overall-track { height:8px; background:#D1FAE5; border-radius:8px; overflow:hidden; }
+.sv-overall-fill { height:100%; background:linear-gradient(90deg,#22C55E,#16A34A); border-radius:8px; transition:width .4s; }
+
+/* Spinner */
+.sv-spinner-wrap { display:flex; align-items:center; justify-content:center; padding:60px 0; }
+.sv-spinner { width:32px; height:32px; border:3px solid #BBF7D0; border-top-color:#22C55E; border-radius:50%; animation:svSpin .8s linear infinite; }
+@keyframes svSpin { to { transform:rotate(360deg) } }
+
+/* Toast */
+.sv-toast {
+  position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(20px);
+  background:#1A1A2E; color:#fff; padding:9px 18px; border-radius:20px;
+  font-size:.8rem; font-weight:600; pointer-events:none; opacity:0;
+  transition:opacity .25s, transform .25s; white-space:nowrap; z-index:600;
+}
+.sv-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+.sv-empty { text-align:center; padding:48px 16px; color:#9AA0AD; font-size:.88rem; }
+</style>
+</head>
+<body style="background:#F0FFF4">
+
+<!-- TOP BAR -->
+<div class="sv-topbar" id="svTopbar">
+  <button class="sv-back" id="svBackBtn" onclick="svGoBack()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <span class="sv-title" id="svTitle">Ielts and Cefr Vocabulary</span>
+  <span class="sv-badge" id="svBadge"></span>
+</div>
+
+<!-- BODY -->
+<div class="sv-body" id="svBody">
+  <div class="sv-spinner-wrap"><div class="sv-spinner"></div></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <a class="bottom-nav-item" href="index.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    Asosiy
+  </a>
+  <a class="bottom-nav-item" href="mywords.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    So'zlarim
+  </a>
+  <a class="bottom-nav-item" href="search.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    Qidirish
+  </a>
+  <a class="bottom-nav-item" href="roadmap.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+    Yo'l xaritasi
+  </a>
+  <a class="bottom-nav-item" href="profile.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Profil
+  </a>
+</nav>
+
+<div class="sv-toast" id="svToast"></div>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="storage-utils.js"></script>
+<script src="auth-guard.js"></script>
+<script>
+// ═══ STATE ═══
+var currentUser = null;
+var SV_WORDS    = [];        // all speaking words
+var svLearned   = [];  // _docId strings
+var svBookmarks = [];  // numeric w.id (same as mywords.html vz_bookmarks)
+var svView      = 'types';   // 'types' | 'words'
+var svCurrentType = null;
+
+var TYPE_EMOJIS = ['🗣️','💬','🎯','📢','🧠','✨','🔥','💡','🎤','📣'];
+
+// ═══ PERSIST ═══
+function svLoadLocal() {
+  svLearned   = JSON.parse(lsGet('sv_learned', '[]'));
+  svBookmarks = JSON.parse(lsGet('vz_bookmarks', '[]')).map(Number);
+}
+function svSaveLocal() {
+  lsSet('sv_learned', JSON.stringify(svLearned));
+  lsSet('vz_bookmarks', JSON.stringify(svBookmarks));
+}
+function svSaveFirestore() {
+  if (!currentUser) return;
+  var ref = db.collection('users').doc(currentUser.uid);
+  // Save svLearned and bookmarks separately using merge so we don't
+  // overwrite data written by other pages (topic.html, mywords.html).
+  // bookmarks is a shared field across all vocab sections — always merge it.
+  var data = { svLearned: svLearned, bookmarks: svBookmarks };
+  ref.set(data, { merge: true }).catch(function(err) {
+    console.warn('svSaveFirestore error:', err);
+  });
+}
+
+function svLogActivityToday(delta) {
+  if (!currentUser || delta === 0) return;
+  var d = new Date();
+  var key = 'activityLog.' + d.getFullYear() + '-' +
+    (d.getMonth()+1).toString().padStart(2,'0') + '-' +
+    d.getDate().toString().padStart(2,'0');
+  var upd = {};
+  upd[key] = firebase.firestore.FieldValue.increment(delta);
+  db.collection('users').doc(currentUser.uid).set(upd, {merge:true}).catch(function(){});
+}
+
+// ═══ AUTH ═══
+firebase.auth().onAuthStateChanged(function(user) {
+  if (!user) { location.href = 'login.html'; return; }
+  currentUser = user;
+  _currentUID = user.uid;  // storage-utils lsKey() uchun
+  svLoadLocal();
+
+  // Load Firestore state + words in parallel
+  Promise.all([
+    db.collection('users').doc(user.uid).get(),
+    db.collection('words').where('category', '==', 'speaking').get()
+  ]).then(function(results) {
+    var userDoc   = results[0];
+    var wordsSnap = results[1];
+
+    // ── PREMIUM CHECK ──
+    var isPremium2 = false;
+    if (userDoc.exists) {
+      var udata = userDoc.data();
+      isPremium2 = !!(udata.isPremium);
+    }
+    if (!isPremium2) {
+      document.getElementById('svBody').innerHTML =
+        '<div style="text-align:center;padding:60px 20px">' +
+        '<div style="font-size:3rem;margin-bottom:16px">&#128274;</div>' +
+        '<div style="font-size:1.1rem;font-weight:800;color:#1A2333;margin-bottom:8px">Premium kerak</div>' +
+        '<div style="font-size:.88rem;color:#4A5568;margin-bottom:24px">Avval Premium sotib oling</div>' +
+        '<button onclick="location.href=\'premium.html\'" style="padding:14px 32px;background:linear-gradient(135deg,#FFB300,#FF8F00);color:#fff;border:none;border-radius:14px;font-size:.95rem;font-weight:800;cursor:pointer">&#128081; VocabUz Premium</button>' +
+        '</div>';
+      return;
     }
 
     // Merge Firestore data into local
