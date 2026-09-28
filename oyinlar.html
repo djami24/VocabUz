@@ -750,6 +750,7 @@ body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:v
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
+<script src="storage-utils.js"></script>
 <script src="auth-guard.js"></script>
 <script>
 /* ════════════════════════════════
@@ -809,9 +810,11 @@ firebase.auth().onAuthStateChanged(function(user) {
   if (!user) { location.href = 'login.html'; return; }
   currentUser = user;
   var uid = user.uid;
-  // load localStorage first (tez ko'rsatish uchun) — uid asosida kalit
-  var lsVz = JSON.parse(localStorage.getItem('vz_learned_' + uid) || localStorage.getItem('vz_learned') || '[]').map(Number);
-  var lsSv = JSON.parse(localStorage.getItem('sv_learned_' + uid) || '[]');
+  _currentUID = uid; // storage-utils uchun
+
+  // localStorage'dan tezkor yuklaymiz (lsKey uid bilan ishlaydi)
+  var lsVz = JSON.parse(lsGet('vz_learned', '[]')).map(Number);
+  var lsSv = JSON.parse(lsGet('sv_learned', '[]'));
   learnedIds = Array.from(new Set([].concat(lsVz, lsSv)));
 
   // Foydalanuvchi + BARCHA so'zlarni Firestore'dan parallel yuklaymiz
@@ -828,8 +831,8 @@ firebase.auth().onAuthStateChanged(function(user) {
       var vzIds = (udata.learned   || []).map(Number);
       var svIds = (udata.svLearned || []);
       learnedIds = Array.from(new Set([].concat(vzIds, svIds)));
-      localStorage.setItem('vz_learned_' + uid, JSON.stringify(vzIds));
-      localStorage.setItem('sv_learned_' + uid, JSON.stringify(svIds));
+      lsSet('vz_learned', JSON.stringify(vzIds));
+      lsSet('sv_learned', JSON.stringify(svIds));
     }
 
     // Firestore so'zlar massivi — hardcoded emas, haqiqiy ma'lumot
@@ -850,10 +853,9 @@ firebase.auth().onAuthStateChanged(function(user) {
 // keep in sync across tabs
 window.addEventListener('storage', function(e) {
   if (!currentUser) return;
-  var uid = currentUser.uid;
-  if (e.key === 'vz_learned_' + uid || e.key === 'sv_learned_' + uid || e.key === 'vz_learned') {
-    var lsVz = JSON.parse(localStorage.getItem('vz_learned_' + uid) || localStorage.getItem('vz_learned') || '[]').map(Number);
-    var lsSv = JSON.parse(localStorage.getItem('sv_learned_' + uid) || '[]');
+  if (e.key === lsKey('vz_learned') || e.key === lsKey('sv_learned')) {
+    var lsVz = JSON.parse(lsGet('vz_learned', '[]')).map(Number);
+    var lsSv = JSON.parse(lsGet('sv_learned', '[]'));
     learnedIds = Array.from(new Set([].concat(lsVz, lsSv)));
     renderDashboard();
   }
