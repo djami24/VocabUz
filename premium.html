@@ -3,94 +3,114 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>VocabUz Premium</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <style>
-body { background: #0D1B2A; min-height: 100vh; }
+body { background: var(--sky); }
 
 .prem-page {
   max-width: 480px;
   margin: 0 auto;
   padding: 0 0 100px;
-  position: relative;
 }
 
-/* Hero */
+/* ── Topbar ── */
+.prem-topbar {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px 12px;
+  background: var(--sky);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid var(--line);
+}
+.prem-topbar-title {
+  flex: 1;
+  text-align: center;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* ── Hero ── */
 .prem-hero {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-  padding: 48px 24px 40px;
+  background: linear-gradient(135deg, #0D47A1 0%, #1DA1F2 100%);
+  margin: 16px;
+  border-radius: 22px;
+  padding: 32px 24px 28px;
   text-align: center;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 8px 32px rgba(29,161,242,.25);
 }
 .prem-hero::before {
   content: '';
   position: absolute;
-  top: -60px; right: -60px;
-  width: 200px; height: 200px;
+  top: -40px; right: -40px;
+  width: 160px; height: 160px;
   border-radius: 50%;
-  background: rgba(255,179,0,.08);
+  background: rgba(255,255,255,.08);
+  pointer-events: none;
 }
 .prem-hero::after {
   content: '';
   position: absolute;
-  bottom: -40px; left: -40px;
-  width: 160px; height: 160px;
+  bottom: -30px; left: -30px;
+  width: 120px; height: 120px;
   border-radius: 50%;
-  background: rgba(255,179,0,.05);
+  background: rgba(255,255,255,.06);
+  pointer-events: none;
 }
-.prem-crown { font-size: 3.2rem; margin-bottom: 14px; display: block; }
+.prem-hero-icon {
+  width: 64px; height: 64px;
+  background: rgba(255,255,255,.18);
+  border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+}
 .prem-hero-title {
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   font-weight: 900;
   color: #fff;
   margin-bottom: 8px;
   letter-spacing: -.3px;
 }
 .prem-hero-sub {
-  font-size: .9rem;
-  color: rgba(255,255,255,.65);
+  font-size: .88rem;
+  color: rgba(255,255,255,.75);
   line-height: 1.5;
-  max-width: 300px;
-  margin: 0 auto;
+  max-width: 280px;
+  margin: 0 auto 20px;
 }
-
-/* Price badge */
-.prem-price-wrap {
-  display: flex;
+.prem-price-row {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
   gap: 10px;
-  margin-top: 24px;
-  flex-wrap: wrap;
+  background: rgba(255,255,255,.15);
+  border-radius: 14px;
+  padding: 10px 20px;
 }
 .prem-price {
-  font-size: 2rem;
+  font-size: 1.6rem;
   font-weight: 900;
-  color: #FFB300;
-  letter-spacing: -.5px;
+  color: #fff;
 }
 .prem-price-label {
-  font-size: .85rem;
-  color: rgba(255,255,255,.55);
+  font-size: .8rem;
+  color: rgba(255,255,255,.65);
   font-weight: 500;
 }
-.prem-price-badge {
-  background: rgba(255,179,0,.15);
-  border: 1px solid rgba(255,179,0,.3);
-  color: #FFB300;
-  font-size: .78rem;
-  font-weight: 700;
-  padding: 4px 12px;
-  border-radius: 20px;
-}
 
-/* Body */
-.prem-body { padding: 24px 16px 0; }
+/* ── Body ── */
+.prem-body { padding: 0 16px; }
 
-/* Status card */
+/* ── Status card (active) ── */
 .prem-status-card {
   background: #F0FFF4;
   border: 2px solid #22C55E;
@@ -99,123 +119,22 @@ body { background: #0D1B2A; min-height: 100vh; }
   display: flex;
   align-items: center;
   gap: 14px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
-.prem-status-icon { font-size: 2rem; flex-shrink: 0; }
+.prem-status-icon {
+  width: 44px; height: 44px;
+  background: rgba(34,197,94,.12);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
 .prem-status-title { font-size: .95rem; font-weight: 800; color: #16A34A; }
 .prem-status-sub { font-size: .78rem; color: #4B9E6A; margin-top: 2px; }
 
-/* Section */
-.prem-section-title {
-  font-size: .72rem;
-  font-weight: 700;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,.4);
-  margin-bottom: 12px;
-}
-
-/* Benefits */
-.prem-benefits { margin-bottom: 24px; }
-.prem-benefit {
-  background: rgba(255,255,255,.05);
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 14px;
-  padding: 14px 16px;
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  margin-bottom: 10px;
-}
-.prem-benefit-icon {
-  width: 44px; height: 44px;
-  border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.4rem;
-  flex-shrink: 0;
-}
-.prem-benefit-title {
-  font-size: .92rem;
-  font-weight: 800;
-  color: #fff;
-  margin-bottom: 3px;
-}
-.prem-benefit-sub {
-  font-size: .78rem;
-  color: rgba(255,255,255,.5);
-  line-height: 1.45;
-}
-.prem-benefit-lock {
-  margin-left: auto;
-  width: 28px; height: 28px;
-  border-radius: 8px;
-  background: rgba(255,179,0,.15);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  color: #FFB300;
-  font-size: .9rem;
-}
-
-/* Card number section */
-.prem-card-box {
-  background: rgba(255,255,255,.05);
-  border: 1px solid rgba(255,255,255,.1);
-  border-radius: 16px;
-  padding: 18px;
-  margin-bottom: 24px;
-}
-.prem-card-label {
-  font-size: .78rem;
-  color: rgba(255,255,255,.45);
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-.prem-card-number {
-  font-size: 1.25rem;
-  font-weight: 800;
-  color: #fff;
-  letter-spacing: .15em;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.prem-card-copy {
-  background: rgba(29,161,242,.15);
-  border: none;
-  color: #1DA1F2;
-  font-size: .75rem;
-  font-weight: 700;
-  padding: 6px 14px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-family: inherit;
-  transition: background .15s;
-}
-.prem-card-copy:active { background: rgba(29,161,242,.28); }
-.prem-card-copy-spinner { display: none; }
-
-/* CTA Button */
-.prem-cta {
-  width: 100%;
-  padding: 17px;
-  background: linear-gradient(135deg, #FFB300, #FF8F00);
-  color: #1a0a00;
-  border: none;
-  border-radius: 16px;
-  font-size: 1.05rem;
-  font-weight: 900;
-  cursor: pointer;
-  font-family: inherit;
-  transition: opacity .15s, transform .1s;
-  box-shadow: 0 4px 20px rgba(255,179,0,.35);
-  margin-bottom: 12px;
-}
-.prem-cta:active { opacity: .85; transform: scale(.98); }
-
+/* ── Pending card ── */
 .prem-pending-box {
-  background: rgba(245,158,11,.1);
-  border: 1px solid rgba(245,158,11,.25);
+  background: #FFF8E1;
+  border: 1.5px solid rgba(245,158,11,.35);
   border-radius: 14px;
   padding: 14px 16px;
   display: flex;
@@ -223,22 +142,189 @@ body { background: #0D1B2A; min-height: 100vh; }
   gap: 12px;
   margin-bottom: 16px;
 }
-.prem-pending-text { font-size: .85rem; color: #F59E0B; font-weight: 600; line-height: 1.4; }
+.prem-pending-icon {
+  width: 40px; height: 40px;
+  background: rgba(245,158,11,.12);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.prem-pending-text { font-size: .84rem; color: #92400E; font-weight: 600; line-height: 1.4; }
 
-/* Payment modal overlay */
+/* ── Section label ── */
+.prem-section-label {
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 10px;
+  margin-top: 20px;
+}
+
+/* ── Benefits ── */
+.prem-benefit {
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow-sm);
+}
+.prem-benefit-icon {
+  width: 46px; height: 46px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.prem-benefit-title {
+  font-size: .92rem;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 3px;
+}
+.prem-benefit-sub {
+  font-size: .78rem;
+  color: var(--ink-mid);
+  line-height: 1.45;
+}
+.prem-benefit-lock {
+  margin-left: auto;
+  width: 30px; height: 30px;
+  border-radius: 9px;
+  background: rgba(29,161,242,.1);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  color: var(--blue);
+}
+
+/* ── Card number box ── */
+.prem-card-box {
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-sm);
+}
+.prem-card-label {
+  font-size: .75rem;
+  color: var(--ink-soft);
+  font-weight: 600;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.prem-card-number {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: .12em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.prem-card-copy {
+  background: var(--blue-soft);
+  border: none;
+  color: var(--blue);
+  font-size: .75rem;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .15s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.prem-card-copy:active { background: var(--sky-mid); }
+
+/* ── CTA button ── */
+.prem-cta {
+  width: 100%;
+  padding: 17px;
+  background: linear-gradient(135deg, #0D47A1, #1DA1F2);
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  font-size: 1rem;
+  font-weight: 900;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity .15s, transform .1s;
+  box-shadow: 0 4px 20px rgba(29,161,242,.3);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.prem-cta:active { opacity: .85; transform: scale(.98); }
+.prem-cta-note {
+  text-align: center;
+  font-size: .73rem;
+  color: var(--ink-soft);
+  margin-top: 4px;
+}
+
+/* ── Welcome section (already premium) ── */
+.prem-welcome {
+  text-align: center;
+  padding: 28px 16px 12px;
+}
+.prem-welcome-icon {
+  width: 72px; height: 72px;
+  background: linear-gradient(135deg, #0D47A1, #1DA1F2);
+  border-radius: 22px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+  box-shadow: 0 6px 24px rgba(29,161,242,.25);
+}
+.prem-welcome-title {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.prem-welcome-sub {
+  font-size: .85rem;
+  color: var(--ink-mid);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.prem-welcome-btn {
+  padding: 13px 32px;
+  background: linear-gradient(135deg, #0D47A1, #1DA1F2);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-size: .95rem;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* ── Payment Modal ── */
 .pay-modal-overlay {
   display: none;
   position: fixed; top:0; left:0; right:0; bottom:0;
-  background: rgba(0,0,0,.7);
+  background: rgba(0,0,0,.45);
   z-index: 1000;
   align-items: flex-end;
   justify-content: center;
 }
 .pay-modal-overlay.open { display: flex; }
 .pay-modal {
-  background: #fff;
+  background: var(--white);
   border-radius: 24px 24px 0 0;
-  padding: 28px 24px 40px;
+  padding: 28px 20px 40px;
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
@@ -246,9 +332,9 @@ body { background: #0D1B2A; min-height: 100vh; }
   overflow-y: auto;
 }
 .pay-modal-title {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 800;
-  color: #1A2333;
+  color: var(--ink);
   margin-bottom: 20px;
   text-align: center;
 }
@@ -261,46 +347,56 @@ body { background: #0D1B2A; min-height: 100vh; }
 .pay-step-num {
   width: 32px; height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #FFB300, #FF8F00);
+  background: linear-gradient(135deg, #0D47A1, #1DA1F2);
   color: #fff;
   font-size: .85rem;
   font-weight: 800;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
-.pay-step-text { font-size: .9rem; color: #1A2333; line-height: 1.5; padding-top: 5px; }
+.pay-step-text { font-size: .88rem; color: var(--ink); line-height: 1.5; padding-top: 5px; }
 .pay-step-text strong { font-weight: 800; }
-
 .pay-card-highlight {
-  background: #FFF8E1;
-  border: 2px solid #FFB300;
+  background: var(--blue-soft);
+  border: 2px solid var(--blue);
   border-radius: 12px;
   padding: 12px 16px;
   font-size: 1.1rem;
   font-weight: 800;
-  color: #1A2333;
+  color: var(--ink);
   text-align: center;
   letter-spacing: .08em;
-  margin: 4px 0 4px;
+  margin: 8px 0;
 }
 .pay-tg-link {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #E3F2FD;
-  color: #1565C0;
+  background: var(--blue-soft);
+  color: var(--blue);
   font-weight: 800;
-  font-size: .95rem;
+  font-size: .9rem;
   padding: 8px 16px;
   border-radius: 10px;
   text-decoration: none;
-  margin-top: 4px;
+  margin-top: 6px;
 }
-
+.pay-note-box {
+  background: #FFF8E1;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-top: 4px;
+  font-size: .78rem;
+  color: #92400E;
+  line-height: 1.5;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
 .pay-submit-btn {
   width: 100%;
   padding: 15px;
-  background: linear-gradient(135deg, #1565C0, #1DA1F2);
+  background: linear-gradient(135deg, #0D47A1, #1DA1F2);
   color: #fff;
   border: none;
   border-radius: 14px;
@@ -310,13 +406,17 @@ body { background: #0D1B2A; min-height: 100vh; }
   font-family: inherit;
   margin-top: 20px;
   transition: opacity .15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 .pay-submit-btn:active { opacity: .85; }
 .pay-cancel-btn {
   width: 100%;
   padding: 13px;
-  background: #F0F4F8;
-  color: #4A5568;
+  background: var(--sky);
+  color: var(--ink-mid);
   border: none;
   border-radius: 14px;
   font-size: .9rem;
@@ -326,11 +426,11 @@ body { background: #0D1B2A; min-height: 100vh; }
   margin-top: 8px;
 }
 
-/* Toast */
+/* ── Toast ── */
 .prem-toast {
   position: fixed; bottom: 80px; left: 50%;
   transform: translateX(-50%) translateY(20px);
-  background: #1A1A2E; color: #fff;
+  background: var(--ink); color: #fff;
   padding: 10px 20px; border-radius: 20px;
   font-size: .82rem; font-weight: 600;
   pointer-events: none; opacity: 0;
@@ -344,15 +444,21 @@ body { background: #0D1B2A; min-height: 100vh; }
 
 <div class="prem-page">
 
+  <!-- Topbar -->
+  <div class="prem-topbar">
+    <div style="width:36px"></div>
+    <div class="prem-topbar-title">Premium</div>
+    <div style="width:36px"></div>
+  </div>
+
   <!-- Hero -->
   <div class="prem-hero">
-    <button onclick="history.back()" style="position:absolute;top:16px;left:16px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.1);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;z-index:1">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-    </button>
-    <span class="prem-crown">&#128081;</span>
+    <div class="prem-hero-icon">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
+    </div>
     <div class="prem-hero-title">VocabUz Premium</div>
-    <div class="prem-hero-sub">Ingliz tilini tezroq va chuqurroq o'rganing — Premium bilan</div>
-    <div class="prem-price-wrap">
+    <div class="prem-hero-sub">Ingliz tilini tezroq va chuqurroq o'rganing</div>
+    <div class="prem-price-row">
       <div class="prem-price">20,000 so'm</div>
       <div class="prem-price-label">/ bir martalik</div>
     </div>
@@ -360,92 +466,116 @@ body { background: #0D1B2A; min-height: 100vh; }
 
   <div class="prem-body">
 
-    <!-- Premium status for already-premium users -->
+    <!-- Premium faol -->
     <div id="premiumActiveCard" style="display:none" class="prem-status-card">
-      <div class="prem-status-icon">&#10003;</div>
+      <div class="prem-status-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
       <div>
         <div class="prem-status-title">Premium faol!</div>
         <div class="prem-status-sub">Barcha Premium imkoniyatlardan foydalanyapsiz</div>
       </div>
     </div>
 
-    <!-- Pending payment info -->
+    <!-- Kutilmoqda -->
     <div id="pendingPayCard" style="display:none" class="prem-pending-box">
-      <span style="font-size:1.4rem">&#9201;</span>
+      <div class="prem-pending-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
       <div class="prem-pending-text">To'lovingiz admin tekshiruvida. Tasdiqlangandan so'ng Premium faollashadi.</div>
     </div>
 
-    <!-- Benefits -->
-    <div class="prem-benefits">
-      <div class="prem-section-title">Nima olasiz?</div>
+    <!-- Imtiyozlar -->
+    <div class="prem-section-label">Nima olasiz?</div>
 
-      <div class="prem-benefit">
-        <div class="prem-benefit-icon" style="background:rgba(34,197,94,.15)">&#127919;</div>
-        <div style="flex:1">
-          <div class="prem-benefit-title">Ielts and Cefr Vocabulary</div>
-          <div class="prem-benefit-sub">IELTS va CEFR imtihonlari uchun zarur so'zlar, iboralar va mashqlar</div>
-        </div>
-        <div class="prem-benefit-lock">&#128274;</div>
+    <div class="prem-benefit">
+      <div class="prem-benefit-icon" style="background:rgba(34,197,94,.1)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
       </div>
-
-      <div class="prem-benefit">
-        <div class="prem-benefit-icon" style="background:rgba(29,161,242,.15)">&#9998;</div>
-        <div style="flex:1">
-          <div class="prem-benefit-title">Writing Vocabulary</div>
-          <div class="prem-benefit-sub">Academic writing uchun zarur lug'at — essays, reports, letters</div>
-        </div>
-        <div class="prem-benefit-lock">&#128274;</div>
+      <div style="flex:1">
+        <div class="prem-benefit-title">Ielts and Cefr Vocabulary</div>
+        <div class="prem-benefit-sub">IELTS va CEFR imtihonlari uchun zarur so'zlar va iboralar</div>
       </div>
-
-      <div class="prem-benefit">
-        <div class="prem-benefit-icon" style="background:rgba(171,71,188,.15)">&#11088;</div>
-        <div style="flex:1">
-          <div class="prem-benefit-title">Premium lug'at materiallari</div>
-          <div class="prem-benefit-sub">Admin tomonidan qo'shiladigan maxsus Premium so'zlar va misollar</div>
-        </div>
-        <div class="prem-benefit-lock">&#128274;</div>
-      </div>
-
-      <div class="prem-benefit">
-        <div class="prem-benefit-icon" style="background:rgba(255,179,0,.12)">&#127881;</div>
-        <div style="flex:1">
-          <div class="prem-benefit-title">Premium belgisi</div>
-          <div class="prem-benefit-sub">Profilingizdagi premium belgisi oltin rangga o'zgaradi</div>
-        </div>
-        <div class="prem-benefit-lock" style="background:rgba(255,179,0,.15);color:#FFB300">&#10003;</div>
+      <div class="prem-benefit-lock">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
       </div>
     </div>
 
-    <!-- Card number + CTA: faqat premium bo'lmagan foydalanuvchilarga -->
+    <div class="prem-benefit">
+      <div class="prem-benefit-icon" style="background:rgba(29,161,242,.1)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1DA1F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      </div>
+      <div style="flex:1">
+        <div class="prem-benefit-title">Writing Vocabulary</div>
+        <div class="prem-benefit-sub">Academic writing uchun zarur lug'at — essays, reports, letters</div>
+      </div>
+      <div class="prem-benefit-lock">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+    </div>
+
+    <div class="prem-benefit">
+      <div class="prem-benefit-icon" style="background:rgba(139,92,246,.1)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <div style="flex:1">
+        <div class="prem-benefit-title">Premium lug'at materiallari</div>
+        <div class="prem-benefit-sub">Admin tomonidan qo'shiladigan maxsus Premium so'zlar</div>
+      </div>
+      <div class="prem-benefit-lock">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+    </div>
+
+    <div class="prem-benefit">
+      <div class="prem-benefit-icon" style="background:rgba(29,161,242,.08)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1DA1F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+      <div style="flex:1">
+        <div class="prem-benefit-title">Premium profil belgisi</div>
+        <div class="prem-benefit-sub">Profilingizdagi premium belgisi ko'rinadi</div>
+      </div>
+      <div class="prem-benefit-lock">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+    </div>
+
+    <!-- To'lov bo'limi -->
     <div id="paymentSection">
-      <div class="prem-section-title">To'lov kartasi</div>
-      <div class="prem-card-box" id="cardNumberBox">
-        <div class="prem-card-label">&#128179; To'lov qilish uchun karta raqami:</div>
+      <div class="prem-section-label">To'lov kartasi</div>
+      <div class="prem-card-box">
+        <div class="prem-card-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          To'lov qilish uchun karta raqami:
+        </div>
         <div class="prem-card-number">
           <span id="cardNumberDisplay">Yuklanmoqda…</span>
-          <button class="prem-card-copy" id="copyCardBtn" onclick="copyCardNumber()">Nusxa olish</button>
+          <button class="prem-card-copy" onclick="copyCardNumber()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Nusxa
+          </button>
         </div>
       </div>
 
-      <!-- CTA -->
       <div id="ctaArea">
         <button class="prem-cta" id="payBtn" onclick="openPayModal()">
-          &#128179; To'lov qilish
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          To'lov qilish
         </button>
-        <div style="text-align:center;font-size:.75rem;color:rgba(255,255,255,.3);margin-top:6px">
-          To'lovdan so'ng admin tasdiqlaydi (odatda 1-24 soat ichida)
-        </div>
+        <div class="prem-cta-note">To'lovdan so'ng admin tasdiqlaydi (1–24 soat)</div>
       </div>
     </div>
 
-    <!-- Premium foydalanuvchiga maxsus xabar -->
-    <div id="premiumWelcomeSection" style="display:none;text-align:center;padding:24px 0 8px">
-      <div style="font-size:2.6rem;margin-bottom:10px">🎉</div>
-      <div style="font-size:1.05rem;font-weight:800;color:#FFD700;margin-bottom:6px">Siz allaqachon Premium aʼzosisiz!</div>
-      <div style="font-size:.85rem;color:rgba(255,255,255,.55);line-height:1.6">Barcha premium imkoniyatlardan toʼliq foydalanishingiz mumkin.</div>
-      <button onclick="history.back()" style="margin-top:20px;padding:13px 32px;background:linear-gradient(135deg,#FFD700,#FF8F00);color:#fff;border:none;border-radius:14px;font-size:.95rem;font-weight:800;cursor:pointer;letter-spacing:.3px">
-        ← Orqaga qaytish
-      </button>
+    <!-- Premium foydalanuvchiga xabar -->
+    <div id="premiumWelcomeSection" style="display:none">
+      <div class="prem-welcome">
+        <div class="prem-welcome-icon">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="#fff"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
+        </div>
+        <div class="prem-welcome-title">Siz Premium aʼzosisiz!</div>
+        <div class="prem-welcome-sub">Barcha premium imkoniyatlardan to'liq foydalanishingiz mumkin.</div>
+        <button class="prem-welcome-btn" onclick="history.back()">Orqaga qaytish</button>
+      </div>
     </div>
 
   </div>
@@ -461,13 +591,13 @@ body { background: #0D1B2A; min-height: 100vh; }
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
     So'zlarim
   </a>
-  <a class="bottom-nav-item" href="topic.html">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="7" x2="16" y2="7"/><line x1="10" y1="11" x2="16" y2="11"/></svg>
-    Mavzular
-  </a>
   <a class="bottom-nav-item" href="search.html">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     Qidirish
+  </a>
+  <a class="bottom-nav-item" href="roadmap.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h7l2 3-2 3H3z"/><path d="M21 3h-7l-2 3 2 3h7z"/><line x1="12" y1="6" x2="12" y2="21"/></svg>
+    Yo'l xarita
   </a>
   <a class="bottom-nav-item" href="profile.html">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -475,10 +605,10 @@ body { background: #0D1B2A; min-height: 100vh; }
   </a>
 </nav>
 
-<!-- Payment Instructions Modal -->
+<!-- Payment Modal -->
 <div class="pay-modal-overlay" id="payModal">
   <div class="pay-modal">
-    <div class="pay-modal-title">&#128179; To'lov ko'rsatmalari</div>
+    <div class="pay-modal-title">To'lov ko'rsatmalari</div>
 
     <div class="pay-step">
       <div class="pay-step-num">1</div>
@@ -490,7 +620,7 @@ body { background: #0D1B2A; min-height: 100vh; }
 
     <div class="pay-step">
       <div class="pay-step-num">2</div>
-      <div class="pay-step-text">To'lovning <strong>skreenshot</strong>ini oling (to'lov muvaffaqiyatli amalga oshirilganligini tasdiqlashi kerak)</div>
+      <div class="pay-step-text">To'lovning <strong>skreenshot</strong>ini oling</div>
     </div>
 
     <div class="pay-step">
@@ -499,7 +629,7 @@ body { background: #0D1B2A; min-height: 100vh; }
         Skreenshot va <strong>ismingizni</strong> Telegram orqali yuboring:
         <br>
         <a href="https://t.me/djamiteacher" target="_blank" class="pay-tg-link">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
           @djamiteacher
         </a>
       </div>
@@ -507,15 +637,17 @@ body { background: #0D1B2A; min-height: 100vh; }
 
     <div class="pay-step">
       <div class="pay-step-num">4</div>
-      <div class="pay-step-text">Admin to'lovni tekshirib, <strong>1-24 soat</strong> ichida Premium faollashtiradi. Siz bildirishnoma olasiz.</div>
+      <div class="pay-step-text">Admin to'lovni tekshirib, <strong>1–24 soat</strong> ichida Premium faollashtiradi.</div>
     </div>
 
-    <div style="background:#FFF8E1;border-radius:12px;padding:12px 14px;margin-top:4px;font-size:.8rem;color:#92400E;line-height:1.5">
-      &#9432; Premium faqat admin tomonidan qo'lda tasdiqlanadi. To'lov tugmasini bosish avtomatik faollashtirmaydi.
+    <div class="pay-note-box">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#92400E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Premium faqat admin tomonidan qo'lda tasdiqlanadi. To'lov tugmasi avtomatik faollashtirmaydi.
     </div>
 
     <button class="pay-submit-btn" onclick="submitPaymentRequest()">
-      &#10003; Tushundim, to'lovni amalga oshirdim
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      Tushundim, to'lovni amalga oshirdim
     </button>
     <button class="pay-cancel-btn" onclick="closePayModal()">Bekor qilish</button>
   </div>
@@ -535,7 +667,6 @@ var _cardNumber = '';
 var _isPremium = false;
 var _hasPendingPayment = false;
 
-// ── AUTH ──
 firebase.auth().onAuthStateChanged(function(user) {
   if (!user) { location.href = 'login.html'; return; }
   _currentUser = user;
@@ -543,15 +674,9 @@ firebase.auth().onAuthStateChanged(function(user) {
   loadUserStatus(user);
 });
 
-// ── Load card number from config ──
 function loadCardNumber() {
   db.collection('config').doc('payment').get().then(function(doc) {
-    if (doc.exists && doc.data().cardNumber) {
-      _cardNumber = doc.data().cardNumber;
-    } else {
-      // Default card number if not configured yet
-      _cardNumber = '8600 0000 0000 0000';
-    }
+    _cardNumber = (doc.exists && doc.data().cardNumber) ? doc.data().cardNumber : '8600 0000 0000 0000';
     document.getElementById('cardNumberDisplay').textContent = _cardNumber;
     document.getElementById('modalCardNumber').textContent = _cardNumber;
   }).catch(function() {
@@ -561,61 +686,48 @@ function loadCardNumber() {
   });
 }
 
-// ── Load user premium status + pending payment (real-time) ──
 var _premiumListener = null;
 function loadUserStatus(user) {
-  // Avval pending payment tekshiruvi
   db.collection('payments')
     .where('userId', '==', user.uid)
     .where('status', '==', 'pending')
     .limit(1).get()
-    .then(function(snap) {
-      _hasPendingPayment = !snap.empty;
-    }).catch(function() {});
+    .then(function(snap) { _hasPendingPayment = !snap.empty; })
+    .catch(function() {});
 
-  // Real-time listener: isPremium o'zgarsa darhol UI yangilanadi
   if (_premiumListener) { _premiumListener(); }
   _premiumListener = db.collection('users').doc(user.uid).onSnapshot(function(doc) {
-    if (doc.exists) {
-      _isPremium = !!(doc.data().isPremium);
-    }
+    if (doc.exists) { _isPremium = !!(doc.data().isPremium); }
     updateUI();
-  }, function() {
-    updateUI();
-  });
+  }, function() { updateUI(); });
 }
 
 function updateUI() {
-  var activeCard       = document.getElementById('premiumActiveCard');
-  var pendingCard      = document.getElementById('pendingPayCard');
-  var paymentSection   = document.getElementById('paymentSection');
-  var welcomeSection   = document.getElementById('premiumWelcomeSection');
-  var payBtn           = document.getElementById('payBtn');
+  var activeCard     = document.getElementById('premiumActiveCard');
+  var pendingCard    = document.getElementById('pendingPayCard');
+  var paymentSection = document.getElementById('paymentSection');
+  var welcomeSection = document.getElementById('premiumWelcomeSection');
+  var payBtn         = document.getElementById('payBtn');
 
   if (_isPremium) {
-    // ── Premium foydalanuvchi ──
-    activeCard.style.display     = 'flex';   // yashil "Premium faol!" card
+    activeCard.style.display     = 'flex';
     pendingCard.style.display    = 'none';
-    paymentSection.style.display = 'none';   // karta raqami + to'lov tugmasi yashiriladi
-    welcomeSection.style.display = 'block';  // maxsus tabrik bloki ko'rsatiladi
-
-    // Benefits qulflarini oching
+    paymentSection.style.display = 'none';
+    welcomeSection.style.display = 'block';
     document.querySelectorAll('.prem-benefit-lock').forEach(function(el) {
-      el.innerHTML = '&#10003;';
-      el.style.background = 'rgba(255,215,0,.15)';
-      el.style.color = '#FFD700';
+      el.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+      el.style.background = 'rgba(34,197,94,.12)';
+      el.style.color = '#16A34A';
     });
   } else if (_hasPendingPayment) {
-    // ── To'lov kutilmoqda ──
-    pendingCard.style.display    = 'flex';
-    payBtn.textContent           = '⏱ Kutilmoqda...';
-    payBtn.disabled              = true;
-    payBtn.style.opacity         = '.5';
-    payBtn.style.cursor          = 'not-allowed';
+    pendingCard.style.display = 'flex';
+    payBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Kutilmoqda...';
+    payBtn.disabled = true;
+    payBtn.style.opacity = '.5';
+    payBtn.style.cursor = 'not-allowed';
   }
 }
 
-// ── Copy card number ──
 function copyCardNumber() {
   if (!_cardNumber) return;
   navigator.clipboard.writeText(_cardNumber).then(function() {
@@ -625,12 +737,8 @@ function copyCardNumber() {
   });
 }
 
-// ── Payment modal ──
 function openPayModal() {
-  if (_isPremium) {
-    showPremToast('Premium allaqachon faol!');
-    return;
-  }
+  if (_isPremium) { showPremToast('Premium allaqachon faol!'); return; }
   document.getElementById('payModal').classList.add('open');
 }
 
@@ -638,14 +746,9 @@ function closePayModal() {
   document.getElementById('payModal').classList.remove('open');
 }
 
-// Submit payment request to Firestore (creates a pending record)
 function submitPaymentRequest() {
   if (!_currentUser) return;
-  if (_hasPendingPayment) {
-    showPremToast("To'lovingiz tekshiruvda");
-    closePayModal();
-    return;
-  }
+  if (_hasPendingPayment) { showPremToast("To'lovingiz tekshiruvda"); closePayModal(); return; }
 
   var btn = document.querySelector('.pay-submit-btn');
   btn.disabled = true;
@@ -666,11 +769,10 @@ function submitPaymentRequest() {
   }).catch(function(err) {
     showPremToast('Xatolik: ' + err.message);
     btn.disabled = false;
-    btn.textContent = '&#10003; Tushundim, to\'lovni amalga oshirdim';
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Tushundim, to\'lovni amalga oshirdim';
   });
 }
 
-// ── Toast ──
 var _toastTimer;
 function showPremToast(msg) {
   var el = document.getElementById('premToast');
@@ -680,11 +782,9 @@ function showPremToast(msg) {
   _toastTimer = setTimeout(function() { el.classList.remove('show'); }, 2500);
 }
 
-// Close modal on overlay click
 document.getElementById('payModal').addEventListener('click', function(e) {
   if (e.target === this) closePayModal();
 });
-
 </script>
 </body>
 </html>
