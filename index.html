@@ -467,7 +467,8 @@ function renderNotifList() {
     }
     var icon = n.type === 'premium_approved' ? '&#127881;' : (n.type === 'premium_rejected' ? '&#10060;' : '&#128276;');
     var bg = n.read ? '#F8FAFC' : '#EFF6FF';
-    return '<div style="background:' + bg + ';border-radius:12px;padding:12px 14px;margin-bottom:8px;border-left:3px solid ' + (n.read?'#E2ECF5':'#1DA1F2') + '">' +
+    var cursor = n.read ? 'default' : 'pointer';
+    return '<div onclick="markOneRead(\'' + n._id + '\')" style="cursor:' + cursor + ';background:' + bg + ';border-radius:12px;padding:12px 14px;margin-bottom:8px;border-left:3px solid ' + (n.read?'#E2ECF5':'#1DA1F2') + ';transition:background .2s">' +
       '<div style="display:flex;gap:10px;align-items:flex-start">' +
         '<span style="font-size:1.2rem">' + icon + '</span>' +
         '<div style="flex:1">' +
@@ -479,19 +480,30 @@ function renderNotifList() {
   }).join('');
 }
 
+function markOneRead(id) {
+  if (!_currentUser || !id) return;
+  var notif = _notifs.find(function(n){ return n._id === id; });
+  if (!notif || notif.read) return;
+  notif.read = true;
+  db.collection('users').doc(_currentUser.uid).collection('notifications').doc(id)
+    .update({ read: true }).catch(function(){});
+  updateNotifDot();
+  renderNotifList();
+}
+
 function markAllRead() {
   if (!_currentUser) return;
+  var unread = _notifs.filter(function(n){ return !n.read; });
+  if (!unread.length) return;
   var batch = db.batch();
-  _notifs.forEach(function(n) {
-    if (!n.read) {
-      batch.update(
-        db.collection('users').doc(_currentUser.uid).collection('notifications').doc(n._id),
-        { read: true }
-      );
-      n.read = true;
-    }
+  unread.forEach(function(n) {
+    batch.update(
+      db.collection('users').doc(_currentUser.uid).collection('notifications').doc(n._id),
+      { read: true }
+    );
+    n.read = true;
   });
-  batch.commit().catch(function(){});
+  batch.commit().catch(function(err){ console.error('markAllRead error:', err); });
   updateNotifDot();
   renderNotifList();
 }
