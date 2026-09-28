@@ -276,9 +276,10 @@ function setAvatarImg(elementId, size) {
   el.appendChild(img);
 }
 
+var _currentUser = null;
+
 document.addEventListener('DOMContentLoaded', function () {
   var GOAL = 1000;
-  var _currentUser = null;
 
   function renderLearnedCount(total) {
     var pct = Math.min(Math.round((total / GOAL) * 100), 100);
