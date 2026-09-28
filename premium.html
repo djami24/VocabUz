@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>VocabUz Premium</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+body { background: #0D1B2A; min-height: 100vh; }
+
+.prem-page {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 0 100px;
+  position: relative;
+}
+
+/* Hero */
+.prem-hero {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  padding: 48px 24px 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.prem-hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: rgba(255,179,0,.08);
+}
+.prem-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -40px; left: -40px;
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: rgba(255,179,0,.05);
+}
+.prem-crown { font-size: 3.2rem; margin-bottom: 14px; display: block; }
+.prem-hero-title {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 8px;
+  letter-spacing: -.3px;
+}
+.prem-hero-sub {
+  font-size: .9rem;
+  color: rgba(255,255,255,.65);
+  line-height: 1.5;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+/* Price badge */
+.prem-price-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+.prem-price {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #FFB300;
+  letter-spacing: -.5px;
+}
+.prem-price-label {
+  font-size: .85rem;
+  color: rgba(255,255,255,.55);
+  font-weight: 500;
+}
+.prem-price-badge {
+  background: rgba(255,179,0,.15);
+  border: 1px solid rgba(255,179,0,.3);
+  color: #FFB300;
+  font-size: .78rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+/* Body */
+.prem-body { padding: 24px 16px 0; }
+
+/* Status card */
+.prem-status-card {
+  background: #F0FFF4;
+  border: 2px solid #22C55E;
+  border-radius: 16px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.prem-status-icon { font-size: 2rem; flex-shrink: 0; }
+.prem-status-title { font-size: .95rem; font-weight: 800; color: #16A34A; }
+.prem-status-sub { font-size: .78rem; color: #4B9E6A; margin-top: 2px; }
+
+/* Section */
+.prem-section-title {
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.4);
+  margin-bottom: 12px;
+}
+
+/* Benefits */
+.prem-benefits { margin-bottom: 24px; }
+.prem-benefit {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+.prem-benefit-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+.prem-benefit-title {
+  font-size: .92rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 3px;
+}
+.prem-benefit-sub {
+  font-size: .78rem;
+  color: rgba(255,255,255,.5);
+  line-height: 1.45;
+}
+.prem-benefit-lock {
+  margin-left: auto;
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  background: rgba(255,179,0,.15);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  color: #FFB300;
+  font-size: .9rem;
+}
+
+/* Card number section */
+.prem-card-box {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 24px;
+}
+.prem-card-label {
+  font-size: .78rem;
+  color: rgba(255,255,255,.45);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.prem-card-number {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: .15em;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.prem-card-copy {
+  background: rgba(29,161,242,.15);
+  border: none;
+  color: #1DA1F2;
+  font-size: .75rem;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .15s;
+}
+.prem-card-copy:active { background: rgba(29,161,242,.28); }
+.prem-card-copy-spinner { display: none; }
+
+/* CTA Button */
+.prem-cta {
+  width: 100%;
+  padding: 17px;
+  background: linear-gradient(135deg, #FFB300, #FF8F00);
+  color: #1a0a00;
+  border: none;
+  border-radius: 16px;
+  font-size: 1.05rem;
+  font-weight: 900;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity .15s, transform .1s;
+  box-shadow: 0 4px 20px rgba(255,179,0,.35);
+  margin-bottom: 12px;
+}
+.prem-cta:active { opacity: .85; transform: scale(.98); }
+
+.prem-pending-box {
+  background: rgba(245,158,11,.1);
+  border: 1px solid rgba(245,158,11,.25);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.prem-pending-text { font-size: .85rem; color: #F59E0B; font-weight: 600; line-height: 1.4; }
+
+/* Payment modal overlay */
+.pay-modal-overlay {
+  display: none;
+  position: fixed; top:0; left:0; right:0; bottom:0;
+  background: rgba(0,0,0,.7);
+  z-index: 1000;
+  align-items: flex-end;
+  justify-content: center;
+}
+.pay-modal-overlay.open { display: flex; }
+.pay-modal {
+  background: #fff;
+  border-radius: 24px 24px 0 0;
+  padding: 28px 24px 40px;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.pay-modal-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #1A2333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.pay-step {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 18px;
+  align-items: flex-start;
+}
+.pay-step-num {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFB300, #FF8F00);
+  color: #fff;
+  font-size: .85rem;
+  font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.pay-step-text { font-size: .9rem; color: #1A2333; line-height: 1.5; padding-top: 5px; }
+.pay-step-text strong { font-weight: 800; }
+
+.pay-card-highlight {
+  background: #FFF8E1;
+  border: 2px solid #FFB300;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #1A2333;
+  text-align: center;
+  letter-spacing: .08em;
+  margin: 4px 0 4px;
+}
+.pay-tg-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #E3F2FD;
+  color: #1565C0;
+  font-weight: 800;
+  font-size: .95rem;
+  padding: 8px 16px;
+  border-radius: 10px;
+  text-decoration: none;
+  margin-top: 4px;
+}
+
+.pay-submit-btn {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #1565C0, #1DA1F2);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-size: .95rem;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: inherit;
+  margin-top: 20px;
+  transition: opacity .15s;
+}
+.pay-submit-btn:active { opacity: .85; }
+.pay-cancel-btn {
+  width: 100%;
+  padding: 13px;
+  background: #F0F4F8;
+  color: #4A5568;
+  border: none;
+  border-radius: 14px;
+  font-size: .9rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  margin-top: 8px;
+}
+
+/* Toast */
+.prem-toast {
+  position: fixed; bottom: 80px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #1A1A2E; color: #fff;
+  padding: 10px 20px; border-radius: 20px;
+  font-size: .82rem; font-weight: 600;
+  pointer-events: none; opacity: 0;
+  transition: opacity .25s, transform .25s;
+  white-space: nowrap; z-index: 2000;
+}
+.prem-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="prem-page">
+
+  <!-- Hero -->
+  <div class="prem-hero">
+    <button onclick="history.back()" style="position:absolute;top:16px;left:16px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.1);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;z-index:1">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <span class="prem-crown">&#128081;</span>
+    <div class="prem-hero-title">VocabUz Premium</div>
+    <div class="prem-hero-sub">Ingliz tilini tezroq va chuqurroq o'rganing — Premium bilan</div>
+    <div class="prem-price-wrap">
+      <div class="prem-price">20,000 so'm</div>
+      <div class="prem-price-label">/ bir martalik</div>
+    </div>
+  </div>
+
+  <div class="prem-body">
+
+    <!-- Premium status for already-premium users -->
+    <div id="premiumActiveCard" style="display:none" class="prem-status-card">
+      <div class="prem-status-icon">&#10003;</div>
+      <div>
+        <div class="prem-status-title">Premium faol!</div>
+        <div class="prem-status-sub">Barcha Premium imkoniyatlardan foydalanyapsiz</div>
+      </div>
+    </div>
+
+    <!-- Pending payment info -->
+    <div id="pendingPayCard" style="display:none" class="prem-pending-box">
+      <span style="font-size:1.4rem">&#9201;</span>
+      <div class="prem-pending-text">To'lovingiz admin tekshiruvida. Tasdiqlangandan so'ng Premium faollashadi.</div>
+    </div>
+
+    <!-- Benefits -->
+    <div class="prem-benefits">
+      <div class="prem-section-title">Nima olasiz?</div>
+
+      <div class="prem-benefit">
+        <div class="prem-benefit-icon" style="background:rgba(34,197,94,.15)">&#127919;</div>
+        <div style="flex:1">
+          <div class="prem-benefit-title">Ielts and Cefr Vocabulary</div>
+          <div class="prem-benefit-sub">IELTS va CEFR imtihonlari uchun zarur so'zlar, iboralar va mashqlar</div>
+        </div>
+        <div class="prem-benefit-lock">&#128274;</div>
+      </div>
+
+      <div class="prem-benefit">
+        <div class="prem-benefit-icon" style="background:rgba(29,161,242,.15)">&#9998;</div>
+        <div style="flex:1">
+          <div class="prem-benefit-title">Writing Vocabulary</div>
+          <div class="prem-benefit-sub">Academic writing uchun zarur lug'at — essays, reports, letters</div>
+        </div>
+        <div class="prem-benefit-lock">&#128274;</div>
+      </div>
+
+      <div class="prem-benefit">
+        <div class="prem-benefit-icon" style="background:rgba(171,71,188,.15)">&#11088;</div>
+        <div style="flex:1">
+          <div class="prem-benefit-title">Premium lug'at materiallari</div>
+          <div class="prem-benefit-sub">Admin tomonidan qo'shiladigan maxsus Premium so'zlar va misollar</div>
+        </div>
+        <div class="prem-benefit-lock">&#128274;</div>
+      </div>
+
+      <div class="prem-benefit">
+        <div class="prem-benefit-icon" style="background:rgba(255,179,0,.12)">&#127881;</div>
+        <div style="flex:1">
+          <div class="prem-benefit-title">Premium belgisi</div>
+          <div class="prem-benefit-sub">Profilingizdagi premium belgisi oltin rangga o'zgaradi</div>
+        </div>
+        <div class="prem-benefit-lock" style="background:rgba(255,179,0,.15);color:#FFB300">&#10003;</div>
+      </div>
+    </div>
+
+    <!-- Card number -->
+    <div class="prem-section-title">To'lov kartasi</div>
+    <div class="prem-card-box" id="cardNumberBox">
+      <div class="prem-card-label">&#128179; To'lov qilish uchun karta raqami:</div>
+      <div class="prem-card-number">
+        <span id="cardNumberDisplay">Yuklanmoqda…</span>
+        <button class="prem-card-copy" id="copyCardBtn" onclick="copyCardNumber()">Nusxa olish</button>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div id="ctaArea">
+      <button class="prem-cta" id="payBtn" onclick="openPayModal()">
+        &#128179; To'lov qilish
+      </button>
+      <div style="text-align:center;font-size:.75rem;color:rgba(255,255,255,.3);margin-top:6px">
+        To'lovdan so'ng admin tasdiqlaydi (odatda 1-24 soat ichida)
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Bottom nav -->
+<nav class="bottom-nav">
+  <a class="bottom-nav-item" href="index.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    Asosiy
+  </a>
+  <a class="bottom-nav-item" href="mywords.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    So'zlarim
+  </a>
+  <a class="bottom-nav-item" href="topic.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="7" x2="16" y2="7"/><line x1="10" y1="11" x2="16" y2="11"/></svg>
+    Mavzular
+  </a>
+  <a class="bottom-nav-item" href="search.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    Qidirish
+  </a>
+  <a class="bottom-nav-item" href="profile.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Profil
+  </a>
+</nav>
+
+<!-- Payment Instructions Modal -->
+<div class="pay-modal-overlay" id="payModal">
+  <div class="pay-modal">
+    <div class="pay-modal-title">&#128179; To'lov ko'rsatmalari</div>
+
+    <div class="pay-step">
+      <div class="pay-step-num">1</div>
+      <div class="pay-step-text">
+        Quyidagi karta raqamiga <strong>20,000 so'm</strong> to'lang:
+        <div class="pay-card-highlight" id="modalCardNumber">Yuklanmoqda…</div>
+      </div>
+    </div>
+
+    <div class="pay-step">
+      <div class="pay-step-num">2</div>
+      <div class="pay-step-text">To'lovning <strong>skreenshot</strong>ini oling (to'lov muvaffaqiyatli amalga oshirilganligini tasdiqlashi kerak)</div>
+    </div>
+
+    <div class="pay-step">
+      <div class="pay-step-num">3</div>
+      <div class="pay-step-text">
+        Skreenshot va <strong>ismingizni</strong> Telegram orqali yuboring:
+        <br>
+        <a href="https://t.me/djamiteacher" target="_blank" class="pay-tg-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+          @djamiteacher
+        </a>
+      </div>
+    </div>
+
+    <div class="pay-step">
+      <div class="pay-step-num">4</div>
+      <div class="pay-step-text">Admin to'lovni tekshirib, <strong>1-24 soat</strong> ichida Premium faollashtiradi. Siz bildirishnoma olasiz.</div>
+    </div>
+
+    <div style="background:#FFF8E1;border-radius:12px;padding:12px 14px;margin-top:4px;font-size:.8rem;color:#92400E;line-height:1.5">
+      &#9432; Premium faqat admin tomonidan qo'lda tasdiqlanadi. To'lov tugmasini bosish avtomatik faollashtirmaydi.
+    </div>
+
+    <button class="pay-submit-btn" onclick="submitPaymentRequest()">
+      &#10003; Tushundim, to'lovni amalga oshirdim
+    </button>
+    <button class="pay-cancel-btn" onclick="closePayModal()">Bekor qilish</button>
+  </div>
+</div>
+
+<div class="prem-toast" id="premToast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="auth-guard.js"></script>
+<script>
+
+var _currentUser = null;
+var _cardNumber = '';
+var _isPremium = false;
+var _hasPendingPayment = false;
+
+// ── AUTH ──
+firebase.auth().onAuthStateChanged(function(user) {
+  if (!user) { location.href = 'login.html'; return; }
+  _currentUser = user;
+  loadCardNumber();
+  loadUserStatus(user);
+});
+
+// ── Load card number from config ──
+function loadCardNumber() {
+  db.collection('config').doc('payment').get().then(function(doc) {
+    if (doc.exists && doc.data().cardNumber) {
+      _cardNumber = doc.data().cardNumber;
+    } else {
+      // Default card number if not configured yet
+      _cardNumber = '8600 0000 0000 0000';
+    }
+    document.getElementById('cardNumberDisplay').textContent = _cardNumber;
+    document.getElementById('modalCardNumber').textContent = _cardNumber;
+  }).catch(function() {
+    _cardNumber = '8600 0000 0000 0000';
+    document.getElementById('cardNumberDisplay').textContent = _cardNumber;
+    document.getElementById('modalCardNumber').textContent = _cardNumber;
+  });
+}
+
+// ── Load user premium status + pending payment ──
+function loadUserStatus(user) {
+  db.collection('users').doc(user.uid).get().then(function(doc) {
+    if (doc.exists) {
+      var data = doc.data();
+      _isPremium = !!(data.isPremium);
+    }
+    // Check for pending payment
+    return db.collection('payments')
+      .where('userId', '==', user.uid)
+      .where('status', '==', 'pending')
+      .limit(1).get();
+  }).then(function(snap) {
+    _hasPendingPayment = !snap.empty;
+    updateUI();
+  }).catch(function(err) {
+    updateUI();
+    console.warn('loadUserStatus error:', err);
+  });
+}
+
+function updateUI() {
+  var activeCard = document.getElementById('premiumActiveCard');
+  var pendingCard = document.getElementById('pendingPayCard');
+  var ctaArea = document.getElementById('ctaArea');
+  var payBtn = document.getElementById('payBtn');
+
+  if (_isPremium) {
+    activeCard.style.display = 'flex';
+    pendingCard.style.display = 'none';
+    payBtn.style.display = 'none';
+    var ctaNote = ctaArea.querySelector('div');
+    if (ctaNote) ctaNote.style.display = 'none';
+  } else if (_hasPendingPayment) {
+    pendingCard.style.display = 'flex';
+    payBtn.textContent = '&#9201; Kutilmoqda...';
+    payBtn.disabled = true;
+    payBtn.style.opacity = '.5';
+    payBtn.style.cursor = 'not-allowed';
+  }
+}
+
+// ── Copy card number ──
+function copyCardNumber() {
+  if (!_cardNumber) return;
+  navigator.clipboard.writeText(_cardNumber).then(function() {
+    showPremToast('Karta raqami nusxalandi!');
+  }).catch(function() {
+    showPremToast('Nusxa olishda xatolik');
+  });
+}
+
+// ── Payment modal ──
+function openPayModal() {
+  if (_isPremium) {
+    showPremToast('Premium allaqachon faol!');
+    return;
+  }
+  document.getElementById('payModal').classList.add('open');
+}
+
+function closePayModal() {
+  document.getElementById('payModal').classList.remove('open');
+}
+
+// Submit payment request to Firestore (creates a pending record)
+function submitPaymentRequest() {
+  if (!_currentUser) return;
+  if (_hasPendingPayment) {
+    showPremToast("To'lovingiz tekshiruvda");
+    closePayModal();
+    return;
+  }
+
+  var btn = document.querySelector('.pay-submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Saqlanmoqda…';
+
+  db.collection('payments').add({
+    userId: _currentUser.uid,
+    userName: _currentUser.displayName || '',
+    userEmail: _currentUser.email || '',
+    amount: "20,000 so'm",
+    status: 'pending',
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(function() {
+    _hasPendingPayment = true;
+    closePayModal();
+    updateUI();
+    showPremToast("To'lov so'rovi yuborildi! Admin tekshiradi.");
+  }).catch(function(err) {
+    showPremToast('Xatolik: ' + err.message);
+    btn.disabled = false;
+    btn.textContent = '&#10003; Tushundim, to\'lovni amalga oshirdim';
+  });
+}
+
+// ── Toast ──
+var _toastTimer;
+function showPremToast(msg) {
+  var el = document.getElementById('premToast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(function() { el.classList.remove('show'); }, 2500);
+}
+
+// Close modal on overlay click
+document.getElementById('payModal').addEventListener('click', function(e) {
+  if (e.target === this) closePayModal();
+});
+
+</script>
+</body>
+</html>
