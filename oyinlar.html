@@ -808,21 +808,28 @@ function showToast(msg) {
 firebase.auth().onAuthStateChanged(function(user) {
   if (!user) { location.href = 'login.html'; return; }
   currentUser = user;
-  // load localStorage first (tez ko'rsatish uchun)
-  learnedIds = JSON.parse(localStorage.getItem('vz_learned') || '[]').map(Number);
+  var uid = user.uid;
+  // load localStorage first (tez ko'rsatish uchun) — uid asosida kalit
+  var lsVz = JSON.parse(localStorage.getItem('vz_learned_' + uid) || localStorage.getItem('vz_learned') || '[]').map(Number);
+  var lsSv = JSON.parse(localStorage.getItem('sv_learned_' + uid) || '[]');
+  learnedIds = Array.from(new Set([].concat(lsVz, lsSv)));
 
   // Foydalanuvchi + BARCHA so'zlarni Firestore'dan parallel yuklaymiz
   Promise.all([
-    db.collection('users').doc(user.uid).get(),
+    db.collection('users').doc(uid).get(),
     db.collection('words').get()
   ]).then(function(results) {
     var userDoc   = results[0];
     var wordsSnap = results[1];
 
-    // O'rganilgan so'zlar ID lari
-    if (userDoc.exists && userDoc.data().learned) {
-      learnedIds = userDoc.data().learned.map(Number);
-      localStorage.setItem('vz_learned', JSON.stringify(learnedIds));
+    // O'rganilgan so'zlar ID lari (learned + svLearned ikkalasini ham olish)
+    if (userDoc.exists) {
+      var udata = userDoc.data();
+      var vzIds = (udata.learned   || []).map(Number);
+      var svIds = (udata.svLearned || []);
+      learnedIds = Array.from(new Set([].concat(vzIds, svIds)));
+      localStorage.setItem('vz_learned_' + uid, JSON.stringify(vzIds));
+      localStorage.setItem('sv_learned_' + uid, JSON.stringify(svIds));
     }
 
     // Firestore so'zlar massivi — hardcoded emas, haqiqiy ma'lumot
@@ -842,8 +849,12 @@ firebase.auth().onAuthStateChanged(function(user) {
 
 // keep in sync across tabs
 window.addEventListener('storage', function(e) {
-  if (e.key === 'vz_learned') {
-    learnedIds = JSON.parse(e.newValue || '[]').map(Number);
+  if (!currentUser) return;
+  var uid = currentUser.uid;
+  if (e.key === 'vz_learned_' + uid || e.key === 'sv_learned_' + uid || e.key === 'vz_learned') {
+    var lsVz = JSON.parse(localStorage.getItem('vz_learned_' + uid) || localStorage.getItem('vz_learned') || '[]').map(Number);
+    var lsSv = JSON.parse(localStorage.getItem('sv_learned_' + uid) || '[]');
+    learnedIds = Array.from(new Set([].concat(lsVz, lsSv)));
     renderDashboard();
   }
 });
