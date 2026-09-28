@@ -828,20 +828,7 @@ firebase.auth().onAuthStateChanged(function(user) {
     var userDoc   = results[0];
     var wordsSnap = results[1];
 
-    // O'rganilgan so'zlar ID lari (learned + tvLearned + svLearned hammasi)
-    if (userDoc.exists) {
-      var udata = userDoc.data();
-      _isPremium = !!(udata.isPremium); // premium holati
-      var vzIds = (udata.learned   || []).map(Number);
-      var tvIds = (udata.tvLearned || []).map(Number);
-      // learned + tvLearned birlashtirib unikal set (top-learners bilan bir xil)
-      var numSet = new Set(vzIds);
-      tvIds.forEach(function(id){ numSet.add(id); });
-      learnedIds = Array.from(numSet);
-      lsSet('vz_learned', JSON.stringify(learnedIds));
-    }
-
-    // Firestore so'zlar massivi — hardcoded emas, haqiqiy ma'lumot
+    // So'zlar massivi
     ALL_WORDS = wordsSnap.docs
       .map(function(d) {
         var data = d.data();
@@ -852,7 +839,32 @@ firebase.auth().onAuthStateChanged(function(user) {
       })
       .filter(function(w) { return w.topic && w.word && w.uz; });
 
-    renderDashboard();
+    function applyUserDoc(doc) {
+      if (doc.exists) {
+        var udata = doc.data();
+        _isPremium = !!(udata.isPremium);
+        var vzIds = (udata.learned   || []).map(Number);
+        var tvIds = (udata.tvLearned || []).map(Number);
+        var numSet = new Set(vzIds);
+        tvIds.forEach(function(id){ numSet.add(id); });
+        learnedIds = Array.from(numSet);
+        lsSet('vz_learned', JSON.stringify(learnedIds));
+      }
+    }
+
+    applyUserDoc(userDoc);
+
+    if (_isPremium) {
+      renderDashboard();
+    } else {
+      // Kesh eski bo'lishi mumkin — serverdan yangi ma'lumot olamiz
+      db.collection('users').doc(uid).get({ source: 'server' })
+        .then(function(freshDoc) {
+          applyUserDoc(freshDoc);
+          renderDashboard();
+        })
+        .catch(function() { renderDashboard(); });
+    }
   }).catch(function() { renderDashboard(); });
 });
 
