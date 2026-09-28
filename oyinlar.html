@@ -760,6 +760,7 @@ let ALL_WORDS   = [];   // Firestore'dan dinamik yuklanadi
 const MIN_WORDS = 20;
 let learnedIds  = [];
 let currentUser = null;
+let _isPremium  = false; // premium holati
 let _appLoaded  = false; // bir marta yuklansin
 
 /* ════════════════════════════════
@@ -830,6 +831,7 @@ firebase.auth().onAuthStateChanged(function(user) {
     // O'rganilgan so'zlar ID lari (learned + tvLearned + svLearned hammasi)
     if (userDoc.exists) {
       var udata = userDoc.data();
+      _isPremium = !!(udata.isPremium); // premium holati
       var vzIds = (udata.learned   || []).map(Number);
       var tvIds = (udata.tvLearned || []).map(Number);
       // learned + tvLearned birlashtirib unikal set (top-learners bilan bir xil)
@@ -900,16 +902,20 @@ function renderDashboard() {
 
   const badge = document.getElementById('topbarBadge');
   badge.textContent = ALL_WORDS.length + " ta so'z";
-  badge.className = 'topbar-badge green';
+  badge.className = _isPremium ? 'topbar-badge green' : 'topbar-badge';
 
-  const html = `
+  let html;
+
+  if (_isPremium) {
+    // ── PREMIUM FOYDALANUVCHI: barcha o'yinlar ochiq ──
+    html = `
     <div class="unlocked-hero">
       <div class="unlocked-icon">
         <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/><line x1="12" y1="12" x2="12" y2="17"/><line x1="9.5" y1="14.5" x2="14.5" y2="14.5"/></svg>
       </div>
       <div>
-        <div class="unlocked-title">O'yinlar ochiq!</div>
-        <div class="unlocked-sub">${ALL_WORDS.length} ta so'z mavjud · Barcha o'yinlar ochiq</div>
+        <div class="unlocked-title">O'yinlar ochiq! 🏆</div>
+        <div class="unlocked-sub">${ALL_WORDS.length} ta so'z · Premium · Barcha o'yinlar ochiq</div>
       </div>
     </div>
     <div class="section-hdr">Barcha o'yinlar</div>
@@ -922,6 +928,33 @@ function renderDashboard() {
           <button class="game-card-start" onclick="event.stopPropagation();${g.fn}()">Boshlash</button>
         </div>`).join('')}
     </div>`;
+  } else {
+    // ── ODDIY FOYDALANUVCHI: o'yinlar qulflangan ──
+    html = `
+    <div class="locked-hero">
+      <div class="locked-icon">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <div class="locked-title">O'yinlar — Premium</div>
+      <div class="locked-sub">O'yinlar bo'limiga kirish uchun Premium obunasi talab qilinadi. Premium bilan barcha ${GAMES.length} ta o'yin va ${ALL_WORDS.length} ta so'z ochiladi!</div>
+      <button class="btn-go-learn" onclick="location.href='premium.html'">
+        🏆 Premium olish
+      </button>
+    </div>
+    <div class="section-hdr">Premium o'yinlar (qulflangan)</div>
+    <div class="games-grid">
+      ${GAMES.map((g) => `
+        <div class="game-card" onclick="showToast('Premium kerak!')" style="--gc:#F5F5F5;opacity:.55;cursor:not-allowed;">
+          <div class="game-card-icon" style="background:#F0F0F0;color:#9AA0AD;position:relative;">
+            ${GAME_ICONS[g.iconKey]}
+            <svg style="position:absolute;bottom:2px;right:2px;width:14px;height:14px;color:#9AA0AD" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <div class="game-card-name">${g.name}</div>
+          <div class="game-card-desc">${g.desc}</div>
+          <button class="game-card-start" style="background:#C5C5C5;" onclick="event.stopPropagation();location.href='premium.html'">🔒 Premium</button>
+        </div>`).join('')}
+    </div>`;
+  }
 
   document.getElementById('dashContent').innerHTML = html;
 }
