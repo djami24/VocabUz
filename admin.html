@@ -720,7 +720,15 @@ textarea.form-input {
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
         Mavzu tartibi
       </div>
+      <div class="nav-label">Premium</div>
+      <div class="nav-item" onclick="showPage('payments')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        To'lovlar
+        <span id="pendingPaymentsBadge" style="display:none;margin-left:auto;background:#EF4444;color:#fff;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:20px">0</span>
+      </div>
     </nav>
+
+    </div>
 
     <div class="sidebar-footer">
       <div class="admin-profile">
@@ -781,8 +789,23 @@ textarea.form-input {
         </div>
       </div>
 
+      <!-- Card number management widget -->
+      <div class="card" style="margin-top:20px">
+        <div class="card-header">
+          <div class="card-title">&#128179; To'lov karta raqami</div>
+        </div>
+        <div class="card-body" style="padding:16px">
+          <p style="font-size:.82rem;color:var(--ink-soft);margin-bottom:12px">Premium to'lov uchun karta raqamini bu yerda saqlang. Premium sahifada avtomatik ko'rinadi.</p>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <input id="adminCardNumber" class="form-input" type="text" placeholder="8600 0000 0000 0000" style="flex:1;min-width:200px" value="">
+            <button onclick="saveCardNumber()" class="btn-primary" style="padding:12px 20px;font-size:.85rem;border-radius:var(--radius-sm);white-space:nowrap">Saqlash</button>
+          </div>
+          <div id="cardNumberSaveMsg" style="font-size:.8rem;margin-top:8px"></div>
+        </div>
+      </div>
+
       <!-- Recent visits table -->
-      <div class="card">
+      <div class="card" style="margin-top:20px">
         <div class="card-header">
           <div class="card-title">Oxirgi kirishlar</div>
         </div>
@@ -905,8 +928,8 @@ textarea.form-input {
             </div>
             <div class="type-card" onclick="selectVocabType('speaking')" id="vspeaking">
               <div class="type-card-icon">🗣️</div>
-              <div class="type-card-title">Speaking Vocabulary</div>
-              <div class="type-card-sub">Speaking bo'limidagi so'zlar va iboralar.</div>
+              <div class="type-card-title">Ielts and Cefr Vocabulary</div>
+              <div class="type-card-sub">IELTS va CEFR bo'limidagi so'zlar va iboralar.</div>
             </div>
             <div class="type-card" onclick="selectVocabType('writing')" id="vwriting">
               <div class="type-card-icon">✍️</div>
@@ -1262,6 +1285,29 @@ textarea.form-input {
       </div>
     </div>
 
+
+    <!-- ── TO'LOVLAR ── -->
+    <div class="tab-page" id="page-payments">
+      <div class="page-header">
+        <div>
+          <div class="page-title">To'lovlar</div>
+          <div class="page-sub">Premium to'lov so'rovlari</div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:0;overflow:hidden">
+        <div style="display:flex;border-bottom:1.5px solid var(--line)">
+          <button id="payTabAll" onclick="filterPayments('all')" style="flex:1;padding:13px;background:var(--blue-soft);color:var(--blue);font-weight:700;font-size:.85rem;border:none;border-bottom:2.5px solid var(--blue);cursor:pointer">Barchasi</button>
+          <button id="payTabPending" onclick="filterPayments('pending')" style="flex:1;padding:13px;background:transparent;color:var(--ink-soft);font-weight:600;font-size:.85rem;border:none;border-bottom:2.5px solid transparent;cursor:pointer">Kutilmoqda</button>
+          <button id="payTabApproved" onclick="filterPayments('approved')" style="flex:1;padding:13px;background:transparent;color:var(--ink-soft);font-weight:600;font-size:.85rem;border:none;border-bottom:2.5px solid transparent;cursor:pointer">Tasdiqlangan</button>
+          <button id="payTabRejected" onclick="filterPayments('rejected')" style="flex:1;padding:13px;background:transparent;color:var(--ink-soft);font-weight:600;font-size:.85rem;border:none;border-bottom:2.5px solid transparent;cursor:pointer">Rad etilgan</button>
+        </div>
+        <div id="paymentsTableWrap" style="padding:16px">
+          <div class="loading"><div class="spinner"></div>Yuklanmoqda…</div>
+        </div>
+      </div>
+    </div>
+
   </main>
 </div>
 
@@ -1433,6 +1479,7 @@ auth.onAuthStateChanged(async function(user) {
   currentAdmin = user;
   showAdminApp();
   loadAll();
+  loadCardNumberForAdmin();
   logVisit(user);
 });
 
@@ -1511,9 +1558,47 @@ async function loadAll() {
   await Promise.all([
     loadWords(),
     loadUsers(),
-    loadVisits()
+    loadVisits(),
+    loadPendingPaymentsCount()
   ]);
   renderDashboard();
+}
+
+async function loadPendingPaymentsCount() {
+  try {
+    const snap = await db.collection('payments').where('status','==','pending').get();
+    const cnt = snap.size;
+    const badge = document.getElementById('pendingPaymentsBadge');
+    if (badge) {
+      badge.textContent = cnt;
+      badge.style.display = cnt > 0 ? 'inline-block' : 'none';
+    }
+  } catch(e) {}
+}
+
+// ── Card number management ──
+async function loadCardNumberForAdmin() {
+  try {
+    const doc = await db.collection('config').doc('payment').get();
+    if (doc.exists && doc.data().cardNumber) {
+      const input = document.getElementById('adminCardNumber');
+      if (input) input.value = doc.data().cardNumber;
+    }
+  } catch(e) {}
+}
+
+async function saveCardNumber() {
+  const input = document.getElementById('adminCardNumber');
+  const msg = document.getElementById('cardNumberSaveMsg');
+  const val = (input ? input.value : '').trim();
+  if (!val) { if(msg) { msg.style.color='var(--red)'; msg.textContent='Karta raqamini kiriting'; } return; }
+  try {
+    await db.collection('config').doc('payment').set({ cardNumber: val }, { merge: true });
+    if(msg) { msg.style.color='var(--green)'; msg.textContent='&#10003; Saqlandi!'; setTimeout(()=>{ msg.textContent=''; }, 2500); }
+    showToast('&#10003; Karta raqami saqlandi!');
+  } catch(e) {
+    if(msg) { msg.style.color='var(--red)'; msg.textContent='Xato: ' + e.message; }
+  }
 }
 
 // ── WORDS ──
@@ -1921,7 +2006,8 @@ function showPage(name) {
     addword:    "so'z qo'shish",
     users:      'barcha foydalanuvchilar',
     visits:     'kirish tarixi',
-    topicorder: 'mavzu tartibi'
+    topicorder: 'mavzu tartibi',
+    payments: "to'lovlar"
   };
   const kw = navKeywords[name] || name;
   document.querySelectorAll('.nav-item').forEach(n => {
@@ -1931,6 +2017,8 @@ function showPage(name) {
   if(name === 'addword') goToStep(1);
   // Load topic order page data
   if(name === 'topicorder') loadTopicOrderPage();
+  // Load payments page
+  if(name === 'payments') loadPaymentsPage();
   closeSidebar();
 }
 
@@ -2061,7 +2149,7 @@ function selectVocabType(type) {
 function setupLevelStep() {
   // For speaking/writing: level not strictly required but still useful
   const subtitle = document.getElementById('levelStepSubtitle');
-  const typeLabels = { topic:'Topic Vocabulary', speaking:'Speaking Vocabulary', writing:'Writing Vocabulary' };
+  const typeLabels = { topic:'Topic Vocabulary', speaking:'Ielts and Cefr Vocabulary', writing:'Writing Vocabulary' };
   subtitle.textContent = typeLabels[wzVocabType] + ' — so\'z darajasini tanlang';
   clearLevelCards();
 }
@@ -2091,7 +2179,7 @@ async function loadTopicsForPicker() {
   const newTopicLevelEl = document.getElementById('newTopicLevel');
   if(newTopicLevelEl && wzLevel) newTopicLevelEl.value = wzLevel;
 
-  const typeLabels = { topic:'Topic Vocabulary', speaking:'Speaking Vocabulary', writing:'Writing Vocabulary' };
+  const typeLabels = { topic:'Topic Vocabulary', speaking:'Ielts and Cefr Vocabulary', writing:'Writing Vocabulary' };
   subtitle.textContent = typeLabels[wzVocabType] + ' uchun mavzu';
 
   // For speaking/writing: hide topic concept since they use 'type' sub-field
@@ -2274,7 +2362,7 @@ function confirmNewTopic() {
 
 // ── STEP 3 setup ──
 async function setupStep4() {
-  const typeLabels = { topic:'Topic Vocabulary', speaking:'Speaking Vocabulary', writing:'Writing Vocabulary' };
+  const typeLabels = { topic:'Topic Vocabulary', speaking:'Ielts and Cefr Vocabulary', writing:'Writing Vocabulary' };
   document.getElementById('step3Title').textContent = 'So\'z qo\'shish';
   document.getElementById('step3Badge').textContent = (wzLevel ? wzLevel + ' · ' : '') + (wzVocabType==='topic' ? wzTopic : typeLabels[wzVocabType] + (wzTopic ? ' › ' + wzTopic : ''));
   document.getElementById('step3Sub').textContent = (wzTopicIsNew ? '🆕 Yangi mavzu: ' : 'Mavzu: ') + wzTopic + (wzLevel ? ' · Daraja: ' + wzLevel : '');
@@ -2658,6 +2746,191 @@ async function saveTopicOrder() {
     showToast('❌ Xato: ' + e.message);
   } finally {
     btn.disabled = false; btn.textContent = '💾 Saqlash';
+  }
+}
+
+
+// ══════════════════════════════════════
+//  TO'LOVLAR (PAYMENTS)
+// ══════════════════════════════════════
+
+let allPayments = [];
+let currentPayFilter = 'all';
+
+async function loadPaymentsPage() {
+  const wrap = document.getElementById('paymentsTableWrap');
+  wrap.innerHTML = '<div class="loading"><div class="spinner"></div>Yuklanmoqda…</div>';
+  try {
+    const snap = await db.collection('payments').orderBy('createdAt','desc').limit(100).get();
+    allPayments = snap.docs.map(d => Object.assign({ _id: d.id }, d.data()));
+    updatePendingBadge();
+    renderPaymentsTable();
+  } catch(e) {
+    wrap.innerHTML = '<div style="color:var(--red);padding:20px">Xatolik: ' + esc(e.message) + '</div>';
+  }
+}
+
+function updatePendingBadge() {
+  const cnt = allPayments.filter(p => p.status === 'pending').length;
+  const badge = document.getElementById('pendingPaymentsBadge');
+  if (badge) {
+    badge.textContent = cnt;
+    badge.style.display = cnt > 0 ? 'inline-block' : 'none';
+  }
+}
+
+function filterPayments(filter) {
+  currentPayFilter = filter;
+  // Update tab styles
+  ['All','Pending','Approved','Rejected'].forEach(f => {
+    const btn = document.getElementById('payTab' + f);
+    if (!btn) return;
+    const isActive = filter === f.toLowerCase();
+    btn.style.background = isActive ? 'var(--blue-soft)' : 'transparent';
+    btn.style.color = isActive ? 'var(--blue)' : 'var(--ink-soft)';
+    btn.style.fontWeight = isActive ? '700' : '600';
+    btn.style.borderBottom = isActive ? '2.5px solid var(--blue)' : '2.5px solid transparent';
+  });
+  renderPaymentsTable();
+}
+
+function renderPaymentsTable() {
+  const wrap = document.getElementById('paymentsTableWrap');
+  const filtered = currentPayFilter === 'all'
+    ? allPayments
+    : allPayments.filter(p => p.status === currentPayFilter);
+
+  if (!filtered.length) {
+    wrap.innerHTML = '<div style="text-align:center;padding:32px;color:var(--ink-soft);font-size:.88rem">To'lovlar yo'q</div>';
+    return;
+  }
+
+  const statusLabel = { pending: 'Kutilmoqda', approved: 'Tasdiqlangan', rejected: 'Rad etilgan' };
+  const statusColor = { pending: '#F59E0B', approved: '#22C55E', rejected: '#EF4444' };
+  const statusBg   = { pending: '#FFF8E1', approved: '#F0FFF4', rejected: '#FFF1F1' };
+
+  let html = '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.85rem">';
+  html += '<thead><tr style="border-bottom:2px solid var(--line)">' +
+    '<th style="padding:10px 12px;text-align:left;color:var(--ink-soft);font-weight:600">Foydalanuvchi</th>' +
+    '<th style="padding:10px 12px;text-align:left;color:var(--ink-soft);font-weight:600">Miqdor</th>' +
+    '<th style="padding:10px 12px;text-align:left;color:var(--ink-soft);font-weight:600">Sana</th>' +
+    '<th style="padding:10px 12px;text-align:left;color:var(--ink-soft);font-weight:600">Holat</th>' +
+    '<th style="padding:10px 12px;text-align:left;color:var(--ink-soft);font-weight:600">Amallar</th>' +
+    '</tr></thead><tbody>';
+
+  filtered.forEach(p => {
+    let dateStr = '';
+    if (p.createdAt) {
+      try {
+        const d = p.createdAt.toDate ? p.createdAt.toDate() : new Date(p.createdAt);
+        dateStr = d.toLocaleString('uz-UZ');
+      } catch(e) {}
+    }
+    const st = p.status || 'pending';
+    const safeId = p._id.replace(/'/g, "\'");
+    html += '<tr style="border-bottom:1px solid var(--line)">' +
+      '<td style="padding:12px">' +
+        '<div style="font-weight:700;color:var(--ink)">' + esc(p.userName || p.userId || '—') + '</div>' +
+        (p.userEmail ? '<div style="font-size:.75rem;color:var(--ink-soft)">' + esc(p.userEmail) + '</div>' : '') +
+      '</td>' +
+      '<td style="padding:12px;font-weight:700;color:var(--ink)">' + esc(p.amount || '20,000 so'm') + '</td>' +
+      '<td style="padding:12px;color:var(--ink-soft);font-size:.8rem">' + dateStr + '</td>' +
+      '<td style="padding:12px">' +
+        '<span style="display:inline-block;padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:700;background:' + (statusBg[st]||'#F5F5F5') + ';color:' + (statusColor[st]||'#666') + '">' + (statusLabel[st]||st) + '</span>' +
+      '</td>' +
+      '<td style="padding:12px">' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
+        (p.screenshot ? '<a href="' + esc(p.screenshot) + '" target="_blank" style="padding:6px 12px;background:#E3F2FD;color:#1565C0;border-radius:8px;font-size:.78rem;font-weight:600;text-decoration:none">&#128247; Skreenshot</a>' : '') +
+        (st === 'pending' ?
+          '<button onclick="approvePayment('' + safeId + '')" style="padding:6px 14px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:.78rem;font-weight:700;cursor:pointer">&#10003; Tasdiqlash</button>' +
+          '<button onclick="rejectPayment('' + safeId + '')" style="padding:6px 14px;background:var(--red);color:#fff;border:none;border-radius:8px;font-size:.78rem;font-weight:700;cursor:pointer">&#10007; Rad etish</button>'
+          : '') +
+        '</div>' +
+      '</td>' +
+    '</tr>';
+  });
+
+  html += '</tbody></table></div>';
+  wrap.innerHTML = html;
+}
+
+async function approvePayment(paymentId) {
+  if (!confirm('Ushbu to'lovni tasdiqlaysizmi? Student Premium oladi.')) return;
+  try {
+    const payRef = db.collection('payments').doc(paymentId);
+    const paySnap = await payRef.get();
+    if (!paySnap.exists) { showToast('❌ To'lov topilmadi'); return; }
+    const pay = paySnap.data();
+    const userId = pay.userId;
+    if (!userId) { showToast('❌ Foydalanuvchi ID topilmadi'); return; }
+
+    const batch = db.batch();
+
+    // 1. Update payment status
+    batch.update(payRef, { status: 'approved', approvedAt: firebase.firestore.FieldValue.serverTimestamp() });
+
+    // 2. Activate premium for user
+    batch.update(db.collection('users').doc(userId), {
+      isPremium: true,
+      premiumActivatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    // 3. Create approval notification
+    const notifRef = db.collection('users').doc(userId).collection('notifications').doc();
+    batch.set(notifRef, {
+      message: "VocabUz Premium to'lovingiz tasdiqlandi. Premium imkoniyatlaringiz faollashtirildi.",
+      type: 'premium_approved',
+      read: false,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    await batch.commit();
+
+    // Update local state
+    const idx = allPayments.findIndex(p => p._id === paymentId);
+    if (idx !== -1) allPayments[idx].status = 'approved';
+    updatePendingBadge();
+    renderPaymentsTable();
+    showToast('✅ Premium faollashtirildi!');
+  } catch(e) {
+    showToast('❌ Xato: ' + e.message);
+  }
+}
+
+async function rejectPayment(paymentId) {
+  if (!confirm('Ushbu to'lovni rad etasizmi?')) return;
+  try {
+    const payRef = db.collection('payments').doc(paymentId);
+    const paySnap = await payRef.get();
+    if (!paySnap.exists) { showToast('❌ To'lov topilmadi'); return; }
+    const pay = paySnap.data();
+    const userId = pay.userId;
+
+    const batch = db.batch();
+
+    // 1. Update payment status
+    batch.update(payRef, { status: 'rejected', rejectedAt: firebase.firestore.FieldValue.serverTimestamp() });
+
+    // 2. Create rejection notification
+    if (userId) {
+      const notifRef = db.collection('users').doc(userId).collection('notifications').doc();
+      batch.set(notifRef, {
+        message: "VocabUz Premium to'lovingiz rad etildi. Iltimos, to'lov ma'lumotlarini tekshiring.",
+        type: 'premium_rejected',
+        read: false,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
+
+    await batch.commit();
+
+    const idx = allPayments.findIndex(p => p._id === paymentId);
+    if (idx !== -1) allPayments[idx].status = 'rejected';
+    updatePendingBadge();
+    renderPaymentsTable();
+    showToast('To'lov rad etildi.');
+  } catch(e) {
+    showToast('❌ Xato: ' + e.message);
   }
 }
 
