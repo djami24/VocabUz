@@ -1,0 +1,68 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Admin emaillarini tekshirish ──
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email in [
+        'admin@vocabuz.com',
+        'djaami2022@gmail.com'
+      ];
+    }
+
+    function isLoggedIn() {
+      return request.auth != null;
+    }
+
+    // ── So'zlar ──
+    match /words/{id} {
+      allow read:   if isLoggedIn();
+      allow write:  if isAdmin();
+    }
+
+    // ── Mavzular ──
+    match /topics/{id} {
+      allow read:   if isLoggedIn();
+      allow write:  if isAdmin();
+    }
+
+    // ── Foydalanuvchi profili ──
+    match /users/{userId} {
+      allow read:  if isLoggedIn() || isAdmin();
+      // Students can update their own doc; admin can update any (for isPremium)
+      allow write: if request.auth.uid == userId || isAdmin();
+
+      // ── Bildirishnomalar (subcollection) ──
+      match /notifications/{notifId} {
+        allow read:   if request.auth.uid == userId;
+        allow write:  if isAdmin(); // Admin creates notifications
+        allow update: if request.auth.uid == userId; // Student can mark as read
+      }
+    }
+
+    // ── Kirish tarixi ──
+    match /visits/{docId} {
+      allow create: if isLoggedIn();
+      allow read:   if isAdmin();
+      allow update,
+            delete: if false;
+    }
+
+    // ── Konfiguratsiya (mavzu tartibi va boshqa sozlamalar) ──
+    match /config/{docId} {
+      allow read:  if isLoggedIn();   // barcha login qilganlar o'qiy oladi
+      allow write: if isAdmin();      // faqat admin yoza oladi
+    }
+
+    // ── To'lovlar ──
+    match /payments/{paymentId} {
+      // Students can create and read their own payments
+      allow create: if isLoggedIn();
+      allow read:   if isLoggedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      // Only admin can update payment status
+      allow update: if isAdmin();
+      allow delete: if false;
+    }
+
+  }
+}
