@@ -589,7 +589,23 @@ firebase.auth().onAuthStateChanged(function(user){
     var learnedIds  = data.learned    || [];
     var svLearnedIds = data.svLearned || [];  // speaking vocabulary
     var bookmarks   = data.bookmarks  || [];
-    var activityLog = data.activityLog || {}; // { "2025-01-15": 5, ... }
+
+    // Firestore'da activityLog dot-notation bilan yoziladi:
+    // "activityLog.2026-09-28": 5  →  data["activityLog.2026-09-28"] = 5
+    // Shuning uchun data.activityLog har doim undefined bo'ladi.
+    // Quyida barcha "activityLog.*" kalitlarni nested object'ga aylantiramiz:
+    var activityLog = {};
+    if(data.activityLog && typeof data.activityLog === 'object'){
+      // Agar backend kelajakda nested object qaytarsa — to'g'ridan ishlatamiz
+      activityLog = data.activityLog;
+    }
+    // Dot-notation fieldlarni yig'ib olamiz (asosiy holat)
+    Object.keys(data).forEach(function(key){
+      if(key.indexOf('activityLog.') === 0){
+        var dateKey = key.substring('activityLog.'.length);
+        activityLog[dateKey] = (activityLog[dateKey] || 0) + data[key];
+      }
+    });
 
     // ── COMPUTE STATS ──────────────────────────────────────
     var totalLearned = learnedIds.length + svLearnedIds.length;  // topic + speaking
