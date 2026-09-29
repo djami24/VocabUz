@@ -328,10 +328,29 @@ function topicWords(topic){ return ALL_WORDS.filter(w=>w.topic===topic); }
 function topicLearnedCount(topic){ return topicWords(topic).filter(w=>learnedIds.includes(w.id)).length; }
 function isTopicFull(topic){ return topicLearnedCount(topic)===topicWords(topic).length; }
 function isTopicPassed(topic){ return passedTopics.includes(topic); }
-function isTopicUnlocked(topic){
-  const idx = TOPIC_ORDER.indexOf(topic);
-  if(idx===0) return true;
-  return isTopicPassed(TOPIC_ORDER[idx-1]);
+// Daraja ichidagi mavzular tartibi (admin belgilagan TOPIC_ORDER bo'yicha)
+function topicsOfLevel(level){
+  const set = new Set();
+  ALL_WORDS.forEach(function(w){
+    if((w.level||'').toUpperCase()===String(level||'').toUpperCase() && w.topic) set.add(w.topic);
+  });
+  const list = TOPIC_ORDER.filter(function(t){ return set.has(t); });
+  set.forEach(function(t){ if(list.indexOf(t)===-1) list.push(t); });
+  return list;
+}
+// Mavzu ochiq: darajadagi birinchi mavzu, yoki oldingi mavzu testdan o'tgan bo'lsa.
+// (Eski foydalanuvchilar progressi yo'qolmasligi uchun: o'tilgan yoki so'z belgilangan mavzu ham ochiq.)
+function isTopicUnlocked(topic, level){
+  const list = topicsOfLevel(level||currentLevel);
+  const idx  = list.indexOf(topic);
+  if(idx<=0) return true;
+  if(isTopicPassed(topic) || topicLearnedCount(topic)>0) return true;
+  return isTopicPassed(list[idx-1]);
+}
+function prevTopicName(topic, level){
+  const list = topicsOfLevel(level||currentLevel);
+  const idx  = list.indexOf(topic);
+  return idx>0 ? list[idx-1] : '';
 }
 
 function saveState(){
@@ -566,25 +585,42 @@ function renderTopics(){
     const full     = learned === total && total > 0;
     const color    = TOPIC_COLOR[topic]||'#E3F2FD';
 
-    let badgeHtml, rightHtml;
-    if(full){
-      badgeHtml=`<span class="topic-badge done">✓ Tugallandi</span>`;
-      rightHtml=`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
+    const unlocked = isTopicUnlocked(topic, currentLevel);
+    const passedT  = isTopicPassed(topic);
+    const safeT = topic.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    let badgeHtml, rightHtml, cardClass, onclick, metaHtml;
+
+    if(!unlocked){
+      const prev = prevTopicName(topic, currentLevel);
+      const safePrev = prev.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+      badgeHtml = '<span class="topic-badge locked">Qulflangan</span>';
+      rightHtml = '<svg class="lock-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
+      cardClass = 'topic-card locked';
+      onclick = "showToast('Avval \u00ab"+safePrev+"\u00bb mavzusi testidan o\\'ting')";
+      metaHtml = total+' ta so\'z &bull; '+badgeHtml;
     } else {
-      badgeHtml=`<span class="topic-badge">${learned}/${total}</span>`;
-      rightHtml=`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink-soft)" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>`;
+      if(passedT){
+        badgeHtml='<span class="topic-badge done">\u2713 O\'tildi</span>';
+        rightHtml='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
+      } else if(full){
+        badgeHtml='<span class="topic-badge">Testga tayyor</span>';
+        rightHtml='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>';
+      } else {
+        badgeHtml='<span class="topic-badge">'+learned+'/'+total+'</span>';
+        rightHtml='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink-soft)" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>';
+      }
+      cardClass = 'topic-card'+(passedT?' completed':'');
+      onclick = "openTopic('"+safeT+"','"+currentLevel+"')";
+      metaHtml = total+' ta so\'z &bull; '+pct+'% '+badgeHtml;
     }
 
-    const cardClass = 'topic-card'+(full?' completed':'');
-    const safeT = topic.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-
-    html += '<div class="'+cardClass+'" onclick="openTopic(\''+safeT+'\',\''+currentLevel+'\')">' +
+    html += '<div class="'+cardClass+'" onclick="'+onclick.replace(/"/g,'&quot;')+'">' +
       '<div class="topic-info">' +
         '<div class="topic-name">'+topic+'</div>' +
-        '<div class="topic-meta">'+total+' ta so\'z &bull; '+pct+'% '+badgeHtml+'</div>' +
+        '<div class="topic-meta">'+metaHtml+'</div>' +
       '</div>' +
       rightHtml +
-      '<div class="topic-card-progress-bar" style="width:'+pct+'%"></div>' +
+      '<div class="topic-card-progress-bar" style="width:'+(unlocked?pct:0)+'%"></div>' +
     '</div>';
   });
   if(!html) html = '<div style="text-align:center;padding:40px;color:var(--ink-soft);font-size:.88rem;">Bu darajada mavzular mavjud emas</div>';
@@ -596,8 +632,12 @@ function renderTopics(){
 //  VIEW 2: SO'ZLAR
 // ════════════════════════════════════════
 function openTopic(topic, level){
-  currentTopic = topic;
   if(level) currentLevel = level;
+  if(!isTopicUnlocked(topic, currentLevel)){
+    showToast("Avval oldingi mavzu testidan o'ting");
+    return;
+  }
+  currentTopic = topic;
   document.getElementById('viewTopics').style.display='none';
   const vw = document.getElementById('viewWords');
   vw.style.display='block';
@@ -996,8 +1036,8 @@ function renderTestResult(){
     saveToFirestore();
   }
 
-  var nextTopicIdx = TOPIC_ORDER.indexOf(currentTopic)+1;
-  var nextTopic    = TOPIC_ORDER[nextTopicIdx];
+  var levelList    = topicsOfLevel(currentLevel);
+  var nextTopic    = levelList[levelList.indexOf(currentTopic)+1];
   var hasNext      = !!nextTopic;
 
   if(passed){
@@ -1032,7 +1072,7 @@ function renderTestResult(){
 function closeTestGoNext(topic){
   closeTest();
   renderTopics();
-  setTimeout(function(){ openTopic(topic); },200);
+  setTimeout(function(){ openTopic(topic, currentLevel); },200);
 }
 
 // Storage sync
