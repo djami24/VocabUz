@@ -372,7 +372,7 @@ function loadPremiumStatus(uid) {
   _premiumListener = db.collection('users').doc(uid).onSnapshot(function(doc) {
     if (!doc.exists) return;
     var data = doc.data();
-    if (data.avatar) setAvatarImg('homeAvatar', 44, data.avatar);
+    setAvatarImg('homeAvatar', 44, data.avatar || 'boy');
     var wasPremium = _isPremiumUser;
     _isPremiumUser = !!(data.isPremium);
 
