@@ -736,6 +736,10 @@ textarea.form-input {
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
         Mavzu tartibi
       </div>
+      <div class="nav-item" onclick="showPage('grammar')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+        Grammar
+      </div>
       <div class="nav-label">Premium</div>
       <div class="nav-item" onclick="showPage('payments')">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
@@ -1308,6 +1312,46 @@ textarea.form-input {
     </div>
 
     <!-- ── VISITS ── -->
+    <div class="tab-page" id="page-grammar">
+      <div class="page-header"><div><div class="page-title">Grammar</div><div class="page-sub">Grammatika materiallari — talabalarga "Grammar" bo'limida ko'rinadi</div></div></div>
+      <div class="card"><div class="card-body" style="padding:18px">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Daraja</label><select class="form-input filter-select" id="gmLevel" style="width:100%"><option value="">Umumiy</option><option value="A1">A1</option><option value="A2">A2</option><option value="B1">B1</option><option value="B2">B2</option><option value="C1">C1</option><option value="C2">C2</option></select></div>
+          <div class="form-group"><label class="form-label">Mavzu (bo'lim) *</label><input class="form-input" type="text" id="gmTopic" list="gmTopicList" placeholder="Masalan: Tenses"><datalist id="gmTopicList"></datalist><div class="form-error" id="gmTopicErr"></div></div>
+        </div>
+        <div class="form-group"><label class="form-label">Sarlavha *</label><input class="form-input" type="text" id="gmTitle" placeholder="Masalan: Present Perfect"><div class="form-error" id="gmTitleErr"></div></div>
+        <div class="form-group"><label class="form-label">Matn *</label>
+          <div class="rt-toolbar" onmousedown="event.preventDefault()">
+                <button type="button" class="rt-btn" onclick="rtBlock('h2')" title="Sarlavha">Sarlavha</button>
+                <button type="button" class="rt-btn" onclick="rtBlock('h3')" title="Kichik sarlavha">Kichik sarlavha</button>
+                <button type="button" class="rt-btn" onclick="rtBlock('p')" title="Oddiy matn">Oddiy</button>
+                <span class="rt-sep"></span>
+                <button type="button" class="rt-btn" onclick="rtCmd('bold')" title="Qalin (Ctrl+B)"><b>B</b></button>
+                <button type="button" class="rt-btn" onclick="rtCmd('italic')" title="Kursiv (Ctrl+I)"><i>I</i></button>
+                <button type="button" class="rt-btn" onclick="rtCmd('underline')" title="Tagiga chizish (Ctrl+U)"><u>U</u></button>
+                <button type="button" class="rt-btn" onclick="rtHighlight()" title="Belgilash">🖍️</button>
+                <span class="rt-sep"></span>
+                <button type="button" class="rt-btn" onclick="rtCmd('insertUnorderedList')" title="Nuqtali ro'yxat">• Ro'yxat</button>
+                <button type="button" class="rt-btn" onclick="rtCmd('insertOrderedList')" title="Raqamli ro'yxat">1. Ro'yxat</button>
+                <button type="button" class="rt-btn" onclick="rtBlock('blockquote')" title="Iqtibos / muhim qoida">❝</button>
+                <button type="button" class="rt-btn" onclick="rtTable()" title="Jadval qo'shish">▦ Jadval</button>
+                <button type="button" class="rt-btn" onclick="rtCmd('insertHorizontalRule')" title="Chiziq">―</button>
+                <span class="rt-sep"></span>
+                <button type="button" class="rt-btn" onclick="rtCmd('removeFormat')" title="Formatni tozalash">⌫</button>
+                <button type="button" class="rt-btn" onclick="rtCmd('undo')" title="Bekor qilish">↶</button>
+                <button type="button" class="rt-btn" onclick="rtCmd('redo')" title="Qaytarish">↷</button>
+                <span class="rt-sep"></span>
+                <button type="button" class="rt-btn" onclick="document.getElementById('gmFile').click()" title=".docx fayldan yuklash">📄 Word fayldan</button>
+                <input type="file" id="gmFile" accept=".docx" style="display:none" onchange="gmImportDocx(this)">
+              </div>
+              <div class="rt-editor" id="gmEditor" contenteditable="true" data-placeholder="Grammatika mavzusini shu yerga yozing…"></div>
+          <div class="form-error" id="gmFileErr"></div>
+        </div>
+        <div style="display:flex;gap:10px"><button class="btn-save" id="gmSaveBtn" onclick="gmSave()">Saqlash</button><button class="btn-secondary" id="gmCancelBtn" onclick="gmReset()" style="display:none">Bekor qilish</button></div>
+        <div style="margin-top:26px"><div class="form-label" style="margin-bottom:8px">Qo'shilgan grammatika materiallari</div><div id="gmList"></div></div>
+      </div></div>
+    </div>
+
     <div class="tab-page" id="page-visits">
       <div class="page-header">
         <div>
@@ -2113,7 +2157,8 @@ function showPage(name) {
     users:      'barcha foydalanuvchilar',
     visits:     'kirish tarixi',
     topicorder: 'mavzu tartibi',
-    payments: "to'lovlar"
+    payments: "to'lovlar",
+    grammar:  'grammar'
   };
   const kw = navKeywords[name] || name;
   document.querySelectorAll('.nav-item').forEach(n => {
@@ -2125,6 +2170,7 @@ function showPage(name) {
   if(name === 'topicorder') loadTopicOrderPage();
   // Load payments page
   if(name === 'payments') loadPaymentsPage();
+  if(name === 'grammar') gmLoad();
   closeSidebar();
 }
 
@@ -2811,7 +2857,9 @@ async function addCategoryWord({ word, uz, type, example }) {
 let wzEditingDocId = null;
 let wzDocCache = {};
 
-function rtEd() { return document.getElementById('rtEditor'); }
+let _rtActive = null;
+document.addEventListener('focusin', function (e) { if (e.target && e.target.classList && e.target.classList.contains('rt-editor')) _rtActive = e.target; });
+function rtEd() { return _rtActive || document.getElementById('rtEditor'); }
 function rtCmd(cmd, val) { rtEd().focus(); document.execCommand(cmd, false, val || null); }
 function rtBlock(tag) { rtEd().focus(); document.execCommand('formatBlock', false, '<' + tag + '>'); }
 function rtHighlight() {
@@ -2985,6 +3033,124 @@ async function deleteDocContent(id) {
   } catch (e) {
     showToast('❌ Xatolik: ' + e.message);
   }
+}
+
+
+// ══════════ GRAMMAR (alohida bo'lim) ══════════
+let gmEditingId = null, gmCache = {};
+function gmEd() { return document.getElementById('gmEditor'); }
+
+function gmReset() {
+  gmEditingId = null;
+  ['gmTitle'].forEach(id => document.getElementById(id).value = '');
+  gmEd().innerHTML = '';
+  ['gmTopicErr','gmTitleErr','gmFileErr'].forEach(id => document.getElementById(id).textContent = '');
+  document.getElementById('gmSaveBtn').textContent = 'Saqlash';
+  document.getElementById('gmSaveBtn').disabled = false;
+  document.getElementById('gmCancelBtn').style.display = 'none';
+}
+
+async function gmImportDocx(input) {
+  const file = input.files[0], errEl = document.getElementById('gmFileErr');
+  errEl.textContent = '';
+  if (!file) return;
+  if (!/\.docx$/i.test(file.name)) { errEl.textContent = "Faqat .docx fayl."; input.value = ''; return; }
+  if (typeof mammoth === 'undefined') { errEl.textContent = "Word kutubxonasi yuklanmadi. Sahifani yangilang."; input.value = ''; return; }
+  try {
+    const res = await mammoth.convertToHtml({ arrayBuffer: await file.arrayBuffer() });
+    gmEd().innerHTML = sanitizeRichHtml(res.value);
+    if (!document.getElementById('gmTitle').value.trim()) document.getElementById('gmTitle').value = file.name.replace(/\.docx$/i, '');
+    showToast('✅ Word fayl yuklandi');
+  } catch (e) { errEl.textContent = "Faylni o'qib bo'lmadi: " + e.message; }
+  input.value = '';
+}
+
+async function gmSave() {
+  const level = document.getElementById('gmLevel').value;
+  const topic = document.getElementById('gmTopic').value.trim();
+  const title = document.getElementById('gmTitle').value.trim();
+  const errEl = document.getElementById('gmFileErr');
+  ['gmTopicErr','gmTitleErr'].forEach(id => document.getElementById(id).textContent = '');
+  errEl.textContent = '';
+  if (!topic) { document.getElementById('gmTopicErr').textContent = 'Mavzuni kiriting'; return; }
+  if (!title) { document.getElementById('gmTitleErr').textContent = 'Sarlavhani kiriting'; return; }
+  const html = sanitizeRichHtml(gmEd().innerHTML);
+  if (!richTextLength(html)) { errEl.textContent = 'Matnni kiriting'; return; }
+  const kb = Math.round(new Blob([html]).size / 1024);
+  if (kb > 900) { errEl.textContent = 'Matn juda katta (' + kb + " KB). 900 KB dan kichik bo'lishi kerak."; return; }
+  const btn = document.getElementById('gmSaveBtn');
+  btn.disabled = true; btn.textContent = 'Saqlanmoqda…';
+  try {
+    if (gmEditingId) {
+      await db.collection('grammarDocs').doc(gmEditingId).update({
+        title: title, level: level, type: topic, html: html,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      showToast('✅ "' + title + '" yangilandi!');
+    } else {
+      const last = await db.collection('grammarDocs').orderBy('order', 'desc').limit(1).get();
+      const order = (last.empty ? 0 : (last.docs[0].data().order || 0)) + 1;
+      await db.collection('grammarDocs').add({
+        title: title, level: level, type: topic, category: 'grammar', order: order,
+        html: html, addedByAdmin: true,
+        addedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      showToast('✅ "' + title + '" saqlandi!');
+    }
+    gmReset();
+    await gmLoad();
+  } catch (e) {
+    showToast('❌ Xatolik: ' + e.message);
+    errEl.textContent = 'Saqlanmadi: ' + e.message;
+    btn.disabled = false;
+    btn.textContent = gmEditingId ? 'Yangilash' : 'Saqlash';
+  }
+}
+
+async function gmLoad() {
+  const el = document.getElementById('gmList');
+  try {
+    const snap = await db.collection('grammarDocs').get();
+    const lv = ['A1','A2','B1','B2','C1','C2'];
+    const items = snap.docs.map(d => Object.assign({ _id: d.id }, d.data()))
+      .sort((a, b) => ((lv.indexOf(a.level) + 1 || 99) - (lv.indexOf(b.level) + 1 || 99)) || (a.order || 0) - (b.order || 0));
+    gmCache = {};
+    items.forEach(x => { gmCache[x._id] = x; });
+    const topics = [...new Set(items.map(x => x.type).filter(Boolean))];
+    document.getElementById('gmTopicList').innerHTML = topics.map(t => '<option value="' + esc(t) + '">').join('');
+    if (!items.length) { el.innerHTML = '<div style="font-size:.82rem;color:var(--ink-soft)">Hali material yo\'q.</div>'; return; }
+    el.innerHTML = items.map(x => `
+      <div class="doc-item">
+        <span class="badge">${esc(x.level || 'Umumiy')}</span>
+        <span class="doc-item-title">${esc(x.type || '—')} › ${esc(x.title || '—')}</span>
+        <button class="doc-item-edit" onclick="gmEdit('${x._id}')">Tahrirlash</button>
+        <button class="doc-item-del" onclick="gmDelete('${x._id}')">O'chirish</button>
+      </div>`).join('');
+  } catch (e) {
+    el.innerHTML = '<div class="form-error">Yuklab bo\'lmadi: ' + esc(e.message) + ' (Firestore qoidalarida grammarDocs borligini tekshiring)</div>';
+  }
+}
+
+function gmEdit(id) {
+  const x = gmCache[id]; if (!x) return;
+  gmEditingId = id;
+  document.getElementById('gmLevel').value = x.level || '';
+  document.getElementById('gmTopic').value = x.type || '';
+  document.getElementById('gmTitle').value = x.title || '';
+  gmEd().innerHTML = sanitizeRichHtml(x.html || '');
+  document.getElementById('gmSaveBtn').textContent = 'Yangilash';
+  document.getElementById('gmCancelBtn').style.display = '';
+  document.getElementById('gmTitle').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+async function gmDelete(id) {
+  if (!confirm("Bu materialni o'chirasizmi?")) return;
+  try {
+    await db.collection('grammarDocs').doc(id).delete();
+    if (gmEditingId === id) gmReset();
+    showToast("🗑️ O'chirildi");
+    await gmLoad();
+  } catch (e) { showToast('❌ Xatolik: ' + e.message); }
 }
 
 // ══════════ MAVZU TARTIBI ══════════
