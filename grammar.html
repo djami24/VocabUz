@@ -276,7 +276,7 @@ firebase.auth().onAuthStateChanged(function (user) {
         document.getElementById('wrBody').innerHTML =
           '<div class="wr-empty">Internet aloqasini tekshirib, sahifani qayta yuklang.</div>';
       } else {
-        wrShowLock();
+        wrShowLock(fresh);
       }
     }).catch(function () {
       document.getElementById('wrBody').innerHTML =
@@ -289,7 +289,9 @@ firebase.auth().onAuthStateChanged(function (user) {
   });
 });
 
-function wrShowLock() {
+function wrShowLock(snap) {
+  var info = (currentUser && currentUser.email ? currentUser.email : '?') + ' · isPremium: ' +
+    (snap && snap.exists ? String(snap.data().isPremium) : "hujjat topilmadi");
   document.getElementById('wrBackBtn').style.display = 'none';
   document.getElementById('wrBody').innerHTML =
     '<div style="text-align:center;padding:60px 20px">' +
@@ -297,6 +299,7 @@ function wrShowLock() {
     '<div style="font-size:1.1rem;font-weight:800;color:#1A2333;margin-bottom:8px">Premium kerak</div>' +
     '<div style="font-size:.88rem;color:#4A5568;margin-bottom:24px">Avval Premium sotib oling</div>' +
     '<button onclick="location.href=\'premium.html\'" style="padding:14px 32px;background:linear-gradient(135deg,#FFB300,#FF8F00);color:#fff;border:none;border-radius:14px;font-size:.95rem;font-weight:800;cursor:pointer">&#128081; VocabUz Premium</button>' +
+    '<div style="margin-top:18px;font-size:.72rem;color:#9AA0AD">' + esc(info) + '</div>' +
     '</div>';
 }
 
