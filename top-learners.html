@@ -533,12 +533,12 @@ function render(top10, myRank, myData, totalUsers) {
     var avatarHtml;
     if (u.photoURL) {
       avatarHtml = '<img src="' + u.photoURL + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;" '
-        + 'onerror="this.style.display='none';this.nextSibling.style.display='flex'">'
+        + 'onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'">'
         + '<span style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-size:' + fontSize + ';font-weight:800;color:#fff;">' + initials + '</span>';
     } else {
       avatarHtml = '<span style="font-size:' + fontSize + ';font-weight:800;color:#fff;">' + initials + '</span>';
     }
-    var crownHtml = (rk === 1) ? '<div class="podium-crown">\u{1F451}</div>' : '';
+    var crownHtml = (rk === 1) ? '<div class="podium-crown">👑</div>' : '';
     var ptop = (rk === 1) ? '24' : '18';
     var outlineStyle = isMe ? 'outline:3px solid rgba(255,255,255,.7);' : '';
     var nameStyle = isMe ? ' style="color:var(--blue);"' : '';
