@@ -805,6 +805,7 @@ function srsDeckHtml(){
 function startSRS(){
   const words = dueWords();
   if(!words.length){ showToast("Bugun takrorlanadigan so'z yo'q 🎉"); return; }
+  fcMode = 'classic'; // takrorlashda rasm emas, so'zning o'zi chiqadi
   launchFC(words, '🔁 Takrorlash');
 }
 
