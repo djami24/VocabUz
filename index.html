@@ -271,6 +271,7 @@
     <button onclick="document.getElementById('premiumLockModal').style.display='none'" style="width:100%;padding:13px;background:#F0F4F8;color:#4A5568;border:none;border-radius:14px;font-size:.9rem;font-weight:600;cursor:pointer">
       Bekor qilish
     </button>
+    <div id="premDbg" style="margin-top:14px;text-align:center;font-size:.72rem;color:#9AA0AD;word-break:break-all"></div>
   </div>
 </div>
 
@@ -431,7 +432,11 @@ function requirePremium(url) {
     _isPremiumUser = isPrem;
     _premiumChecked = true;
     if (isPrem) { location.href = url; }
-    else { modal.style.display = 'flex'; }
+    else {
+      var dbg = document.getElementById('premDbg');
+      if (dbg) dbg.textContent = (user.email || '?') + ' · uid: ' + user.uid.slice(0, 6) + ' · isPremium: ' + (doc.exists ? String(doc.data().isPremium) : 'hujjat topilmadi');
+      modal.style.display = 'flex';
+    }
   }).catch(function () {
     // Tarmoq xatosi — premium bor talabaga "sotib oling" demaymiz
     alert("Internet aloqasini tekshirib, qayta urinib ko'ring.");
