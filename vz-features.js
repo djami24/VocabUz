@@ -24,30 +24,48 @@ function vzSrsUpdate(uid, srs, id, ok) {
 }
 
 // ── 2. KUNLIK MAQSAD + STREAK ──────────────────────────────
+// Saytda kunlik faollik "activityLog.2026-09-29" degan oddiy kalit bilan yoziladi — shuni obyektga aylantiramiz
+function vzLog(d) {
+  var log = {}, k; d = d || {};
+  for (k in (d.activityLog || {})) log[k] = d.activityLog[k];
+  for (k in d) if (k.indexOf('activityLog.') === 0) log[k.slice(12)] = d[k];
+  return log;
+}
 function vzStreak(log) {
   log = log || {}; var d = new Date(), n = 0;
   if (!(log[vzDay(d)] > 0)) d.setDate(d.getDate() - 1);
   while (log[vzDay(d)] > 0) { n++; d.setDate(d.getDate() - 1); }
   return n;
 }
+// SVG ikonkalar (emoji o'rniga)
+var VZ_ICO = {
+  target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+  flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+  repeat: '<polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>',
+  bell: '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>',
+  check: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'
+};
+function vzIco(n, size, color) {
+  return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="' + (color || 'currentColor') + '" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;flex-shrink:0">' + VZ_ICO[n] + '</svg>';
+}
 function vzRenderGoal(d) {
   var el = document.getElementById('vzGoal'); if (!el) return;
-  var log = d.activityLog || {}, t = Math.max(0, log[vzDay()] || 0), g = d.dailyGoal || 10, st = vzStreak(log);
+  var log = vzLog(d), t = Math.max(0, log[vzDay()] || 0), g = d.dailyGoal || 10, st = vzStreak(log);
   var pct = Math.min(100, Math.round(t / g * 100));
   var late = new Date().getHours() >= VZ_REMIND_HOUR;
-  var msg = t >= g ? "Bugungi maqsad bajarildi! Barakalla 🎉"
-    : (st > 0 && t === 0 && late) ? "🔥 " + st + " kunlik zanjiringiz uzilmasin — bugun kamida bitta so'z o'rganing!"
+  var msg = t >= g ? vzIco('check', 13, '#16A34A') + " Bugungi maqsad bajarildi! Barakalla"
+    : (st > 0 && t === 0 && late) ? vzIco('flame', 13, '#F59E0B') + " " + st + " kunlik zanjiringiz uzilmasin — bugun kamida bitta so'z o'rganing!"
     : "Maqsadga " + (g - t) + " ta so'z qoldi";
   var on = localStorage.getItem('vz_remind') === '1';
   el.innerHTML = '<div style="background:#fff;border-radius:16px;padding:14px 16px;margin:0 0 14px;box-shadow:0 1px 4px rgba(33,150,243,.12)">'
-    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><b style="font-size:.95rem">🎯 Kunlik maqsad</b>'
-    + '<span style="font-size:.8rem;font-weight:700;color:#F59E0B">🔥 ' + st + ' kun</span></div>'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><b style="font-size:.95rem;display:inline-flex;align-items:center;gap:6px">' + vzIco('target', 18, '#2196F3') + ' Kunlik maqsad</b>'
+    + '<span style="font-size:.8rem;font-weight:700;color:#F59E0B;display:inline-flex;align-items:center;gap:4px">' + vzIco('flame', 16, '#F59E0B') + st + ' kun</span></div>'
     + '<div style="height:8px;background:#E3F2FD;border-radius:99px;overflow:hidden"><div style="height:100%;width:' + pct + '%;background:#2196F3;border-radius:99px"></div></div>'
     + '<div style="font-size:.78rem;color:#5A6070;margin:7px 0 10px">' + t + '/' + g + " so'z · " + msg + '</div>'
     + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
-    + '<a href="flashcards.html?srs=1" style="flex:1;text-align:center;text-decoration:none;background:#2196F3;color:#fff;font-weight:700;font-size:.8rem;padding:9px;border-radius:12px">🔁 Takrorlash</a>'
+    + '<a href="flashcards.html?srs=1" style="flex:1;text-align:center;text-decoration:none;background:#2196F3;color:#fff;font-weight:700;font-size:.8rem;padding:9px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;gap:6px">' + vzIco('repeat', 15) + ' Takrorlash</a>'
     + '<button onclick="vzSetGoal()" style="border:none;background:#E3F2FD;color:#1565C0;font-weight:700;font-size:.8rem;padding:9px 12px;border-radius:12px;cursor:pointer">Maqsad: ' + g + '</button>'
-    + '<button onclick="vzToggleRemind()" style="border:none;background:' + (on ? '#DCFCE7' : '#F1F5F9') + ';color:#5A6070;font-weight:700;font-size:.8rem;padding:9px 12px;border-radius:12px;cursor:pointer">🔔 ' + (on ? 'Yoqilgan' : 'Eslatma') + '</button>'
+    + '<button onclick="vzToggleRemind()" style="border:none;background:' + (on ? '#DCFCE7' : '#F1F5F9') + ';color:#5A6070;font-weight:700;font-size:.8rem;padding:9px 12px;border-radius:12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px">' + vzIco('bell', 15) + (on ? 'Yoqilgan' : 'Eslatma') + '</button>'
     + '</div></div>';
 }
 function vzSetGoal() {
@@ -71,7 +89,7 @@ function vzRemind() {
     var u = firebase.auth().currentUser, k = 'vz_rn_' + vzDay();
     if (!u || new Date().getHours() < VZ_REMIND_HOUR || localStorage.getItem(k)) return;
     db.collection('users').doc(u.uid).get().then(function (s) {
-      var x = s.data() || {}, t = (x.activityLog || {})[vzDay()] || 0, st = vzStreak(x.activityLog);
+      var x = s.data() || {}, t = vzLog(x)[vzDay()] || 0, st = vzStreak(vzLog(x));
       if (t >= (x.dailyGoal || 10)) return;
       localStorage.setItem(k, '1');
       new Notification('VocabUZ', { body: st > 0 ? "🔥 " + st + " kunlik zanjiringiz uzilmasin! Bugungi maqsadni bajaring." : "Bugungi maqsadingizni bajaring 📚" });
