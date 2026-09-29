@@ -28,7 +28,7 @@ function vzSrsUpdate(uid, srs, id, ok) {
 function vzLog(d) {
   var log = {}, k; d = d || {};
   for (k in (d.activityLog || {})) log[k] = d.activityLog[k];
-  for (k in d) if (k.indexOf('activityLog.') === 0) log[k.slice(12)] = d[k];
+  for (k in d) if (k.indexOf('activityLog.') === 0) log[k.slice(12)] = (log[k.slice(12)] || 0) + d[k];
   return log;
 }
 function vzStreak(log) {
@@ -137,12 +137,22 @@ function vzTrack() {
 }
 
 // ── ISHGA TUSHIRISH ───────────────────────────────────────
+var _vzUnsub = null;
 firebase.auth().onAuthStateChanged(function (u) {
   if (!u || (typeof _registering !== 'undefined' && _registering)) return;
   vzTrack();
-  db.collection('users').doc(u.uid).get().then(function (s) {
+  if (_vzUnsub) _vzUnsub();
+  var first = true;
+  // onSnapshot: foydalanuvchi hujjati o'zgarishi bilan kartochka darhol yangilanadi
+  _vzUnsub = db.collection('users').doc(u.uid).onSnapshot(function (s) {
     var d = s.exists ? s.data() : {}; window.vzUser = d;
-    if (s.exists && !d.refCode) { d.refCode = u.uid.slice(0, 8).toLowerCase(); db.collection('users').doc(u.uid).update({ refCode: d.refCode }).catch(function () {}); }
-    vzRenderGoal(d); vzRenderRef(u, d); vzRemind();
-  }).catch(function () {});
+    if (first) {
+      first = false;
+      if (s.exists && !d.refCode) { d.refCode = u.uid.slice(0, 8).toLowerCase(); db.collection('users').doc(u.uid).update({ refCode: d.refCode }).catch(function () {}); }
+      vzRemind();
+    }
+    vzRenderGoal(d); vzRenderRef(u, d);
+  }, function () {});
 });
+// Orqaga (back) tugmasi bilan qaytganda sahifa keshdan chiqadi — qayta chizamiz
+window.addEventListener('pageshow', function (e) { if (e.persisted && window.vzUser) { vzRenderGoal(window.vzUser); } });
