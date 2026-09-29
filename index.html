@@ -60,6 +60,8 @@
   transition: background .15s;
 }
 .notif-btn:active { background: var(--sky-mid); }
+.prem-tag{display:inline-block;font-size:.6rem;font-weight:700;color:#fff;padding:2px 7px;border-radius:99px;vertical-align:middle;letter-spacing:.3px;background:linear-gradient(135deg,#1565C0,#1DA1F2);box-shadow:0 1px 4px rgba(21,101,192,.35);transition:background .2s}
+.prem-tag.on{background:linear-gradient(135deg,#FFD700,#FF8F00);box-shadow:0 1px 4px rgba(255,180,0,.4)}
 </style>
 </head>
 <body>
@@ -159,7 +161,7 @@
     </div>
 
     <div class="home-card" onclick="openIeltsCefr()">
-      <div class="home-card-title">Ielts and Cefr Vocabulary <span style="display:inline-block;font-size:.6rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#FFD700,#FF8F00);padding:2px 7px;border-radius:99px;vertical-align:middle;letter-spacing:.3px;box-shadow:0 1px 4px rgba(255,180,0,.4)">PREMIUM</span></div>
+      <div class="home-card-title">Ielts and Cefr Vocabulary <span class="prem-tag">PREMIUM</span></div>
       <div class="home-card-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M15 10s1 .5 1 2-1 2-1 2"/>
@@ -177,7 +179,7 @@
     </div>
 
     <div class="home-card" onclick="openOyinlar()">
-      <div class="home-card-title">O'yinlar <span style="display:inline-block;font-size:.6rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#FFD700,#FF8F00);padding:2px 7px;border-radius:99px;vertical-align:middle;letter-spacing:.3px;box-shadow:0 1px 4px rgba(255,180,0,.4)">PREMIUM</span></div>
+      <div class="home-card-title">O'yinlar <span class="prem-tag">PREMIUM</span></div>
       <div class="home-card-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/><line x1="12" y1="12" x2="12" y2="17"/><line x1="9.5" y1="14.5" x2="14.5" y2="14.5"/>
@@ -186,7 +188,7 @@
     </div>
 
     <div class="home-card" onclick="openGrammar()">
-      <div class="home-card-title">Advanced Grammar <span style="display:inline-block;font-size:.6rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#FFD700,#FF8F00);padding:2px 7px;border-radius:99px;vertical-align:middle;letter-spacing:.3px;box-shadow:0 1px 4px rgba(255,180,0,.4)">PREMIUM</span></div>
+      <div class="home-card-title">Advanced Grammar <span class="prem-tag">PREMIUM</span></div>
       <div class="home-card-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="7" x2="16" y2="7"/><line x1="10" y1="11" x2="16" y2="11"/><line x1="10" y1="15" x2="14" y2="15"/>
@@ -195,7 +197,7 @@
     </div>
 
     <div class="home-card" onclick="openWritingVocab()">
-      <div class="home-card-title">Writing vocabulary <span style="display:inline-block;font-size:.6rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#FFD700,#FF8F00);padding:2px 7px;border-radius:99px;vertical-align:middle;letter-spacing:.3px;box-shadow:0 1px 4px rgba(255,180,0,.4)">PREMIUM</span></div>
+      <div class="home-card-title">Writing vocabulary <span class="prem-tag">PREMIUM</span></div>
       <div class="home-card-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/>
@@ -393,6 +395,7 @@ function loadPremiumStatus(uid) {
     }
 
     // Badge rangini yangilash
+    Array.prototype.forEach.call(document.querySelectorAll('.prem-tag'), function (t) { t.classList.toggle('on', _isPremiumUser); });
     var badge = document.getElementById('premiumBadgeBtn');
     if (badge) {
       if (_isPremiumUser) {
