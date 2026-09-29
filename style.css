@@ -162,20 +162,20 @@ ul, ol { list-style: none; }
 .home-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 .home-grid-full { grid-column: 1 / -1; }
 
 .home-card {
   background: var(--white);
   border-radius: var(--radius-md);
-  padding: 18px 16px 14px;
+  padding: 13px 13px 10px;
   box-shadow: var(--shadow-sm);
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  min-height: 110px;
+  min-height: 78px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -189,7 +189,7 @@ ul, ol { list-style: none; }
 .home-card.home-grid-full .home-card-icon { top: 50%; transform: translateY(-50%); }
 
 .home-card-title {
-  font-size: .95rem;
+  font-size: .86rem;
   font-weight: 700;
   color: var(--ink);
   line-height: 1.3;
@@ -197,13 +197,13 @@ ul, ol { list-style: none; }
 }
 .home-card-icon {
   position: absolute;
-  top: 10px; right: 12px;
-  width: 38px; height: 38px;
+  top: 9px; right: 10px;
+  width: 30px; height: 30px;
   display: flex; align-items: center; justify-content: center;
   color: var(--blue);
   opacity: .85;
 }
-.home-card-icon svg { width: 30px; height: 30px; }
+.home-card-icon svg { width: 24px; height: 24px; }
 
 /* ── Banner carousel ── */
 .banner-wrap {
