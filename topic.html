@@ -86,6 +86,16 @@ body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:v
    VIEW 2: SO'ZLAR RO'YXATI
 ══════════════════════════ */
 #viewWords{display:none;padding-bottom:calc(var(--bottom-nav-h)+80px);}
+/* ── O'rganilgan so'zlar bo'limi ── */
+.learned-section{margin-top:6px;display:flex;flex-direction:column;gap:10px;}
+.learned-toggle{width:100%;display:flex;align-items:center;gap:8px;padding:13px 16px;border:none;border-radius:var(--radius);background:var(--green-light);color:var(--green-deep);font-family:inherit;font-size:.9rem;font-weight:800;cursor:pointer;-webkit-tap-highlight-color:transparent;text-align:left;}
+.learned-toggle .lt-cnt{margin-left:auto;background:var(--green);color:#fff;font-size:.74rem;padding:2px 9px;border-radius:99px;}
+.learned-toggle .lt-chev{transition:transform .2s;display:flex;}
+.learned-toggle.open .lt-chev{transform:rotate(180deg);}
+.learned-tools{display:flex;justify-content:flex-end;}
+.learned-tools button{border:none;background:var(--white);color:var(--blue);font-family:inherit;font-size:.78rem;font-weight:700;padding:7px 12px;border-radius:99px;box-shadow:var(--shadow-sm);cursor:pointer;}
+.word-uz.uz-hide{filter:blur(6px);cursor:pointer;user-select:none;}
+.all-done-note{background:var(--white);border-radius:var(--radius);padding:18px 16px;text-align:center;font-size:.88rem;font-weight:700;color:var(--green-deep);box-shadow:var(--shadow-sm);}
 .words-list{padding:0 16px;display:flex;flex-direction:column;gap:10px;}
 .word-card{background:var(--white);border-radius:var(--radius);padding:14px 16px 12px;box-shadow:var(--shadow-sm);transition:box-shadow .15s;}
 .word-card.learned-card{border-left:3px solid var(--green);}
@@ -320,6 +330,8 @@ let learnedIds   = [];
 let passedTopics = [];   // testdan o'tgan mavzular (localStorage)
 let bookmarks    = [];   // yodlash ro'yxati
 let currentUser  = null;
+let learnedOpen   = false; // 'O'rganilgan so'zlar' bo'limi ochiqmi
+let learnedHideUz = false; // o'rganilganlarda tarjima yashirinmi
 let isPremiumUser = false; // Premium foydalanuvchilar uchun barcha mavzular ochiq
 let currentTopic = null; // Ochiq mavzu
 let currentLevel = null; // Tanlangan daraja
@@ -641,6 +653,8 @@ function openTopic(topic, level){
     return;
   }
   currentTopic = topic;
+  learnedOpen = false;
+  learnedHideUz = false;
   document.getElementById('viewTopics').style.display='none';
   const vw = document.getElementById('viewWords');
   vw.style.display='block';
@@ -699,7 +713,7 @@ function renderWords(){
   document.getElementById('progressBanner').innerHTML=bannerHtml;
 
   // So'zlar
-  let html=words.map(function(w,i){
+  function cardHtml(w,num,inLearned){
     var isLearned  = learnedIds.includes(w.id);
     var isBookmark = bookmarks.includes(w.id);
     var exampleHtml = w.example ? '<div class="word-example">'+w.example+'</div>' : '';
@@ -708,10 +722,10 @@ function renderWords(){
       : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>';
     return '<div class="word-card'+(isLearned?' learned-card':'')+'" id="card-'+w.id+'">' +
       '<div class="word-header">' +
-        '<span class="word-num">'+(i+1)+'.</span>' +
+        '<span class="word-num">'+num+'.</span>' +
         '<span class="word-en">'+(w.word||'')+'</span>' +
         '<span class="word-dash"> \u2013 </span>' +
-        '<span class="word-uz">'+(w.uz||'')+'</span>' +
+        '<span class="word-uz'+(inLearned&&learnedHideUz?' uz-hide':'')+'"'+(inLearned?' onclick="this.classList.toggle(\'uz-hide\')"':'')+'>'+(w.uz||'')+'</span>' +
         '<span class="level-badge">'+(w.level||'')+'</span>' +
       '</div>' +
       exampleHtml +
@@ -724,9 +738,42 @@ function renderWords(){
         '</button>' +
       '</div>' +
     '</div>';
-  }).join('');
+  }
+
+  // Yodlanmagan so'zlar — asosiy ro'yxat; o'rganilganlar — alohida bo'limda
+  const pending = words.filter(function(w){ return !learnedIds.includes(w.id); });
+  const done    = words.filter(function(w){ return  learnedIds.includes(w.id); });
+
+  let html = pending.map(function(w,i){ return cardHtml(w,i+1,false); }).join('');
+  if(!pending.length && total){
+    html = '<div class="all-done-note">Barcha so\'zlar o\'rganildi \uD83C\uDF89</div>';
+  }
+
+  if(done.length){
+    const chev = '<span class="lt-chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>';
+    html += '<div class="learned-section">' +
+      '<button type="button" class="learned-toggle'+(learnedOpen?' open':'')+'" onclick="toggleLearnedSection()">' +
+        '\u2713 O\'rganilgan so\'zlar<span class="lt-cnt">'+done.length+'</span>'+chev +
+      '</button>';
+    if(learnedOpen){
+      html += '<div class="learned-tools"><button type="button" onclick="toggleHideUz()">' +
+        (learnedHideUz ? "Tarjimani ko'rsatish" : "Tarjimani yashirish (o'zingizni tekshiring)") + '</button></div>';
+      html += done.map(function(w,i){ return cardHtml(w,i+1,true); }).join('');
+    }
+    html += '</div>';
+  }
+
   document.getElementById('wordsList').innerHTML = html +
     '<div style="height:120px;flex-shrink:0;display:block;"></div>';
+}
+
+function toggleLearnedSection(){
+  learnedOpen = !learnedOpen;
+  renderWords();
+}
+function toggleHideUz(){
+  learnedHideUz = !learnedHideUz;
+  renderWords();
 }
 
 // ════════════════════════════════════════
