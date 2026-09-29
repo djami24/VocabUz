@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Writing Vocabulary — VocaabUZ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+/* ═══ WRITING VOCABULARY PAGE ═══ */
+body { background:#F5F3FF; }
+
+.wr-topbar {
+  display:flex; align-items:center; gap:10px;
+  padding:14px 16px 12px; background:#F5F3FF;
+  position:sticky; top:0; z-index:10;
+  border-bottom:1px solid #DDD6FE;
+}
+.wr-back {
+  width:38px; height:38px; border-radius:50%; background:#fff;
+  border:none; cursor:pointer; display:flex; align-items:center;
+  justify-content:center; box-shadow:0 1px 4px rgba(124,58,237,.15);
+  color:#5A6070; flex-shrink:0;
+}
+.wr-title { font-size:1.05rem; font-weight:700; flex:1; color:#1A1A2E; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.wr-badge {
+  font-size:.75rem; font-weight:700; padding:4px 10px; border-radius:20px;
+  background:#EDE9FE; color:#7C3AED; white-space:nowrap;
+}
+.wr-body { flex:1; overflow-y:auto; padding:0 16px 100px; }
+.wr-section-label {
+  padding:18px 0 10px; font-size:.78rem; font-weight:600;
+  color:#9AA0AD; letter-spacing:.3px; text-transform:uppercase;
+}
+
+/* Level chips */
+.wr-chips { display:flex; gap:8px; overflow-x:auto; padding:14px 0 4px; -webkit-overflow-scrolling:touch; }
+.wr-chip {
+  flex-shrink:0; padding:7px 14px; border-radius:20px; border:1.5px solid #DDD6FE;
+  background:#fff; color:#6B7280; font-size:.8rem; font-weight:700; cursor:pointer; font-family:inherit;
+}
+.wr-chip.active { background:#7C3AED; border-color:#7C3AED; color:#fff; }
+
+/* Overall progress */
+.wr-overall-box {
+  background:#fff; border-radius:14px; padding:14px 16px;
+  box-shadow:0 1px 4px rgba(124,58,237,.12); margin-top:14px;
+}
+.wr-overall-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.wr-overall-label { font-size:.85rem; font-weight:700; color:#1A1A2E; }
+.wr-overall-nums { font-size:.85rem; font-weight:800; color:#7C3AED; }
+.wr-track { height:8px; background:#EDE9FE; border-radius:8px; overflow:hidden; }
+.wr-fill { height:100%; background:linear-gradient(90deg,#8B5CF6,#7C3AED); border-radius:8px; transition:width .4s; }
+
+/* Topic cards */
+.wr-topic-card {
+  background:#fff; border-radius:16px; padding:16px;
+  box-shadow:0 1px 4px rgba(124,58,237,.12);
+  display:flex; align-items:center; gap:14px;
+  cursor:pointer; margin-bottom:10px;
+  border:2px solid transparent;
+  transition:border-color .15s, transform .12s;
+  -webkit-tap-highlight-color:transparent;
+  position:relative; overflow:hidden;
+}
+.wr-topic-card:active { transform:scale(.98); }
+.wr-topic-card.completed { border-color:#8B5CF6; }
+.wr-topic-icon {
+  width:48px; height:48px; border-radius:14px; background:#EDE9FE;
+  display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0;
+}
+.wr-topic-info { flex:1; min-width:0; }
+.wr-topic-name { font-size:.95rem; font-weight:800; color:#1A1A2E; }
+.wr-topic-sub { font-size:.75rem; color:#9AA0AD; margin-top:2px; }
+.wr-topic-right { display:flex; flex-direction:column; align-items:flex-end; gap:5px; flex-shrink:0; }
+.wr-lvl-pill { font-size:.68rem; font-weight:800; padding:2px 8px; border-radius:6px; background:#EDE9FE; color:#7C3AED; }
+.wr-topic-count { font-size:.72rem; font-weight:700; color:#7C3AED; }
+.wr-topic-bar { position:absolute; bottom:0; left:0; height:3px; background:#8B5CF6; transition:width .4s; }
+
+/* Tabs inside a topic */
+.wr-tabs { display:flex; gap:8px; padding:14px 0 6px; }
+.wr-tab {
+  flex:1; padding:10px 8px; border-radius:12px; border:1.5px solid #DDD6FE; background:#fff;
+  color:#6B7280; font-size:.83rem; font-weight:700; cursor:pointer; font-family:inherit;
+}
+.wr-tab.active { background:#EDE9FE; border-color:#8B5CF6; color:#7C3AED; }
+
+/* Word cards */
+.wr-progress-box { background:#fff; border-radius:12px; padding:13px 15px; box-shadow:0 1px 4px rgba(124,58,237,.1); margin:8px 0 12px; }
+.wr-progress-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:7px; }
+.wr-progress-label { font-size:.82rem; font-weight:700; color:#1A1A2E; }
+.wr-progress-pct { font-size:.82rem; font-weight:800; color:#7C3AED; }
+.wr-done-box { background:#EDE9FE; border-radius:12px; padding:13px 15px; display:flex; align-items:center; gap:10px; margin:8px 0 12px; }
+
+.wr-word-card { background:#fff; border-radius:14px; padding:13px 15px 11px; box-shadow:0 1px 4px rgba(124,58,237,.1); margin-bottom:10px; }
+.wr-word-card.learned { border-left:3px solid #8B5CF6; }
+.wr-word-head { display:flex; align-items:baseline; gap:6px; margin-bottom:4px; flex-wrap:wrap; }
+.wr-word-num { font-size:.8rem; font-weight:700; color:#7C3AED; flex-shrink:0; min-width:20px; }
+.wr-word-en { font-size:.95rem; font-weight:700; color:#1A1A2E; }
+.wr-word-dash { color:#8A9BB0; }
+.wr-word-uz { font-size:.88rem; font-weight:500; color:#5A6070; flex:1; }
+.wr-word-example { font-size:.82rem; color:#5A6070; font-style:italic; line-height:1.5; padding:5px 0 8px; border-bottom:1px solid #EDE9FE; margin-bottom:8px; }
+.wr-word-example::before { content:'• '; }
+.wr-word-actions { display:flex; gap:8px; }
+.wr-btn-learned {
+  flex:1; height:36px; border-radius:10px; border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:5px;
+  font-size:.8rem; font-weight:700; font-family:inherit;
+  background:#EDE9FE; color:#7C3AED; transition:background .15s, color .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.wr-btn-learned.done { background:#8B5CF6; color:#fff; }
+.wr-btn-icon {
+  width:36px; height:36px; border-radius:10px; border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  background:#F5F3FF; color:#9AA0AD; flex-shrink:0;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* Material (text / grammar) list */
+.wr-doc-card {
+  background:#fff; border-radius:14px; padding:14px 15px; margin-bottom:10px;
+  box-shadow:0 1px 4px rgba(124,58,237,.1);
+  display:flex; align-items:center; gap:12px; cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.wr-doc-card:active { transform:scale(.98); }
+.wr-doc-icon { width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0; background:#EDE9FE; }
+.wr-doc-icon.grammar { background:#FEF3C7; }
+.wr-doc-title { flex:1; min-width:0; font-size:.92rem; font-weight:700; color:#1A1A2E; }
+.wr-doc-kind { font-size:.7rem; font-weight:700; color:#9AA0AD; margin-top:2px; }
+
+/* Article (formatted, Word-like) */
+.wr-kind-tag { display:inline-block; margin-top:16px; font-size:.72rem; font-weight:800; padding:3px 10px; border-radius:20px; background:#EDE9FE; color:#7C3AED; }
+.wr-kind-tag.grammar { background:#FEF3C7; color:#B45309; }
+.wr-article-title { font-size:1.35rem; font-weight:800; color:#1A1A2E; margin:8px 0 14px; line-height:1.3; }
+.wr-article {
+  background:#fff; border-radius:16px; padding:18px 18px 22px;
+  box-shadow:0 1px 4px rgba(124,58,237,.1);
+  font-size:.95rem; line-height:1.7; color:#2D3748; word-wrap:break-word; overflow-wrap:anywhere;
+}
+.wr-article h1, .wr-article h2 { font-size:1.2rem; font-weight:800; color:#1A1A2E; margin:20px 0 8px; }
+.wr-article h3 { font-size:1.05rem; font-weight:800; color:#1A1A2E; margin:16px 0 6px; }
+.wr-article h4 { font-size:.95rem; font-weight:800; color:#4C1D95; margin:14px 0 6px; }
+.wr-article > :first-child { margin-top:0; }
+.wr-article p { margin:0 0 10px; }
+.wr-article ul, .wr-article ol { margin:0 0 12px; padding-left:22px; }
+.wr-article li { margin-bottom:4px; }
+.wr-article blockquote { margin:12px 0; padding:8px 14px; border-left:4px solid #8B5CF6; background:#F5F3FF; border-radius:0 8px 8px 0; color:#4C1D95; }
+.wr-article hr { border:none; border-top:1.5px solid #EDE9FE; margin:16px 0; }
+.wr-article a { color:#7C3AED; text-decoration:underline; }
+.wr-article mark { background:#FEF08A; padding:0 2px; border-radius:3px; }
+.wr-article .wr-table-wrap { overflow-x:auto; margin:10px 0 14px; -webkit-overflow-scrolling:touch; }
+.wr-article table { border-collapse:collapse; width:100%; font-size:.88rem; }
+.wr-article th, .wr-article td { border:1px solid #DDD6FE; padding:8px 10px; text-align:left; vertical-align:top; }
+.wr-article th { background:#EDE9FE; font-weight:800; color:#4C1D95; }
+.wr-article td p, .wr-article th p { margin:0; }
+
+.wr-spinner-wrap { display:flex; align-items:center; justify-content:center; padding:60px 0; }
+.wr-spinner { width:32px; height:32px; border:3px solid #DDD6FE; border-top-color:#8B5CF6; border-radius:50%; animation:wrSpin .8s linear infinite; }
+@keyframes wrSpin { to { transform:rotate(360deg) } }
+.wr-toast {
+  position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(20px);
+  background:#1A1A2E; color:#fff; padding:9px 18px; border-radius:20px;
+  font-size:.8rem; font-weight:600; pointer-events:none; opacity:0;
+  transition:opacity .25s, transform .25s; white-space:nowrap; z-index:600;
+}
+.wr-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+.wr-empty { text-align:center; padding:48px 16px; color:#9AA0AD; font-size:.88rem; }
+</style>
+</head>
+<body style="background:#F5F3FF">
+
+<!-- TOP BAR -->
+<div class="wr-topbar">
+  <button class="wr-back" id="wrBackBtn" onclick="wrGoBack()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <span class="wr-title" id="wrTitle">Writing Vocabulary</span>
+  <span class="wr-badge" id="wrBadge"></span>
+</div>
+
+<!-- BODY -->
+<div class="wr-body" id="wrBody">
+  <div class="wr-spinner-wrap"><div class="wr-spinner"></div></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <a class="bottom-nav-item" href="index.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    Asosiy
+  </a>
+  <a class="bottom-nav-item" href="mywords.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    So'zlarim
+  </a>
+  <a class="bottom-nav-item" href="search.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    Qidirish
+  </a>
+  <a class="bottom-nav-item" href="roadmap.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+    Yo'l xaritasi
+  </a>
+  <a class="bottom-nav-item" href="profile.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Profil
+  </a>
+</nav>
+
+<div class="wr-toast" id="wrToast"></div>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="storage-utils.js"></script>
+<script src="auth-guard.js"></script>
+<script src="rich-utils.js"></script>
+<script>
+// ═══ STATE ═══
+var currentUser = null;
+var WR_WORDS    = [];      // category == 'writing' so'zlar
+var WR_DOCS     = [];      // writingDocs: matn va grammatika
+var WR_GROUPS   = [];      // daraja + mavzu bo'yicha guruhlar
+var wrLearned   = [];      // o'rganilgan so'zlar (_docId)
+var wrView      = 'topics';   // 'topics' | 'topic' | 'doc'
+var wrLevelFilter = 'all';
+var wrCurIdx    = -1;      // WR_GROUPS ichidagi indeks
+var wrTab       = 'words'; // 'words' | 'docs'
+var wrCurDoc    = null;
+
+var LEVELS = ['A1','A2','B1','B2','C1','C2'];
+var TOPIC_EMOJIS = ['✍️','📝','📖','🖋️','📚','🧾','💡','🔎'];
+
+// ═══ PERSIST ═══
+function wrLoadLocal() {
+  try { wrLearned = JSON.parse(lsGet('wr_learned', '[]')); } catch (e) { wrLearned = []; }
+}
+function wrSaveLocal() { lsSet('wr_learned', JSON.stringify(wrLearned)); }
+function wrSaveFirestore() {
+  if (!currentUser) return;
+  db.collection('users').doc(currentUser.uid)
+    .set({ wrLearned: wrLearned }, { merge: true })
+    .catch(function (err) { console.warn('wrSaveFirestore error:', err); });
+}
+
+// ═══ AUTH + LOAD ═══
+firebase.auth().onAuthStateChanged(function (user) {
+  if (!user) { location.href = 'login.html'; return; }
+  currentUser = user;
+  _currentUID = user.uid;
+  wrLoadLocal();
+
+  Promise.all([
+    db.collection('users').doc(user.uid).get(),
+    db.collection('words').where('category', '==', 'writing').get(),
+    // writingDocs qoidalari hali e'lon qilinmagan bo'lsa ham so'zlar ko'rinaversin
+    db.collection('writingDocs').get().catch(function () { return { docs: [] }; })
+  ]).then(function (res) {
+    var userDoc = res[0];
+    if (userDoc.exists && userDoc.data().isPremium) {
+      wrLoadContent(userDoc, res[1], res[2], user);
+      return;
+    }
+    // Bir marta serverdan qayta tekshiramiz
+    db.collection('users').doc(user.uid).get({ source: 'server' }).then(function (fresh) {
+      if (fresh.exists && fresh.data().isPremium) {
+        wrLoadContent(fresh, res[1], res[2], user);
+      } else if (fresh.metadata && fresh.metadata.fromCache) {
+        document.getElementById('wrBody').innerHTML =
+          '<div class="wr-empty">Internet aloqasini tekshirib, sahifani qayta yuklang.</div>';
+      } else {
+        wrShowLock();
+      }
+    }).catch(function () {
+      document.getElementById('wrBody').innerHTML =
+        '<div class="wr-empty">Xatolik yuz berdi. Qayta urinib ko\'ring.</div>';
+    });
+  }).catch(function (err) {
+    document.getElementById('wrBody').innerHTML =
+      '<div class="wr-empty">Xatolik yuz berdi. Qayta urinib ko\'ring.</div>';
+    console.error(err);
+  });
+});
+
+function wrShowLock() {
+  document.getElementById('wrBackBtn').style.display = 'none';
+  document.getElementById('wrBody').innerHTML =
+    '<div style="text-align:center;padding:60px 20px">' +
+    '<div style="font-size:3rem;margin-bottom:16px">&#128274;</div>' +
+    '<div style="font-size:1.1rem;font-weight:800;color:#1A2333;margin-bottom:8px">Premium kerak</div>' +
+    '<div style="font-size:.88rem;color:#4A5568;margin-bottom:24px">Avval Premium sotib oling</div>' +
+    '<button onclick="location.href=\'premium.html\'" style="padding:14px 32px;background:linear-gradient(135deg,#FFB300,#FF8F00);color:#fff;border:none;border-radius:14px;font-size:.95rem;font-weight:800;cursor:pointer">&#128081; VocabUz Premium</button>' +
+    '</div>';
+}
+
+function wrLoadContent(userDoc, wordsSnap, docsSnap, user) {
+  if (userDoc.exists) {
+    (userDoc.data().wrLearned || []).forEach(function (id) {
+      if (wrLearned.indexOf(id) === -1) wrLearned.push(id);
+    });
+    wrSaveLocal();
+  }
+
+  WR_WORDS = wordsSnap.docs.map(function (d) {
+    var data = d.data();
+    return Object.assign({ _docId: d.id, uz: data.uz || data.translation || '' }, data);
+  });
+  WR_WORDS.sort(function (a, b) { return (a.order || 0) - (b.order || 0); });
+
+  WR_DOCS = docsSnap.docs.map(function (d) {
+    return Object.assign({ _id: d.id }, d.data());
+  });
+  WR_DOCS.sort(function (a, b) { return (a.order || 0) - (b.order || 0); });
+
+  wrBuildGroups();
+  renderTopics();
+
+  // Premium real-time kuzatuvchi
+  db.collection('users').doc(user.uid).onSnapshot(function (doc) {
+    if (!doc.exists || doc.data().isPremium) return;
+    document.getElementById('wrBackBtn').style.display = 'none';
+    document.getElementById('wrBody').innerHTML =
+      '<div style="text-align:center;padding:60px 20px">' +
+      '<div style="font-size:2.8rem;margin-bottom:14px">😔</div>' +
+      '<div style="font-size:1.05rem;font-weight:800;color:#1A2333;margin-bottom:8px">Premium bekor qilindi</div>' +
+      '<div style="font-size:.85rem;color:#8A9BB0;margin-bottom:24px;line-height:1.5">Admin tomonidan Premium obunangiz o\'chirildi.</div>' +
+      '<button onclick="location.href=\'index.html\'" style="padding:14px 32px;background:linear-gradient(135deg,#1565C0,#1DA1F2);color:#fff;border:none;border-radius:14px;font-size:.95rem;font-weight:800;cursor:pointer">Asosiy sahifaga qaytish</button>' +
+      '</div>';
+  }, function () {});
+}
+
+// ═══ GROUPS: daraja + mavzu ═══
+function wrBuildGroups() {
+  var map = {}, list = [];
+  function grp(level, type) {
+    level = level || '';
+    type  = type || 'Umumiy';
+    var key = level + '||' + type;
+    if (!map[key]) {
+      map[key] = { level: level, type: type, words: [], docs: [], order: 1e9 };
+      list.push(map[key]);
+    }
+    return map[key];
+  }
+  WR_WORDS.forEach(function (w) {
+    var g = grp(w.level, w.type);
+    g.words.push(w);
+    g.order = Math.min(g.order, w.order || 0);
+  });
+  WR_DOCS.forEach(function (d) {
+    var g = grp(d.level, d.type);
+    g.docs.push(d);
+    g.order = Math.min(g.order, d.order || 0);
+  });
+  function lv(x) { var i = LEVELS.indexOf(x.level); return i === -1 ? 99 : i; }
+  list.sort(function (a, b) {
+    return (lv(a) - lv(b)) || (a.order - b.order) || a.type.localeCompare(b.type);
+  });
+  list.forEach(function (g, i) { g.idx = i; });
+  WR_GROUPS = list;
+}
+
+function wrCountLearned(words) {
+  return words.filter(function (w) { return wrLearned.indexOf(w._docId) !== -1; }).length;
+}
+
+// ═══ NAVIGATION ═══
+function wrGoBack() {
+  if (wrView === 'doc') {
+    wrView = 'topic';
+    wrTab = 'docs';
+    renderTopic();
+  } else if (wrView === 'topic') {
+    renderTopics();
+  } else {
+    history.back();
+  }
+}
+
+// ═══ VIEW 1: MAVZULAR ═══
+function renderTopics() {
+  wrView = 'topics';
+  wrCurIdx = -1;
+  var body = document.getElementById('wrBody');
+  var totalWords = WR_WORDS.length;
+  var learned = wrCountLearned(WR_WORDS);
+
+  document.getElementById('wrTitle').textContent = 'Writing Vocabulary';
+  document.getElementById('wrBadge').textContent = learned + " o'rganilgan";
+  document.getElementById('wrBackBtn').style.display = 'none';
+
+  if (!WR_GROUPS.length) {
+    body.innerHTML = '<div class="wr-empty">Hali Writing materiallari qo\'shilmagan</div>';
+    return;
+  }
+
+  // Daraja chiplari
+  var present = {};
+  WR_GROUPS.forEach(function (g) { present[g.level || '_'] = true; });
+  var chips = '<button class="wr-chip' + (wrLevelFilter === 'all' ? ' active' : '') + '" onclick="wrSetLevel(\'all\')">Hammasi</button>';
+  LEVELS.forEach(function (l) {
+    if (present[l]) chips += '<button class="wr-chip' + (wrLevelFilter === l ? ' active' : '') + '" onclick="wrSetLevel(\'' + l + '\')">' + l + '</button>';
+  });
+  if (present['_']) chips += '<button class="wr-chip' + (wrLevelFilter === '_' ? ' active' : '') + '" onclick="wrSetLevel(\'_\')">Umumiy</button>';
+
+  var pct = totalWords > 0 ? Math.round(learned / totalWords * 100) : 0;
+  var overall = totalWords > 0
+    ? '<div class="wr-overall-box"><div class="wr-overall-row"><span class="wr-overall-label">Umumiy progress</span>' +
+      '<span class="wr-overall-nums">' + learned + ' / ' + totalWords + '</span></div>' +
+      '<div class="wr-track"><div class="wr-fill" style="width:' + pct + '%"></div></div></div>'
+    : '';
+
+  var cards = '<div class="wr-section-label">Mavzu tanlang</div>';
+  var shown = 0;
+  WR_GROUPS.forEach(function (g) {
+    if (wrLevelFilter !== 'all' && (g.level || '_') !== wrLevelFilter) return;
+    shown++;
+    var tot = g.words.length;
+    var lrn = wrCountLearned(g.words);
+    var p = tot > 0 ? Math.round(lrn / tot * 100) : 0;
+    var done = tot > 0 && lrn === tot;
+    var sub = [];
+    if (tot) sub.push(tot + " ta so'z");
+    if (g.docs.length) sub.push(g.docs.length + ' ta material');
+    cards +=
+      '<div class="wr-topic-card' + (done ? ' completed' : '') + '" onclick="wrOpenTopic(' + g.idx + ')">' +
+        '<div class="wr-topic-icon">' + TOPIC_EMOJIS[g.idx % TOPIC_EMOJIS.length] + '</div>' +
+        '<div class="wr-topic-info">' +
+          '<div class="wr-topic-name">' + esc(g.type) + '</div>' +
+          '<div class="wr-topic-sub">' + sub.join(' · ') + '</div>' +
+        '</div>' +
+        '<div class="wr-topic-right">' +
+          (g.level ? '<span class="wr-lvl-pill">' + esc(g.level) + '</span>' : '') +
+          (tot ? '<span class="wr-topic-count">' + (done ? '✓' : lrn + '/' + tot) + '</span>' : '') +
+        '</div>' +
+        (tot ? '<div class="wr-topic-bar" style="width:' + p + '%"></div>' : '') +
+      '</div>';
+  });
+  if (!shown) cards += '<div class="wr-empty">Bu darajada hali mavzu yo\'q</div>';
+
+  body.innerHTML = '<div class="wr-chips">' + chips + '</div>' + overall + cards;
+  body.scrollTop = 0;
+}
+
+function wrSetLevel(l) { wrLevelFilter = l; renderTopics(); }
+
+// ═══ VIEW 2: MAVZU ICHI ═══
+function wrOpenTopic(idx) {
+  wrCurIdx = idx;
+  var g = WR_GROUPS[idx];
+  wrTab = g.words.length ? 'words' : 'docs';
+  renderTopic();
+}
+
+function wrSetTab(t) { wrTab = t; renderTopic(); }
+
+function renderTopic() {
+  wrView = 'topic';
+  var g = WR_GROUPS[wrCurIdx];
+  if (!g) { renderTopics(); return; }
+  var body = document.getElementById('wrBody');
+  var total = g.words.length;
+  var learned = wrCountLearned(g.words);
+
+  document.getElementById('wrTitle').textContent = g.type;
+  document.getElementById('wrBadge').textContent = total ? (learned + '/' + total) : (g.level || '');
+  document.getElementById('wrBackBtn').style.display = '';
+
+  var tabs = '';
+  if (g.words.length && g.docs.length) {
+    tabs =
+      '<div class="wr-tabs">' +
+        '<button class="wr-tab' + (wrTab === 'words' ? ' active' : '') + '" onclick="wrSetTab(\'words\')">So\'zlar (' + g.words.length + ')</button>' +
+        '<button class="wr-tab' + (wrTab === 'docs' ? ' active' : '') + '" onclick="wrSetTab(\'docs\')">Matn va grammatika (' + g.docs.length + ')</button>' +
+      '</div>';
+  } else if (wrTab === 'words' && !g.words.length) { wrTab = 'docs'; }
+  else if (wrTab === 'docs' && !g.docs.length) { wrTab = 'words'; }
+
+  body.innerHTML = tabs + (wrTab === 'words' ? wrWordsHtml(g) : wrDocsHtml(g)) + '<div style="height:30px"></div>';
+  body.scrollTop = 0;
+}
+
+function wrWordsHtml(g) {
+  var words = g.words;
+  var total = words.length;
+  var learned = wrCountLearned(words);
+  var pct = total > 0 ? Math.round(learned / total * 100) : 0;
+  var banner;
+  if (total > 0 && learned === total) {
+    banner =
+      '<div class="wr-done-box">' +
+        '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="20 6 9 17 4 12"/></svg>' +
+        '<div><div style="font-size:.88rem;font-weight:800;color:#7C3AED">Barcha so\'zlar o\'rganildi! 🎉</div>' +
+        '<div style="font-size:.75rem;color:#7C3AED;opacity:.8">Ajoyib natija!</div></div>' +
+      '</div>';
+  } else {
+    banner =
+      '<div class="wr-progress-box"><div class="wr-progress-row">' +
+        '<span class="wr-progress-label">O\'rganish jarayoni</span><span class="wr-progress-pct">' + pct + '%</span></div>' +
+        '<div class="wr-track"><div class="wr-fill" style="width:' + pct + '%"></div></div></div>';
+  }
+
+  var html = words.map(function (w, i) {
+    var isL = wrLearned.indexOf(w._docId) !== -1;
+    var did = esc(w._docId);
+    return (
+      '<div class="wr-word-card' + (isL ? ' learned' : '') + '">' +
+        '<div class="wr-word-head">' +
+          '<span class="wr-word-num">' + (i + 1) + '.</span>' +
+          '<span class="wr-word-en">' + esc(w.word) + '</span>' +
+          '<span class="wr-word-dash"> – </span>' +
+          '<span class="wr-word-uz">' + esc(w.uz) + '</span>' +
+        '</div>' +
+        (w.example ? '<div class="wr-word-example">' + esc(w.example) + '</div>' : '') +
+        '<div class="wr-word-actions">' +
+          '<button class="wr-btn-learned' + (isL ? ' done' : '') + '" onclick="wrMarkLearned(\'' + did + '\')">' +
+            (isL
+              ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> O\'rgandim'
+              : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> O\'rgandim') +
+          '</button>' +
+          '<button class="wr-btn-icon" onclick="wrSpeak(' + i + ')" title="Talaffuz">' +
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>' +
+          '</button>' +
+        '</div>' +
+      '</div>'
+    );
+  }).join('');
+  return banner + html;
+}
+
+function wrDocsHtml(g) {
+  return '<div class="wr-section-label">Matn va grammatika</div>' + g.docs.map(function (d) {
+    var gram = d.kind === 'grammar';
+    return (
+      '<div class="wr-doc-card" onclick="wrOpenDoc(\'' + esc(d._id) + '\')">' +
+        '<div class="wr-doc-icon' + (gram ? ' grammar' : '') + '">' + (gram ? '📐' : '📝') + '</div>' +
+        '<div style="flex:1;min-width:0"><div class="wr-doc-title">' + esc(d.title || '—') + '</div>' +
+        '<div class="wr-doc-kind">' + (gram ? 'Grammatika' : 'Matn') + '</div></div>' +
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9AA0AD" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>' +
+      '</div>'
+    );
+  }).join('');
+}
+
+// ═══ VIEW 3: MATERIAL (Word'dagidek formatlangan) ═══
+function wrOpenDoc(id) {
+  var d = WR_DOCS.filter(function (x) { return x._id === id; })[0];
+  if (!d) return;
+  wrCurDoc = d;
+  wrView = 'doc';
+  var gram = d.kind === 'grammar';
+  document.getElementById('wrTitle').textContent = WR_GROUPS[wrCurIdx] ? WR_GROUPS[wrCurIdx].type : 'Writing';
+  document.getElementById('wrBadge').textContent = gram ? 'Grammatika' : 'Matn';
+
+  // Xavfsiz tozalash + jadvallarni gorizontal scroll konteyneriga o'rash
+  var wrap = document.createElement('div');
+  wrap.innerHTML = sanitizeRichHtml(d.html || '');
+  Array.prototype.forEach.call(wrap.querySelectorAll('table'), function (t) {
+    var box = document.createElement('div');
+    box.className = 'wr-table-wrap';
+    t.parentNode.insertBefore(box, t);
+    box.appendChild(t);
+  });
+
+  var body = document.getElementById('wrBody');
+  body.innerHTML =
+    '<span class="wr-kind-tag' + (gram ? ' grammar' : '') + '">' + (gram ? '📐 Grammatika' : '📝 Matn') + '</span>' +
+    '<div class="wr-article-title">' + esc(d.title || '') + '</div>' +
+    '<div class="wr-article">' + wrap.innerHTML + '</div>' +
+    '<div style="height:30px"></div>';
+  body.scrollTop = 0;
+}
+
+// ═══ ACTIONS ═══
+function wrMarkLearned(docId) {
+  if (!currentUser) return;
+  var i = wrLearned.indexOf(docId);
+  if (i === -1) { wrLearned.push(docId); wrShowToast("O'rgandim! So'z saqlandi!"); }
+  else { wrLearned.splice(i, 1); wrShowToast("O'rganilganlardan olib tashlandi"); }
+  wrSaveLocal();
+  wrSaveFirestore();
+  var st = document.getElementById('wrBody').scrollTop;
+  renderTopic();
+  document.getElementById('wrBody').scrollTop = st;
+}
+
+function wrSpeak(i) {
+  var g = WR_GROUPS[wrCurIdx];
+  if (!g || !g.words[i] || !('speechSynthesis' in window)) return;
+  var utt = new SpeechSynthesisUtterance(g.words[i].word || '');
+  utt.lang = 'en-US';
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utt);
+}
+
+var wrToastTimer;
+function wrShowToast(msg) {
+  var el = document.getElementById('wrToast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(wrToastTimer);
+  wrToastTimer = setTimeout(function () { el.classList.remove('show'); }, 2000);
+}
+
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+</script>
+</body>
+</html>
