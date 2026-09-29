@@ -361,6 +361,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // ═══ PREMIUM & NOTIFICATIONS ═══
 var _isPremiumUser = false;
+var _premiumChecked = false; // Firestore'dan premium holati kamida bir marta olingan
 
 var _premiumListener = null;
 
@@ -375,6 +376,7 @@ function loadPremiumStatus(uid) {
     setAvatarImg('homeAvatar', 44, data.avatar || 'boy');
     var wasPremium = _isPremiumUser;
     _isPremiumUser = !!(data.isPremium);
+    _premiumChecked = true;
 
     // Badge rangini yangilash
     var badge = document.getElementById('premiumBadgeBtn');
@@ -401,32 +403,31 @@ function loadPremiumStatus(uid) {
   }, function() {});
 }
 
-function openIeltsCefr() {
-  if (_isPremiumUser) {
-    location.href = 'speaking.html';
-  } else {
-    var modal = document.getElementById('premiumLockModal');
-    modal.style.display = 'flex';
-  }
+// Premium kerak bo'lgan sahifalarni ochish.
+// Muhim: premium holati Firestore'dan kelguncha (_premiumChecked=false) "Premium kerak"
+// oynasini ko'rsatmaymiz — avval serverdan tekshiramiz.
+function requirePremium(url) {
+  var modal = document.getElementById('premiumLockModal');
+  if (_isPremiumUser) { location.href = url; return; }
+  if (_premiumChecked) { modal.style.display = 'flex'; return; }
+
+  var user = _currentUser || (firebase.auth().currentUser);
+  if (!user) return; // kirish tekshirilmoqda — auth tugagach foydalanuvchi qayta bosadi
+  db.collection('users').doc(user.uid).get().then(function (doc) {
+    var isPrem = !!(doc.exists && doc.data().isPremium);
+    _isPremiumUser = isPrem;
+    _premiumChecked = true;
+    if (isPrem) { location.href = url; }
+    else { modal.style.display = 'flex'; }
+  }).catch(function () {
+    // Tarmoq xatosi — premium bor talabaga "sotib oling" demaymiz
+    alert("Internet aloqasini tekshirib, qayta urinib ko'ring.");
+  });
 }
 
-function openWritingVocab() {
-  if (_isPremiumUser) {
-    location.href = 'writing.html';
-  } else {
-    var modal = document.getElementById('premiumLockModal');
-    modal.style.display = 'flex';
-  }
-}
-
-function openOyinlar() {
-  if (_isPremiumUser) {
-    location.href = 'oyinlar.html';
-  } else {
-    var modal = document.getElementById('premiumLockModal');
-    modal.style.display = 'flex';
-  }
-}
+function openIeltsCefr()    { requirePremium('speaking.html'); }
+function openWritingVocab() { requirePremium('writing.html'); }
+function openOyinlar()      { requirePremium('oyinlar.html'); }
 
 // ── NOTIFICATIONS ──
 var _notifs = [];
