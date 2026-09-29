@@ -848,9 +848,13 @@ function toggleBookmark(id){
 // ════════════════════════════════════════
 //  VIEW 3: TEST
 // ════════════════════════════════════════
-// Test qoidasi: 10 savol, har savol 4 variant (bittasi to'g'ri),
-// 2 ta xato qilsa → failed (qayta boshlash), 0-1 xato → passed
-const MAX_ERRORS = 1;  // shu yoki kamroq xato = o'tdi
+// Test qoidasi: mavzudagi barcha so'zlar, har savol 4 variant (bittasi to'g'ri),
+// Xatolar soni ruxsat etilganidan oshsa → failed, aks holda foiz bo'yicha passed
+const PASS_PERCENT = 90;  // testdan o'tish uchun kerakli to'g'ri javoblar foizi
+function maxAllowedErrors(total){
+  // Ruxsat etilgan xatolar soni (kamida 1 ta)
+  return Math.max(1, Math.floor(total*(100-PASS_PERCENT)/100));
+}
 
 let testWords   = [];
 let testIdx     = 0;
@@ -861,8 +865,8 @@ let testAnswered= false;
 function startTest(){
   const topic = currentTopic;
   const words  = topicWords(topic).slice();
-  // 10 ta savol olish (yoki mavzuda kamroq bo'lsa hammasi)
-  const shuffled = words.sort(function(){return Math.random()-.5;}).slice(0,Math.min(10,words.length));
+  // Mavzudagi BARCHA so'zlar aralashtirib beriladi
+  const shuffled = words.sort(function(){return Math.random()-.5;});
   testWords   = shuffled;
   testIdx     = 0;
   testErrors  = 0;
@@ -896,11 +900,7 @@ function renderTestQuestion(){
   const wrong3  = pool.sort(function(){return Math.random()-.5;}).slice(0,3);
   const options = [w,...wrong3].sort(function(){return Math.random()-.5;});
 
-  // Xato indikatorlari
-  var errDots='';
-  for(var i=0;i<2;i++){
-    errDots+='<div class="test-error-dot'+(i<testErrors?'':' empty')+'"></div>';
-  }
+  var errInfo=errorInfoHtml();
 
   var optsHtml=options.map(function(opt){
     return '<button class="test-opt" onclick="checkAnswer('+opt.id+','+w.id+',this)">'+(opt.uz||'')+'</button>';
@@ -912,13 +912,17 @@ function renderTestQuestion(){
       '<div class="test-q-word">'+(w.word||'')+'</div>' +
       '<div class="test-q-topic">'+(w.topic||'')+' \u00b7 '+(w.level||'')+'</div>' +
     '</div>' +
-    '<div class="test-error-info">Xato: '+errDots+
-      '<span style="margin-left:4px;color:var(--ink-soft)">(2 ta xatoda test o\'tkazib yuboriladi)</span>' +
-    '</div>' +
+    '<div class="test-error-info">'+errInfo+'</div>' +
     '<div class="test-options">'+optsHtml+'</div>' +
     '<button class="test-next-btn" id="testNextBtn" onclick="nextQuestion()">' +
       (testIdx+1<testWords.length ? 'Keyingi savol' : "Natijani ko'rish") +
     '</button>';
+}
+
+function errorInfoHtml(){
+  var allowed=maxAllowedErrors(testWords.length);
+  return 'Xato: <b style="color:'+(testErrors>0?'var(--red)':'var(--ink)')+'">'+testErrors+'</b> / '+allowed+
+    '<span style="margin-left:6px;color:var(--ink-soft)">(o\'tish uchun kamida '+PASS_PERCENT+'% to\'g\'ri)</span>';
 }
 
 function checkAnswer(selectedId, correctId, btn){
@@ -943,21 +947,15 @@ function checkAnswer(selectedId, correctId, btn){
     });
   }
 
-  // 2 ta xato bo'lsa — darhol fail
-  if(testErrors>=2){
+  // Ruxsat etilgan xatolardan oshsa — darhol fail
+  if(testErrors>maxAllowedErrors(testWords.length)){
     setTimeout(function(){renderTestFail();},800);
     return;
   }
 
   // Xato indikatorini yangilash
-  const errDots=document.querySelector('.test-error-info');
-  if(errDots){
-    var dots='';
-    for(var i=0;i<2;i++){
-      dots+='<div class="test-error-dot'+(i<testErrors?'':' empty')+'"></div>';
-    }
-    errDots.innerHTML='Xato: '+dots+'<span style="margin-left:4px;color:var(--ink-soft)">(2 ta xatoda test o\'tkazib yuboriladi)</span>';
-  }
+  const errBox=document.querySelector('.test-error-info');
+  if(errBox){ errBox.innerHTML=errorInfoHtml(); }
 
   document.getElementById('testNextBtn').style.display='block';
 }
@@ -975,7 +973,7 @@ function renderTestFail(){
   document.getElementById('testBody').innerHTML=
     '<div class="test-result">' +
       '<div class="test-result-title">Test o\'tmadi</div>' +
-      '<div class="test-result-sub">2 ta xato qildingiz. Yana bir bor so\'zlarni yaxshi o\'rganib, qayta urining!</div>' +
+      '<div class="test-result-sub">Ruxsat etilgan xatolar soni (' + maxAllowedErrors(testWords.length) + ' ta) dan oshib ketdi. Testdan o\'tish uchun kamida ' + PASS_PERCENT + '% to\'g\'ri javob kerak. So\'zlarni yana bir bor takrorlab, qayta urining!</div>' +
       '<div class="test-result-stats">' +
         '<div class="trs"><div class="trs-val green">'+testCorrect+'</div><div class="trs-lbl">To\'g\'ri</div></div>' +
         '<div class="trs"><div class="trs-val red">'+testErrors+'</div><div class="trs-lbl">Xato</div></div>' +
@@ -990,7 +988,7 @@ function renderTestFail(){
 
 function renderTestResult(){
   var total  = testWords.length;
-  var passed = testErrors<=MAX_ERRORS;
+  var passed = testErrors<=maxAllowedErrors(total);
 
   if(passed && !isTopicPassed(currentTopic)){
     passedTopics.push(currentTopic);
