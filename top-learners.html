@@ -284,14 +284,6 @@ html,body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;co
 
 <div class="page-content">
 
-  <!-- Hero -->
-  <div class="hero-banner">
-    <div class="hero-label">Reyting</div>
-    <div class="hero-title">Top O'quvchilar</div>
-    <div class="hero-sub">Eng ko'p so'z o'rganganlar — real vaqt rejimida</div>
-    <div class="hero-trophy">🏆</div>
-  </div>
-
   <!-- Spinner -->
   <div class="spinner-wrap" id="loader">
     <div class="spinner"></div>
@@ -306,14 +298,14 @@ html,body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;co
       <span id="updatedText">Yangilanmoqda…</span>
     </div>
 
-    <!-- My rank card (if outside top 10) -->
+    <!-- My rank card (if outside top 20) -->
     <div id="myRankCard" style="display:none;"></div>
 
     <!-- Podium (top 3) -->
     <div class="podium-wrap" id="podiumWrap"></div>
 
-    <!-- List (4–10) -->
-    <div class="list-section-label" id="listLabel" style="display:none;">4 – 10 O'RIN</div>
+    <!-- List (4–20) -->
+    <div class="list-section-label" id="listLabel" style="display:none;">4 – 20 O'RIN</div>
     <div class="learner-list" id="learnerList"></div>
 
     <!-- Empty state -->
@@ -438,8 +430,8 @@ function loadLeaderboard(manual) {
     // Sort by total desc
     users.sort(function(a, b){ return b.total - a.total; });
 
-    // Top 10
-    var top10 = users.slice(0, 10);
+    // Top 20
+    var top10 = users.slice(0, 20);
 
     // Find current user rank
     var myRank = -1;
@@ -488,7 +480,7 @@ function render(top10, myRank, myData, totalUsers) {
   emptyState.style.display = 'none';
 
   // ── My rank card (agar top10 da yo'q bo'lsa)
-  if (myRank > 10 && myData) {
+  if (myRank > 20 && myData) {
     myRankCard.style.display = 'block';
     myRankCard.innerHTML = `
       <div class="my-rank-card">
