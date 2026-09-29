@@ -384,8 +384,12 @@ function loadPremiumStatus(uid) {
     var data = doc.data();
     setAvatarImg('homeAvatar', 44, data.avatar || 'boy');
     var wasPremium = _isPremiumUser;
-    _isPremiumUser = !!(data.isPremium);
-    _premiumChecked = true;
+    // Server tasdiqlamagan (keshdagi / hali yozilayotgan) snapshot "premium yo'q" degan xulosa bermasin
+    var _serverSnap = !(doc.metadata && doc.metadata.fromCache);
+    if (data.isPremium || _serverSnap) {
+      _isPremiumUser = !!(data.isPremium);
+      _premiumChecked = true;
+    }
 
     // Badge rangini yangilash
     var badge = document.getElementById('premiumBadgeBtn');
@@ -418,11 +422,11 @@ function loadPremiumStatus(uid) {
 function requirePremium(url) {
   var modal = document.getElementById('premiumLockModal');
   if (_isPremiumUser) { location.href = url; return; }
-  if (_premiumChecked) { modal.style.display = 'flex'; return; }
 
   var user = _currentUser || (firebase.auth().currentUser);
   if (!user) return; // kirish tekshirilmoqda — auth tugagach foydalanuvchi qayta bosadi
-  db.collection('users').doc(user.uid).get().then(function (doc) {
+  // "Premium kerak" oynasini faqat SERVER tasdiqlagandan keyin ko'rsatamiz
+  db.collection('users').doc(user.uid).get({ source: 'server' }).then(function (doc) {
     var isPrem = !!(doc.exists && doc.data().isPremium);
     _isPremiumUser = isPrem;
     _premiumChecked = true;
