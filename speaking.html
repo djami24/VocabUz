@@ -280,6 +280,10 @@ firebase.auth().onAuthStateChanged(function(user) {
         if (freshDoc.exists && freshDoc.data().isPremium) {
           // Premium tasdiqlandi — sahifani yuklash
           svLoadContent(freshDoc, wordsSnap, user);
+        } else if (freshDoc.metadata && freshDoc.metadata.fromCache) {
+          // Serverdan javob kelmadi (kesh) — premium borligini bilmaymiz, "sotib oling" ko'rsatmaymiz
+          document.getElementById('svBody').innerHTML =
+            '<div class="sv-empty">Internet aloqasini tekshirib, sahifani qayta yuklang.</div>';
         } else {
           document.getElementById('svBody').innerHTML =
             '<div style="text-align:center;padding:60px 20px">' +
