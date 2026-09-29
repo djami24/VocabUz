@@ -471,7 +471,7 @@ firebase.auth().onAuthStateChanged(function(user){
   db.collection('users').doc(user.uid).onSnapshot(function(doc){
     if(doc.exists){
       var data = doc.data();
-      if(data.avatar) setAvatarImg('profAvatar', 52, data.avatar);
+      setAvatarImg('profAvatar', 52, data.avatar || 'boy');
       if(data.tvLearned)    tvLearned    = data.tvLearned.map(Number);
       if(data.tvPassed)     tvPassed     = data.tvPassed;
       if(data.tvBookmarks)  tvBookmarks  = data.tvBookmarks;
