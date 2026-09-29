@@ -64,8 +64,10 @@
 <script src="firebase-config.js"></script>
 <script src="avatar.js"></script>
 <script>
+var _registering = false;
 firebase.auth().onAuthStateChanged(function(user){
-  if(user) location.href = 'index.html';
+  // Ro'yxatdan o'tish jarayonida (Firestore ga yozilguncha) yo'naltirmaymiz
+  if(user && !_registering) location.href = 'index.html';
 });
 
 var selectedAvatar = 'boy';
@@ -96,6 +98,8 @@ function doRegister(){
 
   btn.disabled = true;
   btn.textContent = 'Yuklanmoqda…';
+  _registering = true;
+  cacheAvatarKey(selectedAvatar);
 
   firebase.auth().createUserWithEmailAndPassword(email, pass)
     .then(function(cred){
@@ -123,6 +127,7 @@ function doRegister(){
     })
     .then(function(){ cacheAvatarKey(selectedAvatar); location.href = 'index.html'; })
     .catch(function(err){
+      _registering = false;
       btn.disabled = false;
       btn.textContent = 'Ro\'yxatdan o\'tish';
       var msg = 'Xatolik yuz berdi';
