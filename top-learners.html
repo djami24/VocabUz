@@ -432,7 +432,7 @@ function loadLeaderboard(manual) {
       var name = data.name || data.displayName || (data.email ? data.email.split('@')[0] : 'Foydalanuvchi');
       var isPremium = !!(data.isPremium);
 
-      users.push({ uid: uid, name: name, total: total, isPremium: isPremium });
+      users.push({ uid: uid, name: name, total: total, isPremium: isPremium, photoURL: data.photoURL || '' });
     });
 
     // Sort by total desc
@@ -529,21 +529,29 @@ function render(top10, myRank, myData, totalUsers) {
       continue;
     }
     var initials = escHtml((u.name||'?')[0].toUpperCase());
-    var avatarInner = u.photoURL
-      ? `<img src="${u.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;" onerror="this.style.display='none'"><span style="position:absolute;font-size:${rk===1?'1.3rem':'1.05rem'};font-weight:800;color:#fff;">${initials}</span>`
-      : `<span style="font-size:${rk===1?'1.3rem':'1.05rem'};font-weight:800;color:#fff;">${initials}</span>`;
-    podiumHtml += `
-      <div class="podium-item" style="padding-top:${rk===1?'24':'18'}px;position:relative;">
-        ${rk === 1 ? '<div class="podium-crown">👑</div>' : ''}
-        <div class="podium-avatar ${rankClass[i]}" style="${isMe?'outline:3px solid rgba(255,255,255,.7);':''}overflow:hidden;padding:0;display:flex;align-items:center;justify-content:center;">
-          ${avatarInner}
-        </div>
-        <div class="podium-name"${isMe?' style="color:var(--blue);"':''}>
-          ${u.isPremium ? '<span class="premium-star" title="Premium">⭐</span>' : ''}${escHtml(shortName(u.name))}
-        </div>
-        <div class="podium-count">${u.total} so'z</div>
-        <div class="podium-base ${heights[i]}">${medals[i]}</div>
-      </div>`;
+    var fontSize = (rk === 1) ? '1.3rem' : '1.05rem';
+    var avatarHtml;
+    if (u.photoURL) {
+      avatarHtml = '<img src="' + u.photoURL + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;" '
+        + 'onerror="this.style.display='none';this.nextSibling.style.display='flex'">'
+        + '<span style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-size:' + fontSize + ';font-weight:800;color:#fff;">' + initials + '</span>';
+    } else {
+      avatarHtml = '<span style="font-size:' + fontSize + ';font-weight:800;color:#fff;">' + initials + '</span>';
+    }
+    var crownHtml = (rk === 1) ? '<div class="podium-crown">\u{1F451}</div>' : '';
+    var ptop = (rk === 1) ? '24' : '18';
+    var outlineStyle = isMe ? 'outline:3px solid rgba(255,255,255,.7);' : '';
+    var nameStyle = isMe ? ' style="color:var(--blue);"' : '';
+    var premStar = u.isPremium ? '<span class="premium-star" title="Premium">\u2B50</span>' : '';
+    podiumHtml += '<div class="podium-item" style="padding-top:' + ptop + 'px;position:relative;">'
+      + crownHtml
+      + '<div class="podium-avatar ' + rankClass[i] + '" style="' + outlineStyle + 'overflow:hidden;padding:0;display:flex;align-items:center;justify-content:center;position:relative;">'
+      +   avatarHtml
+      + '</div>'
+      + '<div class="podium-name"' + nameStyle + '>' + premStar + escHtml(shortName(u.name)) + '</div>'
+      + '<div class="podium-count">' + u.total + " so'z</div>"
+      + '<div class="podium-base ' + heights[i] + '">' + medals[i] + '</div>'
+      + '</div>';
   }
   podiumWrap.innerHTML = podiumHtml;
 
