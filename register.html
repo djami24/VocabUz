@@ -7,6 +7,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<style>
+.avatar-pick{display:flex;justify-content:center;gap:18px;margin:2px 0 6px;}
+.avatar-opt{position:relative;width:76px;height:76px;border-radius:50%;padding:0;border:3px solid transparent;background:none;cursor:pointer;overflow:visible;transition:transform .15s,border-color .15s;-webkit-tap-highlight-color:transparent;}
+.avatar-opt img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;opacity:.65;transition:opacity .15s;}
+.avatar-opt.selected{border-color:#1DA1F2;transform:scale(1.06);}
+.avatar-opt.selected img{opacity:1;}
+.avatar-opt.selected::after{content:'\2713';position:absolute;right:-4px;bottom:-4px;width:24px;height:24px;border-radius:50%;background:#1DA1F2;color:#fff;font-size:.8rem;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid #fff;}
+</style>
 </head>
 <body>
 <div class="auth-page">
@@ -20,6 +28,13 @@
   <div class="auth-sub">Yangi hisob yarating</div>
 
   <div class="auth-card">
+    <div class="form-group">
+      <label class="form-label" style="text-align:center;display:block;">Profil rasmini tanlang</label>
+      <div class="avatar-pick">
+        <button type="button" class="avatar-opt selected" id="avOptBoy" onclick="pickAvatar('boy')" aria-label="Avatar 1"><img id="avImgBoy" alt="Avatar 1"></button>
+        <button type="button" class="avatar-opt" id="avOptGirl" onclick="pickAvatar('girl')" aria-label="Avatar 2"><img id="avImgGirl" alt="Avatar 2"></button>
+      </div>
+    </div>
     <div class="form-group">
       <label class="form-label">Ism Familiya</label>
       <input class="form-input" type="text" id="nameInput" placeholder="Alisher Navoiy" autocomplete="name">
@@ -47,10 +62,20 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
+<script src="avatar.js"></script>
 <script>
 firebase.auth().onAuthStateChanged(function(user){
   if(user) location.href = 'index.html';
 });
+
+var selectedAvatar = 'boy';
+document.getElementById('avImgBoy').src  = getAvatarSrc('boy');
+document.getElementById('avImgGirl').src = getAvatarSrc('girl');
+function pickAvatar(key){
+  selectedAvatar = key;
+  document.getElementById('avOptBoy').classList.toggle('selected', key === 'boy');
+  document.getElementById('avOptGirl').classList.toggle('selected', key === 'girl');
+}
 
 function doRegister(){
   var name  = document.getElementById('nameInput').value.trim();
@@ -90,12 +115,13 @@ function doRegister(){
             email: email,
             createdAt: now,
             lastLogin: now,
+            avatar: selectedAvatar,
             bookmarks: [],
             likes: []
           });
         });
     })
-    .then(function(){ location.href = 'index.html'; })
+    .then(function(){ cacheAvatarKey(selectedAvatar); location.href = 'index.html'; })
     .catch(function(err){
       btn.disabled = false;
       btn.textContent = 'Ro\'yxatdan o\'tish';
