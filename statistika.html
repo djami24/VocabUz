@@ -145,20 +145,27 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;}
 .level-title{font-size:.9rem;font-weight:700;margin-bottom:12px;}
 .level-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
 .level-badge{
-  font-size:.72rem;font-weight:700;min-width:30px;
+  font-size:.72rem;font-weight:700;min-width:52px;box-sizing:border-box;
   padding:3px 8px;border-radius:8px;text-align:center;
 }
 .level-badge.a2{background:#DCFCE7;color:#16A34A;}
 .level-badge.b1{background:#DBEAFE;color:#1D4ED8;}
 .level-badge.b2{background:#FEF3C7;color:#B45309;}
+.level-badge.a1{background:#D1FAE5;color:#047857;}
 .level-badge.c1{background:#FCE7F3;color:#9D174D;}
+.level-badge.c2{background:#EDE9FE;color:#6D28D9;}
+.level-badge.na{background:#F1F5F9;color:#64748B;}
 .level-bar-wrap{flex:1;height:8px;background:var(--line);border-radius:4px;overflow:hidden;}
 .level-bar-fill{height:100%;border-radius:4px;transition:width .5s ease;}
 .level-bar-fill.a2{background:#22C55E;}
 .level-bar-fill.b1{background:var(--blue);}
 .level-bar-fill.b2{background:var(--amber);}
+.level-bar-fill.a1{background:#10B981;}
 .level-bar-fill.c1{background:#EC4899;}
-.level-count{font-size:.78rem;font-weight:700;color:var(--ink-mid);min-width:28px;text-align:right;}
+.level-bar-fill.c2{background:#8B5CF6;}
+.level-bar-fill.na{background:#94A3B8;}
+.level-count{font-size:.78rem;font-weight:700;color:var(--ink-mid);min-width:44px;text-align:right;white-space:nowrap;}
+.level-count small{font-weight:600;color:var(--ink-soft);margin-left:3px;}
 
 /* TOPIC CARD */
 .topic-card{
@@ -569,15 +576,17 @@ firebase.auth().onAuthStateChanged(function(user){
     var svWordsSnap  = results[2];
     document.getElementById('loader').style.display='none';
 
-    // Merge Firestore-added topic words into ALL_WORDS
-    var existingIds = new Set(ALL_WORDS.map(function(w){ return w.id; }));
+    // Haqiqiy manba — Firestore. Lokal namuna (seed) so'zlar ID lari Firestore bilan
+    // to'qnashib, noto'g'ri daraja/mavzu ko'rsatmasligi uchun Firestore bo'lsa uni to'liq almashtiramiz.
+    var fsWords = [];
     wordsSnap.docs.forEach(function(d){
       var w = d.data();
-      if(w.id && !existingIds.has(w.id)){
-        ALL_WORDS.push(w);
-        existingIds.add(w.id);
-      }
+      if(w.id !== undefined && w.id !== null) fsWords.push(w);
     });
+    if(fsWords.length){
+      ALL_WORDS.length = 0;
+      fsWords.forEach(function(w){ ALL_WORDS.push(w); });
+    }
 
     // Speaking so'zlarini SV_WORDS ga yuklash (topicMap uchun)
     var SV_WORDS = svWordsSnap.docs.map(function(d){
@@ -658,14 +667,22 @@ firebase.auth().onAuthStateChanged(function(user){
     }
 
     // Level breakdown (topic + speaking)
-    var levelMap = {A2:0,B1:0,B2:0,C1:0};
+    var LEVEL_LIST = ['A1','A2','B1','B2','C1','C2'];
+    function normLvl(v){ return String(v||'').trim().toUpperCase(); }
+    var levelMap = {A1:0,A2:0,B1:0,B2:0,C1:0,C2:0,NA:0};
+    var wordById = {};
+    ALL_WORDS.forEach(function(x){ wordById[String(x.id)] = x; });
     learnedIds.forEach(function(lid){
-      var w = ALL_WORDS.find(function(x){ return String(x.id)===String(lid)||x.id===lid; });
-      if(w && levelMap[w.level]!==undefined) levelMap[w.level]++;
+      var w = wordById[String(lid)];
+      var lv = w ? normLvl(w.level) : '';
+      if(levelMap[lv]!==undefined && lv!=='NA') levelMap[lv]++; else levelMap.NA++;
     });
+    var svById = {};
+    SV_WORDS.forEach(function(x){ svById[x._docId] = x; });
     svLearnedIds.forEach(function(docId){
-      var w = SV_WORDS.find(function(x){ return x._docId===docId; });
-      if(w && levelMap[w.level]!==undefined) levelMap[w.level]++;
+      var w = svById[docId];
+      var lv = w ? normLvl(w.level) : '';
+      if(levelMap[lv]!==undefined && lv!=='NA') levelMap[lv]++; else levelMap.NA++;
     });
 
     // Topic breakdown (topic + speaking)
@@ -719,8 +736,10 @@ firebase.auth().onAuthStateChanged(function(user){
       '</div>';
     });
 
-    var maxLevel = Math.max(levelMap.A2,levelMap.B1,levelMap.B2,levelMap.C1,1);
-    function lvlPct(v){ return Math.round(v/maxLevel*100); }
+    // Daraja ulushi: har bir daraja o'rganilgan so'zlarning necha foizini tashkil qiladi
+    var levelTotal = 0;
+    Object.keys(levelMap).forEach(function(k){ levelTotal += levelMap[k]; });
+    function lvlPct(v){ return levelTotal ? Math.round(v/levelTotal*100) : 0; }
 
     var html = '';
 
@@ -765,13 +784,19 @@ firebase.auth().onAuthStateChanged(function(user){
     if(totalLearned > 0){
       html += '<div class="sec-title">Daraja bo\'yicha</div>';
       html += '<div class="level-card"><div class="level-title">O\'rganilgan so\'zlar darajasi</div>';
-      [['A2','a2'],['B1','b1'],['B2','b2'],['C1','c1']].forEach(function(pair){
-        var lv=pair[0],cls=pair[1];
-        var cnt = levelMap[lv]||0;
+      // Bazada bor (yoki o'rganilgan) darajalarni ko'rsatamiz
+      var presentLv = {};
+      ALL_WORDS.forEach(function(x){ presentLv[normLvl(x.level)] = true; });
+      SV_WORDS.forEach(function(x){ presentLv[normLvl(x.level)] = true; });
+      var rows = LEVEL_LIST.filter(function(lv){ return presentLv[lv] || levelMap[lv] > 0; })
+        .map(function(lv){ return {lv:lv, cls:lv.toLowerCase()}; });
+      if(levelMap.NA > 0) rows.push({lv:'NA', cls:'na', label:'Boshqa'});
+      rows.forEach(function(r){
+        var cnt = levelMap[r.lv]||0;
         html += '<div class="level-row">'+
-          '<span class="level-badge '+cls+'">'+lv+'</span>'+
-          '<div class="level-bar-wrap"><div class="level-bar-fill '+cls+'" style="width:'+lvlPct(cnt)+'%"></div></div>'+
-          '<span class="level-count">'+cnt+'</span>'+
+          '<span class="level-badge '+r.cls+'">'+(r.label||r.lv)+'</span>'+
+          '<div class="level-bar-wrap"><div class="level-bar-fill '+r.cls+'" style="width:'+lvlPct(cnt)+'%"></div></div>'+
+          '<span class="level-count">'+cnt+'<small>'+lvlPct(cnt)+'%</small></span>'+
         '</div>';
       });
       html += '</div>';
