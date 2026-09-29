@@ -279,6 +279,12 @@ html,body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;co
   0%,100% { filter: drop-shadow(0 0 2px rgba(255,179,0,.5)); }
   50%      { filter: drop-shadow(0 0 6px rgba(255,179,0,1)); }
 }
+/* ── HAFTALIK / UMUMIY ── */
+.lb-tabs{display:flex;gap:6px;margin:0 16px 10px;padding:4px;background:var(--white);border-radius:14px;box-shadow:var(--shadow-sm);}
+.lb-tab{flex:1;height:38px;border:none;border-radius:11px;background:transparent;font-family:inherit;font-size:.85rem;font-weight:700;color:var(--ink-soft);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s,color .15s;}
+.lb-tab.active{background:linear-gradient(135deg,var(--blue),var(--blue-deep));color:#fff;box-shadow:0 3px 10px rgba(33,150,243,.3);}
+.week-info{margin:0 16px 14px;padding:10px 14px;background:var(--blue-light);color:var(--blue-deep);border-radius:12px;font-size:.78rem;font-weight:600;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.week-info b{font-weight:800;}
 </style>
 </head>
 <body>
@@ -310,6 +316,13 @@ html,body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;co
       <span id="updatedText">Yangilanmoqda…</span>
     </div>
 
+    <!-- Haftalik / Umumiy -->
+    <div class="lb-tabs">
+      <button class="lb-tab active" id="tabWeek" onclick="setMode('week')">Haftalik</button>
+      <button class="lb-tab" id="tabAll" onclick="setMode('all')">Umumiy</button>
+    </div>
+    <div class="week-info" id="weekInfo"></div>
+
     <!-- My rank card (if outside top 20) -->
     <div id="myRankCard" style="display:none;"></div>
 
@@ -325,8 +338,8 @@ html,body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;co
       <div class="empty-icon">
         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#2196F3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       </div>
-      <div class="empty-title">Hali foydalanuvchi yo'q</div>
-      <div class="empty-sub">So'z o'rganing va birinchi bo'lib reyting jadvalida ko'rining!</div>
+      <div class="empty-title" id="emptyTitle">Hali foydalanuvchi yo'q</div>
+      <div class="empty-sub" id="emptySub">So'z o'rganing va birinchi bo'lib reyting jadvalida ko'rining!</div>
     </div>
 
   </div>
@@ -400,6 +413,121 @@ firebase.auth().onAuthStateChanged(function(user) {
   loadLeaderboard(false);
 });
 
+// ═══ HAFTALIK REYTING ═══
+// Hafta dushanba 00:00 dan yakshanba 23:59 gacha (qurilma vaqti bo'yicha).
+// Haftalik ball = shu hafta kunlari bo'yicha activityLog yig'indisi (topic, speaking, mywords).
+var lbMode      = 'week';   // 'week' | 'all'
+var lbUsers     = [];
+var lastSnap    = null;
+var lbWeekKey   = '';
+var UZ_MONTHS   = ['yan','fev','mar','apr','may','iyn','iyl','avg','sen','okt','noy','dek'];
+
+function pad2(n){ return String(n).padStart(2,'0'); }
+function dayKey(d){ return d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate()); }
+function weekStartDate(){
+  var d = new Date(); d.setHours(0,0,0,0);
+  var day = d.getDay();                       // 0 = yakshanba
+  d.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
+  return d;
+}
+function weekKeys(){
+  var st = weekStartDate(), keys = [];
+  for (var i = 0; i < 7; i++) { var d = new Date(st); d.setDate(st.getDate() + i); keys.push(dayKey(d)); }
+  return keys;
+}
+function weeklyScore(data, keys){
+  var sum = 0;
+  var nested = (data.activityLog && typeof data.activityLog === 'object') ? data.activityLog : null;
+  keys.forEach(function(k){
+    var v = data['activityLog.' + k];            // dot-notation bilan yozilgan (asosiy holat)
+    if (typeof v === 'number') sum += v;
+    else if (nested && typeof nested[k] === 'number') sum += nested[k];
+  });
+  return Math.max(0, sum);                       // "o'rgandim"ni bekor qilish minusga tushirmasin
+}
+
+function processSnap(snap){
+  var keys = weekKeys();
+  lbWeekKey = keys[0];
+  var users = [];
+  snap.forEach(function(doc) {
+    var data = doc.data();
+    var uid  = doc.id;
+
+    // Hisoblash: learned (mywords) + tvLearned (topic vocab) — unikal
+    var vzSet = new Set((data.learned  || []).map(Number));
+    var tvSet = new Set((data.tvLearned|| []).map(Number));
+    tvSet.forEach(function(id){ vzSet.add(id); });
+    var total = vzSet.size;
+
+    // svLearned speaking (string ids, alohida namespace)
+    total += (data.svLearned || []).length;
+
+    var name = data.name || data.displayName || (data.email ? data.email.split('@')[0] : 'Foydalanuvchi');
+    users.push({
+      uid: uid, name: name, allTotal: total, week: weeklyScore(data, keys), total: total,
+      isPremium: !!(data.isPremium), photoURL: data.photoURL || '', avatar: data.avatar || ''
+    });
+  });
+  lbUsers = users;
+  applyMode();
+
+  var now = new Date();
+  document.getElementById('updatedText').textContent =
+    'Oxirgi yangilanish: ' + formatTime(now) + ' · ' + users.length + ' ta foydalanuvchi';
+}
+
+function applyMode(){
+  var isWeek = (lbMode === 'week');
+  var list = lbUsers.map(function(u){
+    return Object.assign({}, u, { total: isWeek ? u.week : u.allTotal });
+  });
+  // Haftalikda faqat shu hafta so'z o'rganganlar reytingga kiradi
+  var ranked = isWeek ? list.filter(function(u){ return u.total > 0; }) : list;
+  ranked.sort(function(a, b){ return (b.total - a.total) || (b.allTotal - a.allTotal); });
+
+  var myRank = -1, myData = null;
+  for (var i = 0; i < ranked.length; i++) {
+    if (ranked[i].uid === currentUser.uid) { myRank = i + 1; myData = ranked[i]; break; }
+  }
+  if (!myData) {                                  // haftalikda hali 0 bo'lsa ham kartochka uchun kerak
+    myData = list.filter(function(u){ return u.uid === currentUser.uid; })[0] || null;
+  }
+
+  document.getElementById('tabWeek').classList.toggle('active', isWeek);
+  document.getElementById('tabAll').classList.toggle('active', !isWeek);
+  updateWeekInfo();
+  render(ranked.slice(0, 20), myRank, myData, ranked.length);
+}
+
+function setMode(m){
+  if (lbMode === m) return;
+  lbMode = m;
+  if (lbUsers.length) applyMode();
+}
+
+function updateWeekInfo(){
+  var el = document.getElementById('weekInfo');
+  if (lbMode !== 'week') { el.style.display = 'none'; return; }
+  el.style.display = 'flex';
+  var st = weekStartDate();
+  var en = new Date(st); en.setDate(st.getDate() + 6);
+  var range = st.getDate() + ' ' + UZ_MONTHS[st.getMonth()] + ' – ' + en.getDate() + ' ' + UZ_MONTHS[en.getMonth()];
+  var end = new Date(st); end.setDate(st.getDate() + 7);
+  var diff = Math.max(0, end - new Date());
+  var days = Math.floor(diff / 86400000);
+  var hours = Math.floor((diff % 86400000) / 3600000);
+  var mins = Math.floor((diff % 3600000) / 60000);
+  var left = days > 0 ? (days + ' kun ' + hours + ' soat') : (hours + ' soat ' + mins + ' daq');
+  el.innerHTML = '<span>Hafta: <b>' + range + '</b></span><span>Tugashiga: <b>' + left + '</b></span>';
+}
+
+// Har daqiqada: hisoblagichni yangilash; yangi hafta boshlansa reytingni noldan hisoblash
+setInterval(function(){
+  if (!lastSnap || !currentUser) return;
+  if (weekKeys()[0] !== lbWeekKey) processSnap(lastSnap); else updateWeekInfo();
+}, 60000);
+
 // ── Load leaderboard
 function loadLeaderboard(manual) {
   // Spinner animation on refresh button
@@ -417,52 +545,8 @@ function loadLeaderboard(manual) {
 
   // Real-time listener on users collection
   unsubscribe = db.collection('users').onSnapshot(function(snap) {
-    var users = [];
-    snap.forEach(function(doc) {
-      var data = doc.data();
-      var uid  = doc.id;
-
-      // Hisoblash: learned (mywords) + tvLearned (topic vocab) — unikal
-      var vzSet = new Set((data.learned  || []).map(Number));
-      var tvSet = new Set((data.tvLearned|| []).map(Number));
-      // Ikkala set ni birlashtirish
-      tvSet.forEach(function(id){ vzSet.add(id); });
-      var total = vzSet.size;
-
-      // svLearned speaking (string ids, alohida namespace)
-      var svCount = (data.svLearned || []).length;
-      total += svCount;
-
-      var name = data.name || data.displayName || (data.email ? data.email.split('@')[0] : 'Foydalanuvchi');
-      var isPremium = !!(data.isPremium);
-
-      users.push({ uid: uid, name: name, total: total, isPremium: isPremium, photoURL: data.photoURL || '', avatar: data.avatar || '' });
-    });
-
-    // Sort by total desc
-    users.sort(function(a, b){ return b.total - a.total; });
-
-    // Top 20
-    var top10 = users.slice(0, 20);
-
-    // Find current user rank
-    var myRank = -1;
-    var myData = null;
-    for (var i = 0; i < users.length; i++) {
-      if (users[i].uid === currentUser.uid) {
-        myRank = i + 1;
-        myData = users[i];
-        break;
-      }
-    }
-
-    render(top10, myRank, myData, users.length);
-
-    // Update timestamp
-    var now = new Date();
-    document.getElementById('updatedText').textContent =
-      'Oxirgi yangilanish: ' + formatTime(now) + ' · ' + users.length + ' ta foydalanuvchi';
-
+    lastSnap = snap;
+    processSnap(snap);
     document.getElementById('loader').style.display  = 'none';
     document.getElementById('mainContent').style.display = 'block';
   }, function(err) {
@@ -482,6 +566,11 @@ function render(top10, myRank, myData, totalUsers) {
   var myRankCard   = document.getElementById('myRankCard');
 
   if (top10.length === 0) {
+    document.getElementById('emptyTitle').textContent = (lbMode === 'week')
+      ? "Bu hafta hali hech kim so'z o'rganmadi" : "Hali foydalanuvchi yo'q";
+    document.getElementById('emptySub').textContent = (lbMode === 'week')
+      ? "Birinchi bo'ling — so'z o'rganing va haftalik reytingda yuqoriga chiqing!"
+      : "So'z o'rganing va birinchi bo'lib reyting jadvalida ko'rining!";
     emptyState.style.display = 'flex';
     podiumWrap.innerHTML = '';
     learnerList.innerHTML = '';
@@ -507,6 +596,17 @@ function render(top10, myRank, myData, totalUsers) {
           <div style="font-size:.72rem;opacity:.7;color:#fff;margin-bottom:2px;">${totalUsers} ta ichida</div>
           <div style="font-size:.75rem;opacity:.75;color:#fff;">${myData.total} ta so'z</div>
         </div>
+      </div>`;
+  } else if (lbMode === 'week' && myRank === -1 && myData) {
+    // Haftalikda hali so'z o'rganmagan bo'lsa — rag'batlantiruvchi kartochka
+    myRankCard.style.display = 'block';
+    myRankCard.innerHTML = `
+      <div class="my-rank-card">
+        <div style="flex:1;min-width:0;">
+          <div class="my-rank-label">Sizning natijangiz</div>
+          <div class="my-rank-name">Bu hafta hali so'z o'rganmadingiz</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;font-size:.75rem;opacity:.85;color:#fff;">0 ta so'z</div>
       </div>`;
   } else {
     myRankCard.style.display = 'none';
@@ -580,7 +680,7 @@ function render(top10, myRank, myData, totalUsers) {
           <div class="learner-avatar" style="overflow:hidden;padding:0;"><img src="${u.photoURL || getAvatarSrc(u.avatar)}" onerror="this.onerror=null;this.src=DEFAULT_AVATAR_SRC" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;" alt="avatar"></div>
           <div class="learner-info">
             <div class="learner-name">${u.isPremium ? '<span class="premium-star" title="Premium">⭐</span>' : ''}${escHtml(u.name)}</div>
-            <div class="learner-sub">${u.total} ta so'z o'rganilgan</div>
+            <div class="learner-sub">${u.total} ta so'z ${lbMode === 'week' ? 'bu hafta' : "o'rganilgan"}</div>
           </div>
           <div class="learner-badge">${u.total} 📚</div>
         </div>`;
