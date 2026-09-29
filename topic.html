@@ -33,6 +33,17 @@ body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:v
 .bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink-soft);font-size:.65rem;font-weight:600;text-decoration:none;-webkit-tap-highlight-color:transparent;}
 .bottom-nav-item.is-active{color:var(--blue);}
 
+/* ── O'RGANDIM: MINI-TEST (so'zni tasdiqlash) ── */
+#learnCheck{display:none;position:fixed;inset:0;z-index:450;background:rgba(26,26,46,.55);align-items:center;justify-content:center;padding:20px;}
+#learnCheck.open{display:flex;}
+.lc-box{width:100%;max-width:400px;background:var(--white);border-radius:20px;padding:22px 18px 16px;box-shadow:0 12px 40px rgba(0,0,0,.25);}
+.lc-label{font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);text-align:center;}
+.lc-word{font-size:1.7rem;font-weight:900;text-align:center;margin:6px 0 4px;color:var(--ink);word-break:break-word;}
+.lc-note{font-size:.76rem;text-align:center;min-height:18px;margin-bottom:12px;color:var(--ink-soft);font-weight:600;}
+.lc-note.err{color:var(--red);}
+.lc-opts{display:flex;flex-direction:column;gap:9px;}
+.lc-cancel{display:block;width:100%;margin-top:12px;padding:10px;border:none;background:none;font-family:inherit;font-size:.82rem;font-weight:600;color:var(--ink-soft);cursor:pointer;}
+
 /* ── TOAST ── */
 .toast{position:fixed;bottom:calc(var(--bottom-nav-h)+16px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 20px;border-radius:24px;font-size:.83rem;font-weight:600;pointer-events:none;opacity:0;transition:opacity .25s,transform .25s;white-space:nowrap;z-index:500;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
@@ -675,16 +686,147 @@ function renderWords(){
     '<div style="height:120px;flex-shrink:0;display:block;"></div>';
 }
 
+// ════════════════════════════════════════
+//  O'RGANDIM — so'z mini-test orqali tasdiqlanadi
+// ════════════════════════════════════════
+const LEARN_MIN_GAP_MS  = 3000;   // ketma-ket ikki so'z orasidagi minimal vaqt
+const LEARN_MAX_PER_MIN = 8;      // 1 daqiqada ko'pi bilan nechta so'z tasdiqlanadi
+const LEARN_MAX_TRIES   = 2;      // bir so'z uchun urinishlar soni
+const LEARN_LOCK_MS     = 15000;  // ikkala urinish xato bo'lsa so'z shu vaqtga bloklanadi
+
+let learnMarks   = [];   // oxirgi tasdiqlash vaqtlari
+let learnLocks   = {};   // { wordId: qulf tugash vaqti }
+let learnCurrent = null; // { id, tries, answered }
+
 function markLearned(id){
   if(!currentUser) return;
   const numId=Number(id);
   const idx=learnedIds.indexOf(numId);
-  const isNew=idx===-1;
-  if(isNew){ learnedIds.push(numId); showToast("O'rgandim! So'z saqlandi!"); logActivityToday(1); }
-  else      { learnedIds.splice(idx,1); showToast("O'rganilganlardan olib tashlandi"); logActivityToday(-1); }
-  saveState();
-  saveToFirestore();
-  renderWords(); // so'zlar ro'yxatini yangilaydi + topbar soni
+  if(idx!==-1){
+    // Olib tashlash — avvalgidek darhol
+    learnedIds.splice(idx,1);
+    showToast("O'rganilganlardan olib tashlandi");
+    logActivityToday(-1);
+    saveState();
+    saveToFirestore();
+    renderWords();
+    return;
+  }
+  // Yangi so'z — avval to'siqlar, keyin mini-test
+  const now=Date.now();
+  if(learnLocks[numId] && learnLocks[numId]>now){
+    showToast("So'zni qayta o'qib chiqing · "+Math.ceil((learnLocks[numId]-now)/1000)+" soniyadan keyin");
+    return;
+  }
+  learnMarks=learnMarks.filter(function(t){ return now-t<60000; });
+  if(learnMarks.length && now-learnMarks[learnMarks.length-1]<LEARN_MIN_GAP_MS){
+    showToast("Shoshilmang — so'zni yaxshilab yodlang");
+    return;
+  }
+  if(learnMarks.length>=LEARN_MAX_PER_MIN){
+    showToast("Juda tez! "+Math.ceil((learnMarks[0]+60000-now)/1000)+" soniya so'zlarni takrorlang");
+    return;
+  }
+  openLearnCheck(numId);
+}
+
+function openLearnCheck(id){
+  learnCurrent={ id:id, tries:0, answered:false };
+  let el=document.getElementById('learnCheck');
+  if(!el){
+    el=document.createElement('div');
+    el.id='learnCheck';
+    el.innerHTML='<div class="lc-box">' +
+      '<div class="lc-label">Tarjimasini tanlang</div>' +
+      '<div class="lc-word" id="lcWord"></div>' +
+      '<div class="lc-note" id="lcNote"></div>' +
+      '<div class="lc-opts" id="lcOpts"></div>' +
+      '<button class="lc-cancel" type="button" onclick="closeLearnCheck()">Bekor qilish</button>' +
+    '</div>';
+    document.body.appendChild(el);
+  }
+  el.classList.add('open');
+  renderLearnCheck();
+}
+
+function closeLearnCheck(){
+  const el=document.getElementById('learnCheck');
+  if(el) el.classList.remove('open');
+  learnCurrent=null;
+}
+
+function renderLearnCheck(){
+  if(!learnCurrent) return;
+  const w=ALL_WORDS.find(function(x){ return x.id===learnCurrent.id; });
+  if(!w){ closeLearnCheck(); return; }
+  learnCurrent.answered=false;
+
+  // Noto'g'ri variantlar: avval shu mavzudan, yetmasa boshqa so'zlardan (takrorlanmasdan)
+  const used={}; used[(w.uz||'').trim().toLowerCase()]=true;
+  const wrong=[];
+  function pick(list){
+    list.slice().sort(function(){ return Math.random()-.5; }).forEach(function(x){
+      const k=(x.uz||'').trim().toLowerCase();
+      if(wrong.length<3 && k && !used[k] && x.id!==w.id){ used[k]=true; wrong.push(x); }
+    });
+  }
+  pick(ALL_WORDS.filter(function(x){ return x.topic===w.topic; }));
+  if(wrong.length<3) pick(ALL_WORDS);
+  const options=[w].concat(wrong).sort(function(){ return Math.random()-.5; });
+
+  document.getElementById('lcWord').textContent=w.word||'';
+  const note=document.getElementById('lcNote');
+  note.className='lc-note';
+  note.textContent=learnCurrent.tries>0 ? "Xato — yana urinib ko'ring ("+learnCurrent.tries+"/"+LEARN_MAX_TRIES+")" : '';
+  if(learnCurrent.tries>0) note.classList.add('err');
+
+  const box=document.getElementById('lcOpts');
+  box.innerHTML='';
+  options.forEach(function(opt){
+    const b=document.createElement('button');
+    b.type='button';
+    b.className='test-opt';
+    b.textContent=opt.uz||'';
+    b.addEventListener('click',function(){ answerLearnCheck(opt.id===w.id,b); });
+    box.appendChild(b);
+  });
+}
+
+function answerLearnCheck(isCorrect,btn){
+  if(!learnCurrent || learnCurrent.answered) return;
+  learnCurrent.answered=true;
+  const wid=learnCurrent.id;
+  document.querySelectorAll('#lcOpts .test-opt').forEach(function(b){ b.disabled=true; });
+
+  if(isCorrect){
+    btn.classList.add('correct');
+    setTimeout(function(){
+      const now=Date.now();
+      closeLearnCheck();
+      if(learnedIds.indexOf(wid)===-1){
+        learnedIds.push(wid);
+        learnMarks.push(now);
+        showToast("O'rgandim! So'z saqlandi!");
+        logActivityToday(1);
+        saveState();
+        saveToFirestore();
+      }
+      renderWords();
+    },550);
+    return;
+  }
+
+  btn.classList.add('wrong');
+  learnCurrent.tries++;
+  if(learnCurrent.tries>=LEARN_MAX_TRIES){
+    learnLocks[wid]=Date.now()+LEARN_LOCK_MS;
+    setTimeout(function(){
+      closeLearnCheck();
+      showToast("Xato. So'zni yana bir bor o'qib chiqing");
+    },700);
+  } else {
+    setTimeout(renderLearnCheck,700);
+  }
 }
 
 function toggleBookmark(id){
