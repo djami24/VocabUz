@@ -320,6 +320,7 @@ let learnedIds   = [];
 let passedTopics = [];   // testdan o'tgan mavzular (localStorage)
 let bookmarks    = [];   // yodlash ro'yxati
 let currentUser  = null;
+let isPremiumUser = false; // Premium foydalanuvchilar uchun barcha mavzular ochiq
 let currentTopic = null; // Ochiq mavzu
 let currentLevel = null; // Tanlangan daraja
 
@@ -341,6 +342,7 @@ function topicsOfLevel(level){
 // Mavzu ochiq: darajadagi birinchi mavzu, yoki oldingi mavzu testdan o'tgan bo'lsa.
 // (Eski foydalanuvchilar progressi yo'qolmasligi uchun: o'tilgan yoki so'z belgilangan mavzu ham ochiq.)
 function isTopicUnlocked(topic, level){
+  if(isPremiumUser) return true;
   const list = topicsOfLevel(level||currentLevel);
   const idx  = list.indexOf(topic);
   if(idx<=0) return true;
@@ -379,6 +381,7 @@ firebase.auth().onAuthStateChanged(function(user){
     var wordsSnap = results[1];
 
     if(userDoc.exists){
+      isPremiumUser = !!userDoc.data().isPremium;
       if(userDoc.data().learned)    learnedIds   = userDoc.data().learned.map(Number);
       if(userDoc.data().passed)     passedTopics = userDoc.data().passed;
       if(userDoc.data().bookmarks)  bookmarks    = userDoc.data().bookmarks.map(Number);
