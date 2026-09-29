@@ -574,6 +574,21 @@ textarea.form-input {
 }
 .bulk-textarea:focus { border-color: var(--blue); background: var(--white); }
 
+.rt-toolbar { display:flex; flex-wrap:wrap; gap:4px; padding:8px; border:1.5px solid var(--line); border-bottom:none; border-radius:10px 10px 0 0; background:var(--blue-soft); position:sticky; top:0; z-index:5; }
+.rt-btn { min-width:34px; height:32px; padding:0 9px; border:1.5px solid var(--line); border-radius:8px; background:#fff; cursor:pointer; font-size:.82rem; font-weight:700; font-family:inherit; color:#334155; }
+.rt-btn:hover { border-color:var(--blue); color:var(--blue); }
+.rt-sep { width:1px; background:var(--line); margin:2px 4px; }
+.rt-editor { min-height:280px; max-height:520px; overflow:auto; padding:16px 18px; border:1.5px solid var(--line); border-radius:0 0 10px 10px; background:#fff; font-size:.95rem; line-height:1.65; outline:none; }
+.rt-editor:focus { border-color:var(--blue); }
+.rt-editor:empty:before { content:attr(data-placeholder); color:var(--ink-soft); }
+.rt-editor h2 { font-size:1.25rem; margin:16px 0 8px; } .rt-editor h3 { font-size:1.08rem; margin:14px 0 6px; } .rt-editor h4 { font-size:.98rem; margin:12px 0 6px; }
+.rt-editor p { margin:0 0 10px; } .rt-editor ul, .rt-editor ol { margin:0 0 10px; padding-left:24px; }
+.rt-editor blockquote { margin:10px 0; padding:6px 14px; border-left:4px solid var(--blue); background:var(--blue-soft); border-radius:0 8px 8px 0; }
+.rt-editor table { border-collapse:collapse; width:100%; margin:10px 0; } .rt-editor th, .rt-editor td { border:1px solid var(--line); padding:6px 8px; min-width:40px; } .rt-editor th { background:var(--blue-soft); }
+.doc-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; margin-bottom:8px; }
+.doc-item-title { flex:1; font-weight:600; font-size:.88rem; }
+.doc-item-del, .doc-item-edit { background:none; border:none; cursor:pointer; color:#DC2626; font-size:.8rem; font-weight:700; }
+.doc-item-edit { color:var(--blue); }
 .preview-box {
   background: var(--sky); border: 1px solid var(--line);
   border-radius: var(--radius-sm); padding: 14px 16px;
@@ -1145,6 +1160,7 @@ textarea.form-input {
           <div class="mode-tabs" id="modeTabs">
             <button class="mode-tab active" onclick="setMode('single')" id="tabSingle">Bitta so'z</button>
             <button class="mode-tab" onclick="setMode('bulk')" id="tabBulk">Ko'p so'z (100 tagacha)</button>
+            <button class="mode-tab" onclick="setMode('doc')" id="tabDoc" style="display:none">📝 Matn / Grammatika</button>
           </div>
 
           <!-- SINGLE WORD MODE -->
@@ -1226,6 +1242,65 @@ textarea.form-input {
               <button class="btn-save" id="btnAddBulk" onclick="addBulkWords()" disabled>
                 Barchasini qo'shish
               </button>
+            </div>
+          </div>
+
+          <!-- MATN / GRAMMATIKA — Word'dagidek formatlab yozish (faqat Writing) -->
+          <div id="modeDoc" style="display:none">
+            <div class="info-row">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              Word'dagidek yozing: sarlavha, qalin, ro'yxat, jadval. Word'dan nusxa ko'chirib qo'ysangiz ham formati saqlanadi.
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Turi *</label>
+                <select class="form-input filter-select" id="docKind" style="width:100%">
+                  <option value="text">📝 Matn (Text)</option>
+                  <option value="grammar">📐 Grammatika</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Sarlavha *</label>
+                <input class="form-input" type="text" id="docTitle" placeholder="Masalan: Passive Voice">
+                <div class="form-error" id="docTitleErr"></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Matn *</label>
+              <div class="rt-toolbar" onmousedown="event.preventDefault()">
+                <button type="button" class="rt-btn" onclick="rtBlock('h2')" title="Sarlavha">Sarlavha</button>
+                <button type="button" class="rt-btn" onclick="rtBlock('h3')" title="Kichik sarlavha">Kichik sarlavha</button>
+                <button type="button" class="rt-btn" onclick="rtBlock('p')" title="Oddiy matn">Oddiy</button>
+                <span class="rt-sep"></span>
+                <button type="button" class="rt-btn" onclick="rtCmd('bold')" title="Qalin (Ctrl+B)"><b>B</b></button>
+                <button type="button" class="rt-btn" onclick="rtCmd('italic')" title="Kursiv (Ctrl+I)"><i>I</i></button>
+                <button type="button" class="rt-btn" onclick="rtCmd('underline')" title="Tagiga chizish (Ctrl+U)"><u>U</u></button>
+                <button type="button" class="rt-btn" onclick="rtHighlight()" title="Belgilash">🖍️</button>
+                <span class="rt-sep"></span>
+                <button type="button" class="rt-btn" onclick="rtCmd('insertUnorderedList')" title="Nuqtali ro'yxat">• Ro'yxat</button>
+                <button type="button" class="rt-btn" onclick="rtCmd('insertOrderedList')" title="Raqamli ro'yxat">1. Ro'yxat</button>
+                <button type="button" class="rt-btn" onclick="rtBlock('blockquote')" title="Iqtibos / muhim qoida">❝</button>
+                <button type="button" class="rt-btn" onclick="rtTable()" title="Jadval qo'shish">▦ Jadval</button>
+                <button type="button" class="rt-btn" onclick="rtCmd('insertHorizontalRule')" title="Chiziq">―</button>
+                <span class="rt-sep"></span>
+                <button type="button" class="rt-btn" onclick="rtCmd('removeFormat')" title="Formatni tozalash">⌫</button>
+                <button type="button" class="rt-btn" onclick="rtCmd('undo')" title="Bekor qilish">↶</button>
+                <button type="button" class="rt-btn" onclick="rtCmd('redo')" title="Qaytarish">↷</button>
+                <span class="rt-sep"></span>
+                <button type="button" class="rt-btn" onclick="document.getElementById('docFile').click()" title=".docx fayldan yuklash">📄 Word fayldan</button>
+                <input type="file" id="docFile" accept=".docx" style="display:none" onchange="rtImportDocx(this)">
+              </div>
+              <div class="rt-editor" id="rtEditor" contenteditable="true" data-placeholder="Matn yoki grammatika mavzusini shu yerga yozing…"></div>
+              <div class="form-error" id="docFileErr"></div>
+            </div>
+            <div style="display:flex;gap:10px">
+              <button class="btn-save" id="btnAddDoc" onclick="addDocContent()">Saqlash</button>
+              <button class="btn-secondary" id="btnCancelDoc" onclick="resetDocForm()" style="display:none">Bekor qilish</button>
+            </div>
+
+            <div style="margin-top:26px">
+              <div class="form-label" style="margin-bottom:8px">Shu mavzudagi qo'shilgan matn va grammatika</div>
+              <div id="docList"><div style="font-size:.82rem;color:var(--ink-soft)">Hali material yo'q.</div></div>
             </div>
           </div>
         </div>
@@ -1446,6 +1521,8 @@ textarea.form-input {
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+<script src="rich-utils.js"></script>
 
 <script>
 // ── Firebase config (firebase-config.js bilan bir xil) ──
@@ -2238,7 +2315,16 @@ async function loadTopicsForPicker() {
     listEl.innerHTML = '<div class="loading"><div class="spinner"></div>Yuklanmoqda…</div>';
     try {
       const snap = await db.collection('words').where('category','==',wzVocabType).get();
-      const types = [...new Set(snap.docs.map(d => d.data().type).filter(Boolean))].sort();
+      const lvOk = d => wzVocabType !== 'writing' || !wzLevel || !d.data().level || d.data().level === wzLevel;
+      const typeSet = new Set(snap.docs.filter(lvOk).map(d => d.data().type).filter(Boolean));
+      if(wzVocabType === 'writing') {
+        // faqat Word fayl qo'shilgan mavzular ham ro'yxatda chiqsin
+        try {
+          const dsnap = await db.collection('writingDocs').get();
+          dsnap.docs.forEach(d => { const t = d.data().type; if(t && lvOk(d)) typeSet.add(t); });
+        } catch(e) { /* qoidalar hali yangilanmagan bo'lishi mumkin */ }
+      }
+      const types = [...typeSet].sort();
       const maxOrder = snap.docs.reduce((m,d) => Math.max(m, d.data().order||0), 0);
       wzMaxNumericId = maxOrder; // for speaking/writing, 'order' serves as ordering
 
@@ -2293,11 +2379,18 @@ function openDeleteTopic(topicName, category) {
   if (category === 'topic') {
     count = ALL_WORDS.filter(w => w.topic === topicName && (!wzLevel || w.level === wzLevel)).length;
   } else {
-    count = ALL_WORDS.filter(w => w.category === category && w.type === topicName).length;
+    count = ALL_WORDS.filter(w => w.category === category && w.type === topicName &&
+      (category !== 'writing' || !wzLevel || !w.level || w.level === wzLevel)).length;
   }
 
   document.getElementById('deleteTopicName').textContent = topicName + (wzLevel ? ' (' + wzLevel + ')' : '');
   document.getElementById('deleteTopicCount').textContent = count + ' ta';
+  if (category === 'writing') {
+    db.collection('writingDocs').where('type', '==', topicName).get().then(function(ds) {
+      const n = ds.docs.filter(d => !wzLevel || d.data().level === wzLevel).length;
+      if (n) document.getElementById('deleteTopicCount').textContent = count + ' ta so\'z + ' + n + ' ta matn/grammatika';
+    }).catch(function(){});
+  }
   openModal('deleteTopicModal');
 }
 
@@ -2320,9 +2413,24 @@ async function confirmDeleteTopic() {
       snap = await db.collection('words').where('category', '==', category).where('type', '==', name).get();
     }
 
+    // Writing mavzusi o'chirilsa — unga biriktirilgan Word fayllar ham o'chadi
+    if (category === 'writing') {
+      try {
+        const dsnap = await db.collection('writingDocs').where('type', '==', name).get();
+        const ddocs = dsnap.docs.filter(d => !topicToDelete.level || d.data().level === topicToDelete.level);
+        for (let i = 0; i < ddocs.length; i += 400) {
+          const b = db.batch();
+          ddocs.slice(i, i + 400).forEach(d => b.delete(d.ref));
+          await b.commit();
+        }
+      } catch(e) { /* no-op */ }
+    }
+
     // Batch delete — 500 ta limit
     const BATCH_SIZE = 400;
-    const docs = snap.docs;
+    const docs = (category === 'writing' && topicToDelete.level)
+      ? snap.docs.filter(d => { const l = d.data().level; return !l || l === topicToDelete.level; })
+      : snap.docs;
     for (let i = 0; i < docs.length; i += BATCH_SIZE) {
       const batch = db.batch();
       docs.slice(i, i + BATCH_SIZE).forEach(d => batch.delete(d.ref));
@@ -2334,7 +2442,9 @@ async function confirmDeleteTopic() {
       const lvl = topicToDelete.level;
       ALL_WORDS = ALL_WORDS.filter(w => !(w.topic === name && (!lvl || w.level === lvl)));
     } else {
-      ALL_WORDS = ALL_WORDS.filter(w => !(w.category === category && w.type === name));
+      const dl = topicToDelete.level;
+      ALL_WORDS = ALL_WORDS.filter(w => !(w.category === category && w.type === name &&
+        (category !== 'writing' || !dl || !w.level || w.level === dl)));
     }
     filteredWords = [...ALL_WORDS];
     filterWords();
@@ -2431,6 +2541,11 @@ async function setupStep4() {
   document.getElementById('btnAddBulk').disabled = true;
   setMode('single');
 
+  // Word fayl rejimi — faqat Writing uchun
+  document.getElementById('tabDoc').style.display = wzVocabType === 'writing' ? '' : 'none';
+  resetDocForm();
+  if(wzVocabType === 'writing') loadDocList();
+
   // Load existing words in this topic for duplicate detection
   wzExistingTopicWords = [];
   try {
@@ -2448,17 +2563,22 @@ async function setupStep4() {
       });
     } else {
       const fsSnap = await db.collection('words').where('category','==',wzVocabType).where('type','==',wzTopic).get();
-      wzExistingTopicWords = fsSnap.docs.map(d => (d.data().word||'').toLowerCase().trim());
+      wzExistingTopicWords = fsSnap.docs
+        .filter(d => wzVocabType !== 'writing' || !wzLevel || !d.data().level || d.data().level === wzLevel)
+        .map(d => (d.data().word||'').toLowerCase().trim());
     }
   } catch(e) { /* no-op */ }
 }
 
 function setMode(mode) {
+  if(mode === 'doc' && wzVocabType !== 'writing') mode = 'single';
   wzMode = mode;
   document.getElementById('tabSingle').classList.toggle('active', mode==='single');
   document.getElementById('tabBulk').classList.toggle('active', mode==='bulk');
+  document.getElementById('tabDoc').classList.toggle('active', mode==='doc');
   document.getElementById('modeSingle').style.display = mode==='single' ? 'block' : 'none';
   document.getElementById('modeBulk').style.display   = mode==='bulk'   ? 'block' : 'none';
+  document.getElementById('modeDoc').style.display    = mode==='doc'    ? 'block' : 'none';
 }
 
 // ── SINGLE WORD ADD ──
@@ -2611,6 +2731,7 @@ async function addBulkWords() {
             uz:         w.uz,
             type:       wzTopic,
             category:   wzVocabType,
+            ...(wzVocabType === 'writing' && wzLevel ? { level: wzLevel } : {}),
             order:      wzMaxNumericId,
             example:    w.example || '',
             vocabType:  wzVocabType,
@@ -2677,12 +2798,193 @@ async function addCategoryWord({ word, uz, type, example }) {
     uz:           uz,
     type:         type || '',
     category:     wzVocabType,
+    ...(wzVocabType === 'writing' && wzLevel ? { level: wzLevel } : {}),
     order:        newOrder,
     example:      example || '',
     vocabType:    wzVocabType,
     addedByAdmin: true,
     addedAt:      firebase.firestore.FieldValue.serverTimestamp()
   });
+}
+
+// ══════════ WRITING: MATN va GRAMMATIKA (Word'dagidek editor) ══════════
+let wzEditingDocId = null;
+let wzDocCache = {};
+
+function rtEd() { return document.getElementById('rtEditor'); }
+function rtCmd(cmd, val) { rtEd().focus(); document.execCommand(cmd, false, val || null); }
+function rtBlock(tag) { rtEd().focus(); document.execCommand('formatBlock', false, '<' + tag + '>'); }
+function rtHighlight() {
+  rtEd().focus();
+  document.execCommand('styleWithCSS', false, true);
+  document.execCommand('hiliteColor', false, '#FEF08A');
+  document.execCommand('styleWithCSS', false, false);
+}
+function rtTable() {
+  const v = prompt("Jadval o'lchami (qator x ustun):", '3x2');
+  if (!v) return;
+  const m = v.toLowerCase().match(/^\s*(\d{1,2})\s*[x×*,]\s*(\d{1,2})\s*$/);
+  if (!m) { showToast("❌ Masalan: 3x2"); return; }
+  const rows = Math.min(+m[1], 30), cols = Math.min(+m[2], 8);
+  let h = '<table><tbody>';
+  for (let r = 0; r < rows; r++) {
+    h += '<tr>';
+    for (let c = 0; c < cols; c++) h += (r === 0 ? '<th>' : '<td>') + '&nbsp;' + (r === 0 ? '</th>' : '</td>');
+    h += '</tr>';
+  }
+  h += '</tbody></table><p><br></p>';
+  rtEd().focus();
+  document.execCommand('insertHTML', false, h);
+}
+
+// Word / veb-sahifadan nusxa ko'chirilganda formatni saqlab, ortiqcha narsalarni tozalash
+document.addEventListener('paste', function (e) {
+  if (e.target !== rtEd()) return;
+  const cd = e.clipboardData;
+  if (!cd) return;
+  const html = cd.getData('text/html');
+  if (!html) return; // oddiy matn — brauzer o'zi qo'yadi
+  e.preventDefault();
+  document.execCommand('insertHTML', false, sanitizeRichHtml(html));
+});
+
+function resetDocForm() {
+  wzEditingDocId = null;
+  document.getElementById('docTitle').value = '';
+  document.getElementById('docKind').value = 'text';
+  document.getElementById('docFile').value = '';
+  document.getElementById('docTitleErr').textContent = '';
+  document.getElementById('docFileErr').textContent = '';
+  rtEd().innerHTML = '';
+  document.getElementById('btnAddDoc').textContent = 'Saqlash';
+  document.getElementById('btnAddDoc').disabled = false;
+  document.getElementById('btnCancelDoc').style.display = 'none';
+}
+
+async function rtImportDocx(input) {
+  const file = input.files[0];
+  const errEl = document.getElementById('docFileErr');
+  errEl.textContent = '';
+  if (!file) return;
+  if (!/\.docx$/i.test(file.name)) {
+    errEl.textContent = "Faqat .docx fayl (eski .doc bo'lsa, Word'da \"Saqlash → .docx\" qiling).";
+    input.value = ''; return;
+  }
+  if (typeof mammoth === 'undefined') {
+    errEl.textContent = "Word o'qish kutubxonasi yuklanmadi. Internetni tekshirib, sahifani yangilang.";
+    input.value = ''; return;
+  }
+  if (rtEd().textContent.trim() && !confirm("Editordagi matn Word fayl bilan almashtiriladi. Davom etasizmi?")) {
+    input.value = ''; return;
+  }
+  try {
+    const res = await mammoth.convertToHtml({ arrayBuffer: await file.arrayBuffer() });
+    rtEd().innerHTML = sanitizeRichHtml(res.value);
+    if (!document.getElementById('docTitle').value.trim())
+      document.getElementById('docTitle').value = file.name.replace(/\.docx$/i, '');
+    showToast('✅ Word fayl yuklandi — tahrirlab saqlashingiz mumkin');
+  } catch (e) {
+    errEl.textContent = "Faylni o'qib bo'lmadi: " + e.message;
+  }
+  input.value = '';
+}
+
+async function addDocContent() {
+  const title = document.getElementById('docTitle').value.trim();
+  const kind  = document.getElementById('docKind').value;
+  const errEl = document.getElementById('docFileErr');
+  errEl.textContent = '';
+  if (!title) { document.getElementById('docTitleErr').textContent = 'Sarlavhani kiriting'; return; }
+  document.getElementById('docTitleErr').textContent = '';
+
+  const html = sanitizeRichHtml(rtEd().innerHTML);
+  if (!richTextLength(html)) { errEl.textContent = 'Matnni kiriting'; return; }
+  const kb = Math.round(new Blob([html]).size / 1024);
+  if (kb > 900) { errEl.textContent = 'Matn juda katta (' + kb + " KB). 900 KB dan kichik bo'lishi kerak — bir nechta materialga bo'ling."; return; }
+
+  const btn = document.getElementById('btnAddDoc');
+  btn.disabled = true; btn.textContent = 'Saqlanmoqda…';
+  try {
+    if (wzEditingDocId) {
+      await db.collection('writingDocs').doc(wzEditingDocId).update({
+        title: title, kind: kind, html: html,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      showToast('✅ "' + title + '" yangilandi!');
+    } else {
+      const last = await db.collection('writingDocs').orderBy('order', 'desc').limit(1).get();
+      const order = (last.empty ? 0 : (last.docs[0].data().order || 0)) + 1;
+      await db.collection('writingDocs').add({
+        title: title,
+        kind: kind,                 // 'text' | 'grammar'
+        level: wzLevel || '',
+        type: wzTopic,              // Writing mavzusi
+        category: 'writing',
+        order: order,
+        html: html,
+        addedByAdmin: true,
+        addedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      showToast('✅ "' + title + '" saqlandi!');
+    }
+    resetDocForm();
+    await loadDocList();
+  } catch (e) {
+    showToast('❌ Xatolik: ' + e.message);
+    btn.disabled = false;
+    btn.textContent = wzEditingDocId ? 'Yangilash' : 'Saqlash';
+    return;
+  }
+}
+
+async function loadDocList() {
+  const el = document.getElementById('docList');
+  try {
+    const snap = await db.collection('writingDocs').where('type', '==', wzTopic).get();
+    const items = snap.docs
+      .map(d => Object.assign({ _id: d.id }, d.data()))
+      .filter(x => !wzLevel || x.level === wzLevel)
+      .sort((a, b) => (a.order || 0) - (b.order || 0));
+    wzDocCache = {};
+    items.forEach(x => { wzDocCache[x._id] = x; });
+    if (!items.length) {
+      el.innerHTML = '<div style="font-size:.82rem;color:var(--ink-soft)">Hali material yo\'q.</div>';
+      return;
+    }
+    el.innerHTML = items.map(x => `
+      <div class="doc-item">
+        <span class="badge ${x.kind === 'grammar' ? 'badge-blue' : ''}">${x.kind === 'grammar' ? '📐 Grammatika' : '📝 Matn'}</span>
+        <span class="doc-item-title">${esc(x.title || '—')}</span>
+        <button class="doc-item-edit" onclick="editDocContent('${x._id}')">Tahrirlash</button>
+        <button class="doc-item-del" onclick="deleteDocContent('${x._id}')">O'chirish</button>
+      </div>`).join('');
+  } catch (e) {
+    el.innerHTML = '<div class="form-error">Yuklab bo\'lmadi: ' + esc(e.message) + ' (Firestore qoidalarini yangilaganingizni tekshiring)</div>';
+  }
+}
+
+function editDocContent(id) {
+  const x = wzDocCache[id];
+  if (!x) return;
+  wzEditingDocId = id;
+  document.getElementById('docTitle').value = x.title || '';
+  document.getElementById('docKind').value = x.kind === 'grammar' ? 'grammar' : 'text';
+  rtEd().innerHTML = sanitizeRichHtml(x.html || '');
+  document.getElementById('btnAddDoc').textContent = 'Yangilash';
+  document.getElementById('btnCancelDoc').style.display = '';
+  document.getElementById('docTitle').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+async function deleteDocContent(id) {
+  if (!confirm("Bu materialni o'chirasizmi?")) return;
+  try {
+    await db.collection('writingDocs').doc(id).delete();
+    if (wzEditingDocId === id) resetDocForm();
+    showToast("🗑️ O'chirildi");
+    await loadDocList();
+  } catch (e) {
+    showToast('❌ Xatolik: ' + e.message);
+  }
 }
 
 // ══════════ MAVZU TARTIBI ══════════
