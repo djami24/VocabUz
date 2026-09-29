@@ -7,8 +7,93 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<style>
+/* ── XUSH KELIBSIZ (faqat birinchi kirishda) ── */
+#welcomeOverlay{display:none;position:fixed;inset:0;z-index:1000;align-items:center;justify-content:center;padding:20px;overflow-y:auto;
+  background:linear-gradient(160deg,#0D47A1 0%,#1565C0 45%,#2196F3 100%);font-family:'Inter',sans-serif;}
+#welcomeOverlay.show{display:flex;}
+#welcomeOverlay.hide{opacity:0;transition:opacity .3s ease;pointer-events:none;}
+.wm-card{width:100%;max-width:400px;margin:auto;background:#fff;border-radius:26px;padding:30px 22px 22px;text-align:center;
+  box-shadow:0 20px 60px rgba(0,0,0,.28);animation:wmIn .45s cubic-bezier(.2,.9,.3,1.1) both;}
+@keyframes wmIn{from{opacity:0;transform:translateY(24px) scale(.96)}to{opacity:1;transform:none}}
+.wm-logo{width:76px;height:76px;margin:0 auto 14px;border-radius:22px;overflow:hidden;box-shadow:0 6px 18px rgba(33,150,243,.35);background:#E3F2FD;}
+.wm-logo img{width:100%;height:100%;object-fit:cover;display:block;}
+.wm-hello{font-size:.98rem;font-weight:800;color:#2196F3;margin-bottom:6px;}
+.wm-title{font-size:1.5rem;font-weight:900;line-height:1.2;color:#1A1A2E;margin-bottom:10px;}
+.wm-title span{background:linear-gradient(135deg,#1565C0,#2196F3);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.wm-text{font-size:.92rem;line-height:1.6;color:#5A6070;margin-bottom:18px;}
+.wm-steps{display:flex;flex-direction:column;gap:10px;text-align:left;margin-bottom:20px;}
+.wm-step{display:flex;gap:12px;align-items:flex-start;padding:13px 14px;border-radius:16px;}
+.wm-step.blue{background:#E3F2FD;}
+.wm-step.green{background:#DCFCE7;}
+.wm-ico{width:38px;height:38px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,.08);}
+.wm-step b{display:block;font-size:.88rem;font-weight:800;color:#1A1A2E;margin-bottom:2px;}
+.wm-step p{font-size:.82rem;line-height:1.45;color:#5A6070;margin:0;}
+.wm-step p em{font-style:normal;font-weight:800;color:#16A34A;}
+.wm-step.blue p em{color:#1565C0;}
+.wm-link{font-weight:800;color:#1565C0;text-decoration:underline;text-underline-offset:2px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.wm-link.green{color:#16A34A;}
+.wm-btn{width:100%;height:54px;border:none;border-radius:16px;cursor:pointer;font-family:inherit;font-size:1.02rem;font-weight:800;color:#fff;
+  background:linear-gradient(135deg,#1565C0,#2196F3);box-shadow:0 6px 18px rgba(33,150,243,.4);-webkit-tap-highlight-color:transparent;}
+.wm-btn:active{transform:scale(.98);}
+@media (prefers-reduced-motion:reduce){.wm-card{animation:none}}
+</style>
 </head>
 <body>
+<!-- XUSH KELIBSIZ: faqat birinchi marta ko'rsatiladi -->
+<div id="welcomeOverlay" role="dialog" aria-modal="true" aria-labelledby="wmTitle">
+  <div class="wm-card">
+    <div class="wm-logo" id="wmLogo"></div>
+    <div class="wm-hello">Assalomu alaykum!</div>
+    <div class="wm-title" id="wmTitle"><span>VocabUz</span> ga xush kelibsiz!</div>
+    <div class="wm-text">Bu yerda siz inglizcha so'zlarni o'rganishingiz mumkin va qiziqarli o'yinlar orqali yanada oson o'rganasiz.</div>
+    <div class="wm-steps">
+      <div class="wm-step blue">
+        <div class="wm-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg></div>
+        <div><b>Avval ro'yxatdan o'tganmisiz?</b><p>Email va parolingizni kiriting va sahifaga <a href="#" class="wm-link" id="wmLogin">kiring</a>.</p></div>
+      </div>
+      <div class="wm-step green">
+        <div class="wm-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/></svg></div>
+        <div><b>Hali ro'yxatdan o'tmaganmisiz?</b><p><a href="register.html" class="wm-link green" id="wmRegister">«Ro'yxatdan o'tish»</a> tugmasini bosing.</p></div>
+      </div>
+    </div>
+    <button type="button" class="wm-btn" id="wmBtn">Tushundim</button>
+  </div>
+</div>
+<script>
+(function(){
+  var KEY = 'vz_welcome_seen';
+  var seen = false;
+  try { seen = localStorage.getItem(KEY) === '1'; } catch(e) {}
+  if (seen) return;
+  var ov = document.getElementById('welcomeOverlay');
+  ov.classList.add('show');
+  document.documentElement.style.overflow = 'hidden';
+  // Logotipni login sahifadagi logodan nusxalaymiz (rasmni ikki marta yozmaslik uchun)
+  window.addEventListener('DOMContentLoaded', function(){
+    var img = document.querySelector('.auth-logo img');
+    var box = document.getElementById('wmLogo');
+    if (img && box) { var c = img.cloneNode(true); c.removeAttribute('style'); box.appendChild(c); }
+  });
+  function closeWelcome(){
+    try { localStorage.setItem(KEY, '1'); } catch(e) {}
+    ov.classList.add('hide');
+    document.documentElement.style.overflow = '';
+    setTimeout(function(){ ov.classList.remove('show'); }, 300);
+  }
+  document.getElementById('wmBtn').addEventListener('click', closeWelcome);
+  // "kiring" — oynani yopib, email maydoniga o'tadi
+  document.getElementById('wmLogin').addEventListener('click', function(e){
+    e.preventDefault();
+    closeWelcome();
+    setTimeout(function(){ var i = document.getElementById('emailInput'); if (i) i.focus(); }, 320);
+  });
+  // "Ro'yxatdan o'tish" — belgini saqlab, register.html ga o'tadi
+  document.getElementById('wmRegister').addEventListener('click', function(){
+    try { localStorage.setItem(KEY, '1'); } catch(e) {}
+  });
+})();
+</script>
 <div class="auth-page">
   
   <div class="auth-logo" style="overflow:hidden;padding:0;">
