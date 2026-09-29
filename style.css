@@ -184,6 +184,10 @@ ul, ol { list-style: none; }
 }
 .home-card:active { transform: scale(.97); box-shadow: none; }
 
+/* Writing vocabulary (full-width) kartochka — pastroq */
+.home-card.home-grid-full { min-height: 72px; padding: 14px 16px; justify-content: center; }
+.home-card.home-grid-full .home-card-icon { top: 50%; transform: translateY(-50%); }
+
 .home-card-title {
   font-size: .95rem;
   font-weight: 700;
