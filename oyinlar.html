@@ -758,6 +758,7 @@ body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:v
 ════════════════════════════════ */
 let ALL_WORDS   = [];   // Firestore'dan dinamik yuklanadi
 const MIN_WORDS = 20;
+const GAME_SIZE = 25; // har bir o'yinda tasodifiy tanlanadigan so'zlar soni
 let learnedIds  = [];
 let currentUser = null;
 let _isPremium  = false; // premium holati
@@ -1056,7 +1057,7 @@ const HM_MAX = 6;
 function startHangman() {
   const pool = getLearnedVocabulary();
   if (pool.length < 1) { showToast("So'zlar topilmadi!"); return; }
-  hmWords  = shuffle(pool).slice(0, Math.min(10, pool.length));
+  hmWords  = shuffle(pool).slice(0, Math.min(GAME_SIZE, pool.length));
   hmIdx    = 0;
   hmScore  = 0;
   openGame('gameHangman');
@@ -1140,7 +1141,7 @@ let trWords, trIdx, trCorrect, trWrong;
 function startTranslation() {
   const pool = getLearnedVocabulary();
   if (pool.length < 4) { showToast("Kamida 4 ta so'z kerak!"); return; }
-  trWords   = shuffle(pool).slice(0, Math.min(10, pool.length));
+  trWords   = shuffle(pool).slice(0, Math.min(GAME_SIZE, pool.length));
   trIdx     = 0; trCorrect = 0; trWrong = 0;
   openGame('gameTranslation');
   trRender();
@@ -1199,7 +1200,7 @@ let snWords, snIdx, snCorrect, snWrong, snPlaced;
 function startSentence() {
   const pool = getLearnedVocabulary().filter(w => w.example && w.example.length > 10);
   if (pool.length < 1) { showToast("Example mavjud so'zlar topilmadi!"); return; }
-  snWords   = shuffle(pool).slice(0, Math.min(8, pool.length));
+  snWords   = shuffle(pool).slice(0, Math.min(GAME_SIZE, pool.length));
   snIdx     = 0; snCorrect = 0; snWrong = 0;
   openGame('gameSentence');
   snRender();
@@ -1298,7 +1299,7 @@ let scWords, scIdx, scCorrect, scWrong;
 function startScramble() {
   const pool = getLearnedVocabulary().filter(w => w.word.length > 3 && !w.word.includes(' '));
   if (pool.length < 1) { showToast("Mos so'zlar topilmadi!"); return; }
-  scWords   = shuffle(pool).slice(0, Math.min(10, pool.length));
+  scWords   = shuffle(pool).slice(0, Math.min(GAME_SIZE, pool.length));
   scIdx     = 0; scCorrect = 0; scWrong = 0;
   openGame('gameScramble');
   scRender();
@@ -1495,7 +1496,7 @@ function startQuiz() {
 function _startChooseEngine() {
   const pool = getLearnedVocabulary();
   if (pool.length < 4) { showToast("Kamida 4 ta so'z kerak!"); return; }
-  chWords   = shuffle(pool).slice(0, Math.min(10, pool.length));
+  chWords   = shuffle(pool).slice(0, Math.min(GAME_SIZE, pool.length));
   chIdx     = 0; chCorrect = 0; chWrong = 0;
   openGame('gameChoose');
   chRender();
@@ -1583,7 +1584,7 @@ let mlWords, mlIdx, mlCorrect, mlWrong, mlWordState, mlHidden;
 function startMissing() {
   const pool = getLearnedVocabulary().filter(w => w.word.length >= 4 && !w.word.includes(' '));
   if (pool.length < 1) { showToast("Mos so'zlar topilmadi!"); return; }
-  mlWords   = shuffle(pool).slice(0, Math.min(10, pool.length));
+  mlWords   = shuffle(pool).slice(0, Math.min(GAME_SIZE, pool.length));
   mlIdx     = 0; mlCorrect = 0; mlWrong = 0;
   openGame('gameMissing');
   mlRender();
@@ -1673,7 +1674,7 @@ const SP_TIME = 10;
 function startSpeed() {
   const pool = getLearnedVocabulary();
   if (pool.length < 1) { showToast("So'zlar topilmadi!"); return; }
-  spWords   = shuffle(pool).slice(0, Math.min(10, pool.length));
+  spWords   = shuffle(pool).slice(0, Math.min(GAME_SIZE, pool.length));
   spIdx     = 0; spCorrect = 0; spWrong = 0;
   openGame('gameSpeed');
   spRender();
@@ -1760,7 +1761,7 @@ let tfWords, tfIdx, tfCorrect, tfWrong;
 function startTF() {
   const pool = getLearnedVocabulary();
   if (pool.length < 2) { showToast("Kamida 2 ta so'z kerak!"); return; }
-  tfWords   = shuffle(pool).slice(0, Math.min(12, pool.length));
+  tfWords   = shuffle(pool).slice(0, Math.min(GAME_SIZE, pool.length));
   tfIdx     = 0; tfCorrect = 0; tfWrong = 0;
   openGame('gameTF');
   tfRender();
