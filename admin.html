@@ -2805,6 +2805,8 @@ async function saveTopicOrder() {
 
 let allPayments = [];
 let currentPayFilter = 'all';
+let premiumUids = new Set();   // hozir Premiumi bor foydalanuvchilar UID'lari
+let premiumUidsLoaded = false;
 
 async function loadPaymentsPage() {
   const wrap = document.getElementById('paymentsTableWrap');
@@ -2812,6 +2814,16 @@ async function loadPaymentsPage() {
   try {
     const snap = await db.collection('payments').orderBy('createdAt','desc').limit(100).get();
     allPayments = snap.docs.map(d => Object.assign({ _id: d.id }, d.data()));
+    // Hozir Premiumi bor foydalanuvchilarni aniqlash (bekor qilish tugmasi uchun)
+    try {
+      const pSnap = await db.collection('users').where('isPremium','==',true).get();
+      premiumUids = new Set(pSnap.docs.map(d => d.id));
+      premiumUidsLoaded = true;
+    } catch(e) {
+      premiumUids = new Set();
+      premiumUidsLoaded = false;
+      console.warn('[payments] Premium foydalanuvchilarni yuklab bo\'lmadi:', e.message);
+    }
     updatePendingBadge();
     renderPaymentsTable();
   } catch(e) {
@@ -2894,6 +2906,12 @@ function renderPaymentsTable() {
           '<button onclick="approvePayment(\'' + safeId + '\')" style="padding:6px 14px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:.78rem;font-weight:700;cursor:pointer">&#10003; Tasdiqlash</button>' +
           '<button onclick="rejectPayment(\'' + safeId + '\')" style="padding:6px 14px;background:var(--red);color:#fff;border:none;border-radius:8px;font-size:.78rem;font-weight:700;cursor:pointer">&#10007; Rad etish</button>'
           : '') +
+        (st === 'approved' && p.userId && premiumUids.has(p.userId) ?
+          '<button onclick="revokePremiumByPayment(\'' + safeId + '\')" style="padding:6px 14px;background:#FEE2E2;color:#B91C1C;border:none;border-radius:8px;font-size:.78rem;font-weight:700;cursor:pointer">&#9733; Premiumni bekor qilish</button>'
+          : '') +
+        (st === 'approved' && p.userId && premiumUidsLoaded && !premiumUids.has(p.userId) ?
+          '<span style="padding:6px 4px;color:var(--ink-soft);font-size:.75rem;font-weight:600">Premium bekor qilingan</span>'
+          : '') +
         '</div>' +
       '</td>' +
     '</tr>';
@@ -2956,6 +2974,13 @@ async function approvePayment(paymentId) {
   });
 }
 
+// To'lovlar jadvalidan Premiumni bekor qilish
+function revokePremiumByPayment(paymentId) {
+  const p = allPayments.find(x => x._id === paymentId);
+  if (!p || !p.userId) { showToast('❌ Foydalanuvchi topilmadi'); return; }
+  revokePremium(p.userId, p.userName || p.userEmail || p.userId);
+}
+
 async function revokePremium(userId, userName) {
   showConfirm(
     `"${userName || userId}" foydalanuvchisining Premiumini bekor qilasizmi?`,
@@ -2981,6 +3006,9 @@ async function revokePremium(userId, userName) {
     const idx = allUsers.findIndex(u => u._id === userId);
     if (idx !== -1) allUsers[idx].isPremium = false;
     filterUsers();
+    // To'lovlar jadvalini ham yangilash (shu foydalanuvchining barcha qatorlarida tugma yo'qoladi)
+    premiumUids.delete(userId);
+    if (typeof renderPaymentsTable === 'function' && allPayments.length) renderPaymentsTable();
     showToast('✅ Premium bekor qilindi!');
   } catch(e) {
     showToast('❌ Xato: ' + e.message);
