@@ -838,7 +838,8 @@ firebase.auth().onAuthStateChanged(function(user) {
           : d.id;
         return Object.assign({}, data, { _docId: d.id, id: wId });
       })
-      .filter(function(w) { return w.topic && w.word && w.uz; });
+      // Writing so'zlari o'yinlarga kirmasin
+      .filter(function(w) { return w.topic && w.word && w.uz && w.category !== 'writing' && w.vocabType !== 'writing'; });
 
     function applyUserDoc(doc) {
       if (doc.exists) {
