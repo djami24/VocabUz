@@ -554,6 +554,7 @@ body { background: var(--sky); }
     </div>
 
     <!-- To'lov bo'limi -->
+    <div id="vzReferral"></div>
     <div id="paymentSection">
       <div class="prem-section-label">To'lov kartasi</div>
       <div class="prem-card-box">
@@ -672,6 +673,7 @@ body { background: var(--sky); }
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
+<script src="vz-features.js"></script>
 <script src="auth-guard.js"></script>
 <script>
 
@@ -710,7 +712,7 @@ function loadUserStatus(user) {
 
   if (_premiumListener) { _premiumListener(); }
   _premiumListener = db.collection('users').doc(user.uid).onSnapshot(function(doc) {
-    if (doc.exists) { _isPremium = !!(doc.data().isPremium); }
+    if (doc.exists) { _isPremium = !!(vzPrem(doc.data())); }
     updateUI();
   }, function() { updateUI(); });
 }

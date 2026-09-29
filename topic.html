@@ -306,6 +306,7 @@ body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:v
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
+<script src="vz-features.js"></script>
 <script src="storage-utils.js"></script>
 <script src="auth-guard.js"></script>
 <script>
@@ -393,7 +394,7 @@ firebase.auth().onAuthStateChanged(function(user){
     var wordsSnap = results[1];
 
     if(userDoc.exists){
-      isPremiumUser = !!userDoc.data().isPremium;
+      isPremiumUser = !!vzPrem(userDoc.data());
       if(userDoc.data().learned)    learnedIds   = userDoc.data().learned.map(Number);
       if(userDoc.data().passed)     passedTopics = userDoc.data().passed;
       if(userDoc.data().bookmarks)  bookmarks    = userDoc.data().bookmarks.map(Number);

@@ -62,6 +62,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
+<script src="vz-features.js"></script>
 <script src="avatar.js"></script>
 <script>
 var _registering = false;
@@ -125,6 +126,7 @@ function doRegister(){
           });
         });
     })
+    .then(function(){ var r = vzGetRef(); return r ? vzClaimReferral(firebase.auth().currentUser.uid, r).catch(function(){}) : null; })
     .then(function(){ cacheAvatarKey(selectedAvatar); location.href = 'index.html'; })
     .catch(function(err){
       _registering = false;

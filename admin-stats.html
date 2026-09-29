@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="uz"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Statistika — VocabUZ admin</title>
+<style>
+body{margin:0;background:#F0F6FF;font-family:Inter,system-ui,sans-serif;color:#1A1A2E;padding:16px;max-width:720px;margin:auto}
+h1{font-size:1.2rem}h2{font-size:.95rem;margin:0 0 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.box,.card{background:#fff;border-radius:14px;padding:14px;box-shadow:0 1px 4px rgba(33,150,243,.12)}
+.card{margin-bottom:14px}.num{font-size:1.7rem;font-weight:800;color:#2196F3}.lbl{font-size:.75rem;color:#9AA0AD}
+.row{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.82rem}.row .n{width:130px;flex-shrink:0}
+.bar{height:10px;background:#2196F3;border-radius:99px;min-width:2px}.v{font-weight:700;margin-left:4px}
+.cols{display:flex;align-items:flex-end;gap:6px;height:110px}.col{flex:1;text-align:center;font-size:.7rem}.col div{background:#2196F3;border-radius:6px 6px 0 0;margin-bottom:3px}
+</style></head><body>
+<h1>📊 VocabUZ statistikasi</h1>
+<div id="app">Yuklanmoqda…</div>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="vz-features.js"></script>
+<script>
+var ADMINS = ['admin@vocabuz.com', 'djaami2022@gmail.com'];
+var LABELS = {index:'Bosh sahifa', topic:'Topic vocabulary', speaking:'IELTS / CEFR', grammar:'Grammar', writing:'Writing vocab', oyinlar:"O'yinlar", flashcards:'Flashcards', top15k:'TOP 15K', mywords:"Mening so'zlarim", 'top-learners':'Top Learners', statistika:'Statistika', search:'Qidirish', premium:'Premium', profile:'Profil'};
+function ds(d){ return vzDay(d); }
+firebase.auth().onAuthStateChanged(function (u) {
+  if (!u) { location.href = 'login.html'; return; }
+  if (ADMINS.indexOf(u.email) < 0) { document.getElementById('app').textContent = 'Ruxsat yo\'q'; return; }
+  var since = new Date(); since.setDate(since.getDate() - 13); since.setHours(0, 0, 0, 0);
+  Promise.all([
+    db.collection('stats').get(),
+    db.collection('visits').where('timestamp', '>=', since).get(),
+    db.collection('users').get(),
+    db.collection('referrals').get()
+  ]).then(function (r) {
+    // Bo'limlar (oxirgi 30 kun)
+    var sec = {}, lim = new Date(); lim.setDate(lim.getDate() - 29); var limS = ds(lim);
+    r[0].forEach(function (d) { if (d.id >= limS) { var s = d.data().sections || {}; for (var k in s) sec[k] = (sec[k] || 0) + s[k]; } });
+    var secArr = Object.keys(sec).map(function (k) { return [k, sec[k]]; }).sort(function (a, b) { return b[1] - a[1]; });
+    var max = secArr.length ? secArr[0][1] : 1;
+    // Kunlik faol foydalanuvchilar (visits dan, noyob uid)
+    var dau = {};
+    r[1].forEach(function (d) { var v = d.data(), t = v.timestamp && v.timestamp.toDate && v.timestamp.toDate(); if (!t) return; var k = ds(t); (dau[k] = dau[k] || {})[v.uid] = 1; });
+    var days = [], i; for (i = 13; i >= 0; i--) { var x = new Date(); x.setDate(x.getDate() - i); days.push(ds(x)); }
+    var dv = days.map(function (k) { return Object.keys(dau[k] || {}).length; }), dmax = Math.max.apply(null, dv.concat([1]));
+    // Premium
+    var prem = 0, bonus = 0, now = Date.now();
+    r[2].forEach(function (d) { var x = d.data(); if (x.isPremium) prem++; else if (vzMs(x.refBonusUntil) > now) bonus++; });
+    var h = '<div class="grid">'
+      + '<div class="box"><div class="num">' + dv[13] + '</div><div class="lbl">Bugungi faol foydalanuvchilar</div></div>'
+      + '<div class="box"><div class="num">' + prem + '</div><div class="lbl">Premium olgan talabalar</div></div>'
+      + '<div class="box"><div class="num">' + bonus + '</div><div class="lbl">Taklif bonusi faol</div></div>'
+      + '<div class="box"><div class="num">' + r[3].size + '</div><div class="lbl">Taklif orqali kelganlar</div></div>'
+      + '<div class="box"><div class="num">' + r[2].size + '</div><div class="lbl">Jami talabalar</div></div></div>'
+      + '<div class="card"><h2>Kunlik faol foydalanuvchilar (14 kun)</h2><div class="cols">'
+      + dv.map(function (n, j) { return '<div class="col"><div style="height:' + Math.round(n / dmax * 90) + 'px"></div>' + n + '<br>' + days[j].slice(8) + '</div>'; }).join('') + '</div></div>'
+      + '<div class="card"><h2>Eng ko\'p ochilgan bo\'limlar (30 kun)</h2>'
+      + (secArr.length ? secArr.map(function (a) { return '<div class="row"><span class="n">' + (LABELS[a[0]] || a[0]) + '</span><div class="bar" style="width:' + Math.round(a[1] / max * 100) + '%"></div><span class="v">' + a[1] + '</span></div>'; }).join('') : '<span class="lbl">Hali ma\'lumot yo\'q — talabalar sayt ishlata boshlagach paydo bo\'ladi</span>') + '</div>';
+    document.getElementById('app').innerHTML = h;
+  }).catch(function (e) { document.getElementById('app').textContent = 'Xatolik: ' + e.message + ' (firestore.rules yangilanganmi?)'; });
+});
+</script></body></html>

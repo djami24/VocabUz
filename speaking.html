@@ -208,6 +208,7 @@ body { background: #F0FFF4; }
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
+<script src="vz-features.js"></script>
 <script src="storage-utils.js"></script>
 <script src="auth-guard.js"></script>
 <script>
@@ -272,12 +273,12 @@ firebase.auth().onAuthStateChanged(function(user) {
     var isPremium2 = false;
     if (userDoc.exists) {
       var udata = userDoc.data();
-      isPremium2 = !!(udata.isPremium);
+      isPremium2 = !!(vzPrem(udata));
     }
     if (!isPremium2) {
       // Bir marta qayta tekshiramiz (auth-guard.js dan keyin kelishi mumkin)
       db.collection('users').doc(user.uid).get().then(function(freshDoc) {
-        if (freshDoc.exists && freshDoc.data().isPremium) {
+        if (freshDoc.exists && vzPrem(freshDoc.data())) {
           // Premium tasdiqlandi — sahifani yuklash
           svLoadContent(freshDoc, wordsSnap, user);
         } else if (freshDoc.metadata && freshDoc.metadata.fromCache) {
@@ -332,7 +333,7 @@ function svLoadContent(userDoc, wordsSnap, user) {
     // Real-time premium kuzatuvchi — admin o'chirganda darhol chiqaradi
     db.collection('users').doc(user.uid).onSnapshot(function(doc) {
       if (!doc.exists) return;
-      if (!doc.data().isPremium) {
+      if (!vzPrem(doc.data())) {
         document.getElementById('svBody').innerHTML =
           '<div style="text-align:center;padding:60px 20px">' +
           '<div style="font-size:2.8rem;margin-bottom:14px">😔</div>' +

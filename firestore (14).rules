@@ -16,7 +16,15 @@ service cloud.firestore {
 
     // ── Premium bilan bog'liq maydonlar: faqat admin o'zgartira oladi ──
     function premiumFields() {
-      return ['isPremium', 'premiumActivatedAt', 'premiumRevokedAt'];
+      return ['isPremium', 'premiumActivatedAt', 'premiumRevokedAt', 'refBonusUntil', 'refCount'];
+    }
+
+    // ── Taklif (referral): bonusni faqat referrals/{yangiUid} hujjati BIR MARTA yaratilganda berish mumkin ──
+    function refPath() {
+      return /databases/$(database)/documents/referrals/$(request.auth.uid);
+    }
+    function refClaim() {
+      return existsAfter(refPath()) && !exists(refPath());
     }
 
     // ── So'zlar ──
@@ -41,7 +49,18 @@ service cloud.firestore {
                         && !request.resource.data.keys().hasAny(premiumFields()));
       allow update: if isAdmin()
                     || (request.auth.uid == userId
-                        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(premiumFields()));
+                        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(premiumFields()))
+                    // yangi talaba o'ziga taklif bonusini oladi (3 kun)
+                    || (request.auth.uid == userId && refClaim()
+                        && !('referredBy' in resource.data)
+                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['referredBy', 'refBonusUntil'])
+                        && request.resource.data.refBonusUntil <= request.time + duration.value(3, 'd') + duration.value(1, 'h'))
+                    // taklif qilgan talabaga bonus (+1 taklif, jami 60 kundan oshmaydi)
+                    || (request.auth.uid != userId && refClaim()
+                        && getAfter(refPath()).data.referrerUid == userId
+                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['refBonusUntil', 'refCount'])
+                        && request.resource.data.refCount == resource.data.get('refCount', 0) + 1
+                        && request.resource.data.refBonusUntil <= request.time + duration.value(60, 'd'));
       allow delete: if isAdmin();
 
       // ── Bildirishnomalar (subcollection) ──
@@ -64,6 +83,23 @@ service cloud.firestore {
     match /config/{docId} {
       allow read:  if isLoggedIn();   // barcha login qilganlar o'qiy oladi
       allow write: if isAdmin();      // faqat admin yoza oladi
+    }
+
+    // ── Taklif yozuvlari (har bir yangi talaba uchun faqat bitta, o'zgartirib bo'lmaydi) ──
+    match /referrals/{inviteeUid} {
+      allow create: if isLoggedIn() && request.auth.uid == inviteeUid
+                    && request.resource.data.keys().hasOnly(['referrerUid', 'code', 'createdAt'])
+                    && request.resource.data.referrerUid != request.auth.uid;
+      allow read:   if isAdmin() || request.auth.uid == inviteeUid
+                    || (isLoggedIn() && resource.data.referrerUid == request.auth.uid);
+      allow update, delete: if false;
+    }
+
+    // ── Kunlik statistika: qaysi bo'lim necha marta ochilgan ──
+    match /stats/{day} {
+      allow read:   if isAdmin();
+      allow create, update: if isLoggedIn() && request.resource.data.keys().hasOnly(['sections']);
+      allow delete: if false;
     }
 
     // ── To'lovlar ──

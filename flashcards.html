@@ -573,6 +573,7 @@ html,body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;co
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
+<script src="vz-features.js"></script>
 <script src="storage-utils.js"></script>
 <script src="auth-guard.js"></script>
 <script>
@@ -585,6 +586,7 @@ const TOPIC_EMOJI = {
 // ── STATE ──────────────────────────────────────────────────
 let ALL_WORDS    = [];   // Firestore'dan dinamik yuklanadi
 let learnedIds   = [];
+let srs          = {};   // takrorlash jadvali: {id:{b:quti, d:keyingi vaqt}}
 let currentUser  = null;
 let activeFilter = 'Hammasi';
 // Rejim: 'image' = rasmli (front: rasm), 'classic' = klassik (front: so'z)
@@ -618,6 +620,7 @@ firebase.auth().onAuthStateChanged(function(user){
       learnedIds = JSON.parse(lsGet('vz_learned','[]')).map(Number);
     }
     lsSet('vz_learned', JSON.stringify(learnedIds));
+    srs = (userDoc.exists && userDoc.data().srs) || {};
 
     // Firestore'dan haqiqiy so'zlarni yuklash
     ALL_WORDS = wordsSnap.docs
@@ -633,6 +636,7 @@ firebase.auth().onAuthStateChanged(function(user){
 
     document.getElementById('loader').style.display = 'none';
     renderMain();
+    if(location.search.indexOf('srs=1') > -1) startSRS();
   }).catch(function(){
     // Firestore ishlamasa localStorage'dan olamiz
     document.getElementById('loader').style.display = 'none';
@@ -711,6 +715,7 @@ function renderMain(){
 
   // Deck cards
   html += '<div class="deck-list">';
+  html += srsDeckHtml();
   if(activeFilter === 'Hammasi'){
     html += `
       <div class="deck-card" onclick="startFC(null,&quot;Barcha so'zlar&quot;)">
@@ -779,6 +784,28 @@ function setFilter(f){
 function setMode(m){
   fcMode = m;
   renderMain();
+}
+
+// ── TAKRORLASH (Leitner): bugun takrorlanishi kerak bo'lgan so'zlar ──
+function dueWords(){
+  return vzSrsDue(ALL_WORDS.filter(function(w){ return learnedIds.includes(w.id); }), srs);
+}
+function srsDeckHtml(){
+  const n = dueWords().length;
+  return `
+    <div class="deck-card" onclick="startSRS()" style="border:2px solid ${n?'#F59E0B':'#DCFCE7'}">
+      <div class="deck-icon" style="background:#FEF3C7;">🔁</div>
+      <div class="deck-info">
+        <div class="deck-title">Takrorlash</div>
+        <div class="deck-sub">${n ? "Bugun takrorlash vaqti kelgan so'zlar" : "Bugungi takrorlash tugadi 🎉"}</div>
+      </div>
+      <div class="deck-progress">${n} ta</div>
+    </div>`;
+}
+function startSRS(){
+  const words = dueWords();
+  if(!words.length){ showToast("Bugun takrorlanadigan so'z yo'q 🎉"); return; }
+  launchFC(words, '🔁 Takrorlash');
 }
 
 // ── START FLASHCARDS ──────────────────────────────────────
@@ -899,6 +926,7 @@ function fcAnswer(type){
   if(type==='good')  fcGood++;
   if(type==='again') fcAgain++;
   if(type==='skip')  fcSkip++;
+  if(type!=='skip' && currentUser) vzSrsUpdate(currentUser.uid, srs, fcWords[fcIndex].id, type==='good');
   fcIndex++;
   if(fcIndex >= fcWords.length){ showFCResult(); }
   else { showFCCard(); }

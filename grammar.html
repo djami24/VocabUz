@@ -220,6 +220,7 @@ body { background:#F5F3FF; }
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
+<script src="vz-features.js"></script>
 <script src="storage-utils.js"></script>
 <script src="auth-guard.js"></script>
 <script src="rich-utils.js"></script>
@@ -264,13 +265,13 @@ firebase.auth().onAuthStateChanged(function (user) {
     db.collection('grammarDocs').get()
   ]).then(function (res) {
     var userDoc = res[0];
-    if (userDoc.exists && userDoc.data().isPremium) {
+    if (userDoc.exists && vzPrem(userDoc.data())) {
       wrLoadContent(userDoc, res[1], res[2], user);
       return;
     }
     // Bir marta serverdan qayta tekshiramiz
     db.collection('users').doc(user.uid).get({ source: 'server' }).then(function (fresh) {
-      if (fresh.exists && fresh.data().isPremium) {
+      if (fresh.exists && vzPrem(fresh.data())) {
         wrLoadContent(fresh, res[1], res[2], user);
       } else if (fresh.metadata && fresh.metadata.fromCache) {
         document.getElementById('wrBody').innerHTML =
@@ -327,7 +328,7 @@ function wrLoadContent(userDoc, wordsSnap, docsSnap, user) {
 
   // Premium real-time kuzatuvchi
   db.collection('users').doc(user.uid).onSnapshot(function (doc) {
-    if (!doc.exists || doc.data().isPremium) return;
+    if (!doc.exists || vzPrem(doc.data())) return;
     document.getElementById('wrBackBtn').style.display = 'none';
     document.getElementById('wrBody').innerHTML =
       '<div style="text-align:center;padding:60px 20px">' +

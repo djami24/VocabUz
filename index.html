@@ -148,6 +148,8 @@
     </div>
   </div>
 
+  <div id="vzGoal"></div>
+
   <!-- Cards grid -->
   <div class="home-grid">
 
@@ -281,6 +283,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
+<script src="vz-features.js"></script>
 <script src="avatar.js"></script>
 <script src="auth-guard.js"></script>
 <script>
@@ -389,8 +392,8 @@ function loadPremiumStatus(uid) {
     var wasPremium = _isPremiumUser;
     // Server tasdiqlamagan (keshdagi / hali yozilayotgan) snapshot "premium yo'q" degan xulosa bermasin
     var _serverSnap = !(doc.metadata && doc.metadata.fromCache);
-    if (data.isPremium || _serverSnap) {
-      _isPremiumUser = !!(data.isPremium);
+    if (vzPrem(data) || _serverSnap) {
+      _isPremiumUser = !!(vzPrem(data));
       _premiumChecked = true;
     }
 
@@ -431,7 +434,7 @@ function requirePremium(url) {
   if (!user) return; // kirish tekshirilmoqda — auth tugagach foydalanuvchi qayta bosadi
   // "Premium kerak" oynasini faqat SERVER tasdiqlagandan keyin ko'rsatamiz
   db.collection('users').doc(user.uid).get({ source: 'server' }).then(function (doc) {
-    var isPrem = !!(doc.exists && doc.data().isPremium);
+    var isPrem = !!(doc.exists && vzPrem(doc.data()));
     _isPremiumUser = isPrem;
     _premiumChecked = true;
     if (isPrem) { location.href = url; }

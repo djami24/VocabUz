@@ -449,6 +449,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
+<script src="vz-features.js"></script>
 <script src="avatar.js"></script>
 <script>
 
@@ -480,7 +481,7 @@ firebase.auth().onAuthStateChanged(function(user){
       updateMenuSub();
 
       // Premium badge va banner rangini yangilash
-      var isPremium = !!(data.isPremium);
+      var isPremium = !!(vzPrem(data));
       var badge  = document.getElementById('profPremiumBadge');
       var banner = document.getElementById('profPremiumBanner');
       var bannerTitle = document.getElementById('profPremiumBannerTitle');

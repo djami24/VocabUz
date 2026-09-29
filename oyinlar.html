@@ -750,6 +750,7 @@ body{min-height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:v
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
+<script src="vz-features.js"></script>
 <script src="storage-utils.js"></script>
 <script src="auth-guard.js"></script>
 <script>
@@ -844,7 +845,7 @@ firebase.auth().onAuthStateChanged(function(user) {
     function applyUserDoc(doc) {
       if (doc.exists) {
         var udata = doc.data();
-        _isPremium = !!(udata.isPremium);
+        _isPremium = !!(vzPrem(udata));
         var vzIds = (udata.learned   || []).map(Number);
         var tvIds = (udata.tvLearned || []).map(Number);
         var numSet = new Set(vzIds);
@@ -886,7 +887,7 @@ function startPremiumWatcher(uid) {
   if (_premiumWatcher) return;
   _premiumWatcher = db.collection('users').doc(uid).onSnapshot(function(doc) {
     if (!doc.exists) return;
-    var stillPremium = !!(doc.data().isPremium);
+    var stillPremium = !!(vzPrem(doc.data()));
     if (!stillPremium && _isPremium) {
       _isPremium = false;
       showToast('Premium bekor qilindi. Asosiy sahifaga qaytilmoqda...');
