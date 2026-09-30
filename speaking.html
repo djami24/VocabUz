@@ -158,6 +158,83 @@ body { background: #F0FFF4; }
 }
 .sv-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
+/* ── O'rganilgan so'zlar bo'limi ── */
+.sv-learned-section { margin-top:6px; }
+.sv-learned-toggle {
+  width:100%; display:flex; align-items:center; gap:8px; padding:13px 16px;
+  border:none; border-radius:14px; background:#DCFCE7; color:#16A34A;
+  font-family:inherit; font-size:.9rem; font-weight:800; cursor:pointer;
+  text-align:left; margin-bottom:10px; -webkit-tap-highlight-color:transparent;
+}
+.sv-learned-toggle .lt-cnt { margin-left:auto; background:#22C55E; color:#fff; font-size:.74rem; padding:2px 9px; border-radius:99px; }
+.sv-learned-toggle .lt-chev { display:flex; transition:transform .2s; }
+.sv-learned-toggle.open .lt-chev { transform:rotate(180deg); }
+.sv-learned-tools { display:flex; justify-content:flex-end; margin-bottom:10px; }
+.sv-learned-tools button {
+  border:none; background:#fff; color:#16A34A; font-family:inherit; font-size:.78rem; font-weight:700;
+  padding:7px 12px; border-radius:99px; box-shadow:0 1px 4px rgba(34,197,94,.15); cursor:pointer;
+}
+.sv-word-uz.uz-hide { filter:blur(6px); cursor:pointer; user-select:none; }
+.sv-alldone-note {
+  background:#fff; border-radius:14px; padding:18px 16px; text-align:center; margin-bottom:10px;
+  font-size:.88rem; font-weight:700; color:#16A34A; box-shadow:0 1px 4px rgba(34,197,94,.12);
+}
+.sv-test-ready {
+  background:linear-gradient(135deg,#22C55E,#16A34A); color:#fff; border-radius:14px; padding:14px 16px;
+  display:flex; align-items:center; gap:12px; margin-bottom:12px; cursor:pointer;
+  box-shadow:0 4px 14px rgba(34,197,94,.3);
+}
+.sv-test-ready-txt { flex:1; }
+.sv-test-ready-title { font-size:.92rem; font-weight:800; }
+.sv-test-ready-sub { font-size:.75rem; opacity:.9; margin-top:2px; }
+.sv-test-ready-btn { border:none; background:#fff; color:#16A34A; font-family:inherit; font-size:.78rem; font-weight:800; padding:8px 13px; border-radius:10px; cursor:pointer; }
+
+/* ── O'rgandim mini-test (modal) ── */
+#svLearnCheck { display:none; position:fixed; inset:0; z-index:450; background:rgba(26,26,46,.55); align-items:center; justify-content:center; padding:20px; }
+#svLearnCheck.open { display:flex; }
+.svq-box { width:100%; max-width:400px; background:#fff; border-radius:20px; padding:22px 18px 16px; box-shadow:0 12px 40px rgba(0,0,0,.25); }
+.svq-label { font-size:.72rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#9AA0AD; text-align:center; }
+.svq-word { font-size:1.7rem; font-weight:900; text-align:center; margin:6px 0 4px; color:#1A1A2E; word-break:break-word; }
+.svq-note { font-size:.76rem; text-align:center; min-height:18px; margin-bottom:12px; color:#9AA0AD; font-weight:600; }
+.svq-note.err { color:#EF4444; }
+.svq-opts { display:flex; flex-direction:column; gap:9px; }
+.svq-opt {
+  width:100%; padding:15px 18px; border-radius:12px; border:2px solid #DCFCE7; background:#fff;
+  font-family:inherit; font-size:.9rem; font-weight:600; color:#1A1A2E; cursor:pointer; text-align:left;
+  transition:all .15s; -webkit-tap-highlight-color:transparent;
+}
+.svq-opt:active:not([disabled]) { background:#F0FFF4; }
+.svq-opt.correct { background:#DCFCE7 !important; border-color:#22C55E !important; color:#16A34A !important; }
+.svq-opt.wrong { background:#FEE2E2 !important; border-color:#EF4444 !important; color:#EF4444 !important; }
+.svq-opt[disabled] { cursor:default; }
+.svq-cancel { display:block; width:100%; margin-top:12px; padding:10px; border:none; background:none; font-family:inherit; font-size:.82rem; font-weight:600; color:#9AA0AD; cursor:pointer; }
+
+/* ── Kategoriya testi (to'liq ekran) ── */
+#svTest { display:none; position:fixed; inset:0; z-index:400; background:#F0FFF4; flex-direction:column; overflow-y:auto; }
+#svTest.open { display:flex; }
+.svt-top { display:flex; align-items:center; gap:10px; padding:14px 16px 10px; }
+.svt-close { width:38px; height:38px; border-radius:50%; background:#fff; border:none; cursor:pointer; box-shadow:0 1px 4px rgba(34,197,94,.15); color:#5A6070; font-size:1rem; }
+.svt-title { flex:1; font-size:1rem; font-weight:800; color:#1A1A2E; }
+.svt-counter { font-size:.78rem; font-weight:700; background:#DCFCE7; color:#16A34A; padding:4px 10px; border-radius:20px; }
+.svt-track { height:6px; background:#D1FAE5; margin:0 16px 8px; border-radius:6px; overflow:hidden; }
+.svt-fill { height:100%; width:0; background:linear-gradient(90deg,#22C55E,#16A34A); transition:width .3s; }
+.svt-body { padding:8px 16px 40px; max-width:460px; width:100%; margin:0 auto; }
+.svt-q { text-align:center; padding:18px 0 10px; }
+.svt-q-label { font-size:.72rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#9AA0AD; }
+.svt-q-word { font-size:1.9rem; font-weight:900; color:#1A1A2E; margin:6px 0; word-break:break-word; }
+.svt-err { text-align:center; font-size:.8rem; font-weight:600; color:#5A6070; margin-bottom:12px; }
+.svt-next { display:none; width:100%; margin-top:14px; padding:14px; border:none; border-radius:12px; background:#22C55E; color:#fff; font-family:inherit; font-size:.92rem; font-weight:800; cursor:pointer; }
+.svt-result { text-align:center; padding:30px 8px; }
+.svt-result-title { font-size:1.4rem; font-weight:900; color:#1A1A2E; margin-bottom:8px; }
+.svt-result-sub { font-size:.86rem; color:#5A6070; line-height:1.55; margin-bottom:18px; }
+.svt-stats { display:flex; justify-content:center; gap:22px; margin-bottom:22px; }
+.svt-stat-val { font-size:1.5rem; font-weight:900; }
+.svt-stat-lbl { font-size:.72rem; color:#9AA0AD; font-weight:600; }
+.svt-btns { display:flex; flex-direction:column; gap:10px; }
+.svt-btn { padding:14px; border:none; border-radius:12px; font-family:inherit; font-size:.9rem; font-weight:800; cursor:pointer; }
+.svt-btn.primary { background:#22C55E; color:#fff; }
+.svt-btn.secondary { background:#fff; color:#16A34A; box-shadow:0 1px 4px rgba(34,197,94,.15); }
+
 .sv-empty { text-align:center; padding:48px 16px; color:#9AA0AD; font-size:.88rem; }
 </style>
 </head>
@@ -203,12 +280,33 @@ body { background: #F0FFF4; }
 
 <div class="sv-toast" id="svToast"></div>
 
+<!-- O'rgandim mini-test -->
+<div id="svLearnCheck">
+  <div class="svq-box">
+    <div class="svq-label">Tarjimasini tanlang</div>
+    <div class="svq-word" id="svqWord"></div>
+    <div class="svq-note" id="svqNote"></div>
+    <div class="svq-opts" id="svqOpts"></div>
+    <button class="svq-cancel" type="button" onclick="svCloseLearnCheck()">Bekor qilish</button>
+  </div>
+</div>
+
+<!-- Kategoriya testi -->
+<div id="svTest">
+  <div class="svt-top">
+    <button class="svt-close" type="button" onclick="svCloseTest()">&#10005;</button>
+    <div class="svt-title" id="svtTitle"></div>
+    <div class="svt-counter" id="svtCounter"></div>
+  </div>
+  <div class="svt-track"><div class="svt-fill" id="svtFill"></div></div>
+  <div class="svt-body" id="svtBody"></div>
+</div>
+
 <!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
-<script src="vz-features.js"></script>
 <script src="storage-utils.js"></script>
 <script src="auth-guard.js"></script>
 <script>
@@ -217,6 +315,9 @@ var currentUser = null;
 var SV_WORDS    = [];        // all speaking words
 var svLearned   = [];  // _docId strings
 var svBookmarks = [];  // numeric w.id (same as mywords.html vz_bookmarks)
+var svPassed    = [];  // testdan o'tgan kategoriyalar (type nomlari)
+var svLearnedOpen   = false; // "O'rganilgan so'zlar" bo'limi ochiqmi
+var svLearnedHideUz = false; // o'rganilganlarda tarjima yashirinmi
 var svView      = 'types';   // 'types' | 'words'
 var svCurrentType = null;
 
@@ -226,10 +327,12 @@ var TYPE_EMOJIS = ['🗣️','💬','🎯','📢','🧠','✨','🔥','💡','�
 function svLoadLocal() {
   svLearned   = JSON.parse(lsGet('sv_learned', '[]'));
   svBookmarks = JSON.parse(lsGet('vz_bookmarks', '[]')).map(Number);
+  svPassed    = JSON.parse(lsGet('sv_passed', '[]'));
 }
 function svSaveLocal() {
   lsSet('sv_learned', JSON.stringify(svLearned));
   lsSet('vz_bookmarks', JSON.stringify(svBookmarks));
+  lsSet('sv_passed', JSON.stringify(svPassed));
 }
 function svSaveFirestore() {
   if (!currentUser) return;
@@ -237,7 +340,7 @@ function svSaveFirestore() {
   // Save svLearned and bookmarks separately using merge so we don't
   // overwrite data written by other pages (topic.html, mywords.html).
   // bookmarks is a shared field across all vocab sections — always merge it.
-  var data = { svLearned: svLearned, bookmarks: svBookmarks };
+  var data = { svLearned: svLearned, svPassed: svPassed, bookmarks: svBookmarks };
   ref.set(data, { merge: true }).catch(function(err) {
     console.warn('svSaveFirestore error:', err);
   });
@@ -273,18 +376,14 @@ firebase.auth().onAuthStateChanged(function(user) {
     var isPremium2 = false;
     if (userDoc.exists) {
       var udata = userDoc.data();
-      isPremium2 = !!(vzPrem(udata));
+      isPremium2 = !!(udata.isPremium);
     }
     if (!isPremium2) {
       // Bir marta qayta tekshiramiz (auth-guard.js dan keyin kelishi mumkin)
       db.collection('users').doc(user.uid).get().then(function(freshDoc) {
-        if (freshDoc.exists && vzPrem(freshDoc.data())) {
+        if (freshDoc.exists && freshDoc.data().isPremium) {
           // Premium tasdiqlandi — sahifani yuklash
           svLoadContent(freshDoc, wordsSnap, user);
-        } else if (freshDoc.metadata && freshDoc.metadata.fromCache) {
-          // Serverdan javob kelmadi (kesh) — premium borligini bilmaymiz, "sotib oling" ko'rsatmaymiz
-          document.getElementById('svBody').innerHTML =
-            '<div class="sv-empty">Internet aloqasini tekshirib, sahifani qayta yuklang.</div>';
         } else {
           document.getElementById('svBody').innerHTML =
             '<div style="text-align:center;padding:60px 20px">' +
@@ -315,6 +414,7 @@ function svLoadContent(userDoc, wordsSnap, user) {
       var ud = userDoc.data();
       (ud.svLearned   || []).forEach(function(id) { if (!svLearned.includes(id))   svLearned.push(id); });
       svBookmarks = (ud.bookmarks || []).map(Number);
+      (ud.svPassed    || []).forEach(function(t) { if (!svPassed.includes(t)) svPassed.push(t); });
       svSaveLocal();
     }
 
@@ -333,7 +433,7 @@ function svLoadContent(userDoc, wordsSnap, user) {
     // Real-time premium kuzatuvchi — admin o'chirganda darhol chiqaradi
     db.collection('users').doc(user.uid).onSnapshot(function(doc) {
       if (!doc.exists) return;
-      if (!vzPrem(doc.data())) {
+      if (!doc.data().isPremium) {
         document.getElementById('svBody').innerHTML =
           '<div style="text-align:center;padding:60px 20px">' +
           '<div style="font-size:2.8rem;margin-bottom:14px">😔</div>' +
@@ -407,7 +507,8 @@ function renderTypes() {
     var lrn      = words.filter(function(w) { return svLearned.includes(w._docId); }).length;
     var tot      = words.length;
     var p        = tot > 0 ? Math.round(lrn / tot * 100) : 0;
-    var isDone   = lrn === tot && tot > 0;
+    var isFull   = lrn === tot && tot > 0;
+    var isDone   = svPassed.includes(type);
     var emoji    = TYPE_EMOJIS[idx % TYPE_EMOJIS.length];
     var safe     = type.replace(/'/g, "\\'");
 
@@ -420,8 +521,8 @@ function renderTypes() {
         '</div>' +
         '<div class="sv-type-badge">' +
           (isDone
-            ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Tugallandi'
-            : lrn + '/' + tot) +
+            ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> O\'tildi'
+            : (isFull ? 'Testga tayyor' : lrn + '/' + tot)) +
         '</div>' +
         '<div class="sv-type-bar" style="width:' + p + '%"></div>' +
       '</div>';
@@ -433,6 +534,8 @@ function renderTypes() {
 // ═══ VIEW 2: SO'ZLAR ═══
 function openType(type) {
   svCurrentType = type;
+  svLearnedOpen = false;
+  svLearnedHideUz = false;
   svView = 'words';
   document.getElementById('svBackBtn').style.display = '';
   renderWords();
@@ -451,14 +554,22 @@ function renderWords() {
 
   // Banner
   var banner = '';
-  if (full) {
+  var passedType = svPassed.indexOf(type) !== -1;
+  if (passedType) {
     banner =
       '<div class="sv-done-box">' +
         '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="20 6 9 17 4 12"/></svg>' +
         '<div>' +
-          '<div style="font-size:.88rem;font-weight:800;color:#16A34A">Barcha so\'zlar o\'rganildi! 🎉</div>' +
-          '<div style="font-size:.75rem;color:#16A34A;opacity:.8">Ajoyib natija!</div>' +
+          '<div style="font-size:.88rem;font-weight:800;color:#16A34A">Kategoriya o\'tildi! \u2713</div>' +
+          '<div style="font-size:.75rem;color:#16A34A;opacity:.8">Barcha so\'zlarni yaxshi bilasiz</div>' +
         '</div>' +
+      '</div>';
+  } else if (full) {
+    banner =
+      '<div class="sv-test-ready" onclick="svStartTest()">' +
+        '<div class="sv-test-ready-txt"><div class="sv-test-ready-title">Test boshlashga tayyor!</div>' +
+        '<div class="sv-test-ready-sub">Barcha ' + total + ' ta so\'zni o\'rgandingiz</div></div>' +
+        '<button class="sv-test-ready-btn" type="button">Testni boshlash</button>' +
       '</div>';
   } else {
     banner =
@@ -474,7 +585,7 @@ function renderWords() {
   }
 
   // Word cards
-  var wordsHtml = words.map(function(w, i) {
+  function svCardHtml(w, num, inLearned) {
     var isLearned = svLearned.includes(w._docId);
     var safe = w._docId.replace(/'/g, "\\'");
     // bookmarkId: numeric w.id bo'lsa u, yo'q bo'lsa _docId (mywords.html ikkalasini ham qabul qiladi)
@@ -485,10 +596,10 @@ function renderWords() {
     return (
       '<div class="sv-word-card' + (isLearned ? ' learned' : '') + '" id="svcard-' + w._docId + '">' +
         '<div class="sv-word-head">' +
-          '<span class="sv-word-num">' + (i + 1) + '.</span>' +
+          '<span class="sv-word-num">' + num + '.</span>' +
           '<span class="sv-word-en">' + esc(w.word || '') + '</span>' +
           '<span class="sv-word-dash"> – </span>' +
-          '<span class="sv-word-uz">' + esc(w.uz || '') + '</span>' +
+          '<span class="sv-word-uz' + (inLearned && svLearnedHideUz ? ' uz-hide' : '') + '"' + (inLearned ? ' onclick="this.classList.toggle(\'uz-hide\')"' : '') + '>' + esc(w.uz || '') + '</span>' +
           (w.type ? '<span class="sv-type-pill">' + esc(w.type) + '</span>' : '') +
         '</div>' +
         (w.example ? '<div class="sv-word-example">' + esc(w.example) + '</div>' : '') +
@@ -507,29 +618,284 @@ function renderWords() {
         '</div>' +
       '</div>'
     );
-  }).join('');
+  }
+
+  // Yodlanmagan so'zlar — asosiy ro'yxat; o'rganilganlar — alohida bo'limda
+  var pending = words.filter(function(w) { return !svLearned.includes(w._docId); });
+  var done    = words.filter(function(w) { return  svLearned.includes(w._docId); });
+
+  var wordsHtml = pending.map(function(w, i) { return svCardHtml(w, i + 1, false); }).join('');
+  if (!pending.length && total) {
+    wordsHtml = '<div class="sv-alldone-note">Barcha so\'zlar o\'rganildi \uD83C\uDF89</div>';
+  }
+  if (done.length) {
+    var chev = '<span class="lt-chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>';
+    wordsHtml += '<div class="sv-learned-section">' +
+      '<button type="button" class="sv-learned-toggle' + (svLearnedOpen ? ' open' : '') + '" onclick="svToggleLearnedSection()">' +
+        '\u2713 O\'rganilgan so\'zlar<span class="lt-cnt">' + done.length + '</span>' + chev +
+      '</button>';
+    if (svLearnedOpen) {
+      wordsHtml += '<div class="sv-learned-tools"><button type="button" onclick="svToggleHideUz()">' +
+        (svLearnedHideUz ? "Tarjimani ko'rsatish" : "Tarjimani yashirish (o'zingizni tekshiring)") + '</button></div>';
+      wordsHtml += done.map(function(w, i) { return svCardHtml(w, i + 1, true); }).join('');
+    }
+    wordsHtml += '</div>';
+  }
 
   document.getElementById('svBody').innerHTML = banner + wordsHtml + '<div style="height:30px"></div>';
   document.getElementById('svBody').scrollTop = 0;
 }
 
 // ═══ ACTIONS ═══
+// ═══ O'RGANDIM — so'z mini-test orqali tasdiqlanadi ═══
+var SV_LEARN_MIN_GAP_MS  = 3000;   // ketma-ket ikki so'z orasidagi minimal vaqt
+var SV_LEARN_MAX_PER_MIN = 8;      // 1 daqiqada ko'pi bilan nechta so'z tasdiqlanadi
+var SV_LEARN_MAX_TRIES   = 2;      // bir so'z uchun urinishlar soni
+var SV_LEARN_LOCK_MS     = 15000;  // ikkala urinish xato bo'lsa so'z shu vaqtga bloklanadi
+var svLearnMarks = [];             // oxirgi tasdiqlash vaqtlari
+var svLearnLocks = {};             // { docId: qulf tugash vaqti }
+var svLearnCur   = null;           // { id, tries, answered }
+
 function svMarkLearned(docId) {
   if (!currentUser) return;
   var idx = svLearned.indexOf(docId);
-  if (idx === -1) {
-    svLearned.push(docId);
-    svShowToast("O'rgandim! So'z saqlandi!");
-    svLogActivityToday(1);
-  } else {
+  if (idx !== -1) {
+    // Olib tashlash — avvalgidek darhol
     svLearned.splice(idx, 1);
     svShowToast("O'rganilganlardan olib tashlandi");
     svLogActivityToday(-1);
+    svSaveLocal();
+    svSaveFirestore();
+    renderWords();
+    return;
   }
-  svSaveLocal();
-  svSaveFirestore();
+  // Yangi so'z — avval to'siqlar, keyin mini-test
+  var now = Date.now();
+  if (svLearnLocks[docId] && svLearnLocks[docId] > now) {
+    svShowToast("So'zni qayta o'qib chiqing · " + Math.ceil((svLearnLocks[docId] - now) / 1000) + " soniyadan keyin");
+    return;
+  }
+  svLearnMarks = svLearnMarks.filter(function(t) { return now - t < 60000; });
+  if (svLearnMarks.length && now - svLearnMarks[svLearnMarks.length - 1] < SV_LEARN_MIN_GAP_MS) {
+    svShowToast("Shoshilmang — so'zni yaxshilab yodlang");
+    return;
+  }
+  if (svLearnMarks.length >= SV_LEARN_MAX_PER_MIN) {
+    svShowToast("Juda tez! " + Math.ceil((svLearnMarks[0] + 60000 - now) / 1000) + " soniya so'zlarni takrorlang");
+    return;
+  }
+  svOpenLearnCheck(docId);
+}
+
+// Noto'g'ri variantlar: avval shu kategoriyadan, yetmasa boshqa so'zlardan (takrorlanmasdan)
+function svPickOptions(w, poolFirst) {
+  var used = {}; used[(w.uz || '').trim().toLowerCase()] = true;
+  var wrong = [];
+  function pick(list) {
+    list.slice().sort(function() { return Math.random() - .5; }).forEach(function(x) {
+      var k = (x.uz || '').trim().toLowerCase();
+      if (wrong.length < 3 && k && !used[k] && x._docId !== w._docId) { used[k] = true; wrong.push(x); }
+    });
+  }
+  pick(poolFirst);
+  if (wrong.length < 3) pick(SV_WORDS);
+  return [w].concat(wrong).sort(function() { return Math.random() - .5; });
+}
+
+function svOpenLearnCheck(docId) {
+  svLearnCur = { id: docId, tries: 0, answered: false };
+  document.getElementById('svLearnCheck').classList.add('open');
+  svRenderLearnCheck();
+}
+function svCloseLearnCheck() {
+  document.getElementById('svLearnCheck').classList.remove('open');
+  svLearnCur = null;
+}
+function svRenderLearnCheck() {
+  if (!svLearnCur) return;
+  var w = SV_WORDS.find(function(x) { return x._docId === svLearnCur.id; });
+  if (!w) { svCloseLearnCheck(); return; }
+  svLearnCur.answered = false;
+  var options = svPickOptions(w, svWordsOfType(w.type || 'Umumiy'));
+
+  document.getElementById('svqWord').textContent = w.word || '';
+  var note = document.getElementById('svqNote');
+  note.className = 'svq-note';
+  note.textContent = svLearnCur.tries > 0 ? "Xato — yana urinib ko'ring (" + svLearnCur.tries + "/" + SV_LEARN_MAX_TRIES + ")" : '';
+  if (svLearnCur.tries > 0) note.classList.add('err');
+
+  var box = document.getElementById('svqOpts');
+  box.innerHTML = '';
+  options.forEach(function(opt) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'svq-opt';
+    b.textContent = opt.uz || '';
+    b.addEventListener('click', function() { svAnswerLearnCheck(opt._docId === w._docId, b); });
+    box.appendChild(b);
+  });
+}
+function svAnswerLearnCheck(isCorrect, btn) {
+  if (!svLearnCur || svLearnCur.answered) return;
+  svLearnCur.answered = true;
+  var wid = svLearnCur.id;
+  document.querySelectorAll('#svqOpts .svq-opt').forEach(function(b) { b.disabled = true; });
+
+  if (isCorrect) {
+    btn.classList.add('correct');
+    setTimeout(function() {
+      var now = Date.now();
+      svCloseLearnCheck();
+      if (svLearned.indexOf(wid) === -1) {
+        svLearned.push(wid);
+        svLearnMarks.push(now);
+        svShowToast("O'rgandim! So'z saqlandi!");
+        svLogActivityToday(1);
+        svSaveLocal();
+        svSaveFirestore();
+      }
+      renderWords();
+    }, 550);
+    return;
+  }
+
+  btn.classList.add('wrong');
+  svLearnCur.tries++;
+  if (svLearnCur.tries >= SV_LEARN_MAX_TRIES) {
+    svLearnLocks[wid] = Date.now() + SV_LEARN_LOCK_MS;
+    setTimeout(function() {
+      svCloseLearnCheck();
+      svShowToast("Xato. So'zni yana bir bor o'qib chiqing");
+    }, 700);
+  } else {
+    setTimeout(svRenderLearnCheck, 700);
+  }
+}
+
+// ═══ KATEGORIYA TESTI — barcha so'zlar, 90% qoidasi ═══
+var SV_PASS_PERCENT = 90;   // testdan o'tish uchun kerakli to'g'ri javoblar foizi
+function svMaxErrors(total) {
+  return Math.max(1, Math.floor(total * (100 - SV_PASS_PERCENT) / 100)); // kamida 1 ta xato mumkin
+}
+var svTWords = [], svTIdx = 0, svTErrors = 0, svTCorrect = 0, svTAnswered = false;
+
+function svStartTest() {
+  var type = svCurrentType;
+  var words = svWordsOfType(type).slice().sort(function() { return Math.random() - .5; });
+  if (!words.length) return;
+  svTWords = words; svTIdx = 0; svTErrors = 0; svTCorrect = 0; svTAnswered = false;
+  document.getElementById('svtTitle').textContent = type + ' testi';
+  document.getElementById('svTest').classList.add('open');
+  svRenderTestQuestion();
+}
+function svCloseTest() {
+  document.getElementById('svTest').classList.remove('open');
   renderWords();
 }
+function svErrInfoHtml() {
+  return "Xato: <b style=\"color:" + (svTErrors > 0 ? '#EF4444' : '#1A1A2E') + "\">" + svTErrors + "</b> / " + svMaxErrors(svTWords.length) +
+    "<span style=\"margin-left:6px;color:#9AA0AD\">(o'tish uchun kamida " + SV_PASS_PERCENT + "% to'g'ri)</span>";
+}
+function svRenderTestQuestion() {
+  if (svTIdx >= svTWords.length) { svRenderTestResult(); return; }
+  var w = svTWords[svTIdx];
+  var total = svTWords.length;
+  svTAnswered = false;
+  document.getElementById('svtCounter').textContent = (svTIdx + 1) + '/' + total;
+  document.getElementById('svtFill').style.width = ((svTIdx + 1) / total * 100) + '%';
+
+  var options = svPickOptions(w, svWordsOfType(w.type || 'Umumiy'));
+  var body = document.getElementById('svtBody');
+  body.innerHTML = '';
+  var q = document.createElement('div');
+  q.className = 'svt-q';
+  q.innerHTML = '<div class="svt-q-label">Tarjimasini tanlang</div><div class="svt-q-word"></div>';
+  q.querySelector('.svt-q-word').textContent = w.word || '';
+  body.appendChild(q);
+
+  var err = document.createElement('div');
+  err.className = 'svt-err'; err.id = 'svtErr'; err.innerHTML = svErrInfoHtml();
+  body.appendChild(err);
+
+  var opts = document.createElement('div');
+  opts.className = 'svq-opts';
+  options.forEach(function(opt) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'svq-opt'; b.textContent = opt.uz || '';
+    b.addEventListener('click', function() { svCheckTestAnswer(opt._docId === w._docId, b, opts, w); });
+    opts.appendChild(b);
+  });
+  body.appendChild(opts);
+
+  var next = document.createElement('button');
+  next.type = 'button'; next.className = 'svt-next'; next.id = 'svtNext';
+  next.textContent = (svTIdx + 1 < total) ? 'Keyingi savol' : "Natijani ko'rish";
+  next.addEventListener('click', function() { svTIdx++; svRenderTestQuestion(); });
+  body.appendChild(next);
+}
+function svCheckTestAnswer(isCorrect, btn, optsBox, w) {
+  if (svTAnswered) return;
+  svTAnswered = true;
+  optsBox.querySelectorAll('.svq-opt').forEach(function(b) { b.disabled = true; });
+  if (isCorrect) {
+    btn.classList.add('correct'); svTCorrect++;
+  } else {
+    btn.classList.add('wrong'); svTErrors++;
+    optsBox.querySelectorAll('.svq-opt').forEach(function(b) {
+      if (b.textContent === (w.uz || '')) b.classList.add('correct');
+    });
+  }
+  var e = document.getElementById('svtErr');
+  if (e) e.innerHTML = svErrInfoHtml();
+  if (svTErrors > svMaxErrors(svTWords.length)) {
+    setTimeout(svRenderTestFail, 800);
+    return;
+  }
+  document.getElementById('svtNext').style.display = 'block';
+}
+function svStatsHtml(colors) {
+  return '<div class="svt-stats">' +
+    '<div><div class="svt-stat-val" style="color:#16A34A">' + svTCorrect + '</div><div class="svt-stat-lbl">To\'g\'ri</div></div>' +
+    '<div><div class="svt-stat-val" style="color:#EF4444">' + svTErrors + '</div><div class="svt-stat-lbl">Xato</div></div>' +
+    (colors ? '<div><div class="svt-stat-val" style="color:#1565C0">' + Math.round(svTCorrect / svTWords.length * 100) + '%</div><div class="svt-stat-lbl">Natija</div></div>' : '') +
+  '</div>';
+}
+function svRenderTestFail() {
+  document.getElementById('svtBody').innerHTML =
+    '<div class="svt-result">' +
+      '<div class="svt-result-title">Test o\'tmadi</div>' +
+      '<div class="svt-result-sub">Ruxsat etilgan xatolar soni (' + svMaxErrors(svTWords.length) + ' ta) dan oshib ketdi. ' +
+        'Testdan o\'tish uchun kamida ' + SV_PASS_PERCENT + '% to\'g\'ri javob kerak. So\'zlarni yana bir bor takrorlab, qayta urining!</div>' +
+      svStatsHtml(false) +
+      '<div class="svt-btns">' +
+        '<button class="svt-btn primary" type="button" onclick="svStartTest()">Qaytadan boshlash</button>' +
+        '<button class="svt-btn secondary" type="button" onclick="svCloseTest()">So\'zlarni takrorlash</button>' +
+      '</div>' +
+    '</div>';
+}
+function svRenderTestResult() {
+  var passed = svTErrors <= svMaxErrors(svTWords.length);
+  if (!passed) { svRenderTestFail(); return; }
+  if (svPassed.indexOf(svCurrentType) === -1) {
+    svPassed.push(svCurrentType);
+    svSaveLocal();
+    svSaveFirestore();
+  }
+  document.getElementById('svtBody').innerHTML =
+    '<div class="svt-result">' +
+      '<div class="svt-result-title">Tabriklaymiz! 🎉</div>' +
+      '<div class="svt-result-sub"><strong></strong> kategoriyasidan testni muvaffaqiyatli topshirdingiz!</div>' +
+      svStatsHtml(true) +
+      '<div class="svt-btns">' +
+        '<button class="svt-btn primary" type="button" onclick="svCloseTest();svGoBack()">Kategoriyalar ro\'yxatiga</button>' +
+      '</div>' +
+    '</div>';
+  document.querySelector('#svtBody .svt-result-sub strong').textContent = svCurrentType;
+}
+
+// ═══ O'RGANILGAN SO'ZLAR BO'LIMI ═══
+function svToggleLearnedSection() { svLearnedOpen = !svLearnedOpen; renderWords(); }
+function svToggleHideUz()         { svLearnedHideUz = !svLearnedHideUz; renderWords(); }
 
 
 function svToggleBookmark(bmId) {
